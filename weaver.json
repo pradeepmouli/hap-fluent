@@ -1,0 +1,206 @@
+{
+	"$schema": "https://raw.githubusercontent.com/pradeepmouli/repoweaver/master/schemas/weaver.schema.json",
+	"name": "react-fullstack-project",
+	"description": "A full-stack React application with advanced merge strategies",
+	"templates": [
+		{
+			"url": "https://github.com/pradeepmouli/ts-template.git",
+			"branch": "master",
+			"name": "ts-template"
+		}
+	],
+	"mergeStrategy": "merge",
+	"mergeStrategies": [
+		{
+			"patterns": [
+				"package.json"
+			],
+			"strategy": {
+				"type": "package-json",
+				"options": {
+					"preserveExisting": true
+				}
+			},
+			"priority": 200
+		},
+		{
+			"patterns": [
+				"frontend/package.json",
+				"backend/package.json"
+			],
+			"strategy": {
+				"type": "package-json"
+			},
+			"priority": 190
+		},
+		{
+			"patterns": [
+				"*.config.js",
+				"*.config.ts",
+				"*.config.json"
+			],
+			"strategy": {
+				"type": "config",
+				"options": {
+					"deepMerge": true
+				}
+			},
+			"priority": 180
+		},
+		{
+			"patterns": [
+				"src/**/*.jsx",
+				"src/**/*.tsx",
+				"components/**/*.tsx"
+			],
+			"strategy": {
+				"type": "skip"
+			},
+			"priority": 170
+		},
+		{
+			"patterns": [
+				"src/**/*.test.js",
+				"src/**/*.test.ts",
+				"**/__tests__/**"
+			],
+			"strategy": {
+				"type": "skip"
+			},
+			"priority": 160
+		},
+		{
+			"patterns": [
+				"README.md",
+				"CHANGELOG.md"
+			],
+			"strategy": {
+				"type": "skip"
+			},
+			"priority": 155
+		},
+		{
+			"patterns": [
+				"*.md"
+			],
+			"strategy": {
+				"type": "markdown",
+				"options": {
+					"separator": "\n\n---\n\n"
+				}
+			},
+			"priority": 150
+		},
+		{
+			"patterns": [
+				"docs/**/*.md"
+			],
+			"strategy": {
+				"type": "markdown",
+				"options": {
+					"separator": "\n\n## Template Updates\n\n"
+				}
+			},
+			"priority": 140
+		},
+		{
+			"patterns": [
+				"*.yml",
+				"*.yaml",
+				".github/workflows/*.yml"
+			],
+			"strategy": {
+				"type": "yaml"
+			},
+			"priority": 130
+		},
+		{
+			"patterns": [
+				"backend/src/**/*.js",
+				"backend/src/**/*.ts"
+			],
+			"strategy": {
+				"type": "code",
+				"options": {
+					"addConflictMarkers": true
+				}
+			},
+			"priority": 120
+		},
+		{
+			"patterns": [
+				"public/**/*",
+				"static/**/*"
+			],
+			"strategy": {
+				"type": "skip"
+			},
+			"priority": 110
+		},
+		{
+			"patterns": [
+				"*.json"
+			],
+			"strategy": {
+				"type": "json"
+			},
+			"priority": 100
+		}
+	],
+	"excludePatterns": [
+		"node_modules/**",
+		"dist/**",
+		"build/**",
+		"coverage/**",
+		"*.log",
+		".env",
+		".env.local",
+		".env.development.local",
+		".env.test.local",
+		".env.production.local",
+		"*.tmp",
+		"*.cache",
+		".DS_Store",
+		"Thumbs.db"
+	],
+	"includePatterns": [
+		"!.env.example",
+		"!docs/**"
+	],
+	"autoUpdate": true,
+	"createRepository": false,
+	"privateRepository": false,
+	"initGit": true,
+	"addRemote": "https://github.com/pradeepmouli/hap-fluent.git",
+	"hooks": {
+		"preBootstrap": [
+			"echo 'Starting hap-fluent project setup...'",
+			"npm --version"
+		],
+		"postBootstrap": [
+			"npm install",
+			"npm run build",
+			"npm run test -- --passWithNoTests",
+			"echo 'Setup complete! Run npm start to begin development.'"
+		],
+		"preTemplate": [
+			"echo 'Processing template: ${TEMPLATE_NAME}'"
+		],
+		"postTemplate": [
+			"echo 'Completed processing template: ${TEMPLATE_NAME}'"
+		]
+	},
+	"variables": {
+		"PROJECT_NAME": "hap-fluent",
+		"AUTHOR_NAME": "Pradeep Mouli",
+		"NODE_VERSION": "20",
+		"REACT_VERSION": "19.1.0",
+		"API_PORT": "3001",
+		"CLIENT_PORT": "3000"
+	},
+	"plugins": [
+		"npm-merger",
+		"yaml-merger",
+		"react-merger"
+	]
+}

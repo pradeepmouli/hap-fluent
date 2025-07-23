@@ -1,0 +1,24 @@
+{
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "explicit",
+		"source.addMissingImports.ts": "explicit",
+		"source.sortImports": "never"
+	},
+	"typescript.suggest.autoImports": true,
+	"eslint.workingDirectories": [
+		"packages/*"
+	],
+	"search.exclude": {
+		"**/node_modules": true,
+		"**/dist": true,
+		"**/build": true,
+		"**/coverage": true
+	},
+	"typescript.preferences.includePackageJsonAutoImports": "on",
+	"github.copilot.chat.agent.thinkingTool": true,
+	"github.copilot.chat.codeGeneration.useInstructionFiles": true,
+	"prettier.prettierPath": "node_modules/prettier/bin",
+	"prettier.requireConfig": true
+}

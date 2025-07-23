@@ -1,0 +1,25 @@
+{
+	"name": "hap-codegen",
+	"version": "0.1.0",
+	"description": "Code generation for HAP-NodeJS service and characteristic TypeScript interfaces.",
+	"main": "dist/generate-hap-interfaces.js",
+	"types": "dist/generate-hap-interfaces.d.ts",
+	"module": "dist/generate-hap-interfaces.js",
+	"type": "module",
+	"scripts": {
+		"build": "tsc",
+		"download": "tsx src/download-hap-definitions.ts",
+		"generate": "tsx src/generate-hap-interfaces.ts"
+	},
+	"license": "Apache-2.0",
+	"devDependencies": {
+		"ts-morph": "^20.0.0",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.8.3"
+	},
+	"dependencies": {
+		"camelcase": "^8.0.0",
+		"hap-nodejs": "^1.2.0",
+		"reflect-metadata": "^0.2.2"
+	}
+}
