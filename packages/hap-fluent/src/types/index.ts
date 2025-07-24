@@ -1,8 +1,10 @@
 // Re-export all the types from the interface files
 export * from './hap-interfaces.js';
 export * from './hap-enums.js';
-export * from './service-mapping.js';
-import { Service } from 'homebridge';
+import './hap-interfaces.js';
+import { Service, HAP } from 'homebridge';
+
+const d = typeof HAP['_accessoryInformation'];
 
 // Re-export with explicit names to resolve ambiguity
 

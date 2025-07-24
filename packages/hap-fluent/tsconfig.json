@@ -1,21 +1,21 @@
 {
+	"extends": "../../tsconfig.json",
 	"compilerOptions": {
 		"target": "ES2020",
 		"module": "node18",
 		"moduleResolution": "node16",
-
 		"rootDir": "src",
 		"outDir": "dist",
 		"strict": true,
 		"esModuleInterop": true,
-		"skipLibCheck": true,
-		"paths": {
-			"@hap-codegen/*": [
-				"../hap-codegen/src/*"
-			]
-		}
+		"skipLibCheck": true
 	},
 	"include": [
 		"src"
+	],
+	"exclude": [
+		"node_modules",
+		"dist",
+		"examples"
 	]
 }

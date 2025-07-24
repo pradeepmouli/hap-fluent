@@ -5,6 +5,7 @@ import * as Interfaces from './types/hap-interfaces.js';
 import { CharacteristicEventTypes, Service, Characteristic } from 'homebridge';
 import type { InterfaceForService } from './types/index.js';
 import { CamelCase, PascalCase } from 'type-fest';
+import camelcase from 'camelcase';
 
 export type ServiceMap<T extends typeof Service> = InterfaceForService<T> & {
 	characteristics: {
@@ -56,7 +57,7 @@ export class FluentCharacteristic<T> {
  * FluentService wraps a HAP service with strong typing and fluent API
  */
 
-export function createFluentService<T extends typeof Service>(
+export function wrapService<T extends typeof Service>(
 	service: InstanceType<T>
 ): ServiceMap<T> {
 	let e = {
@@ -74,21 +75,19 @@ export function createFluentService<T extends typeof Service>(
 			])
 		),
 
-		onGet: (key: keyof ServiceMap<T>, callback: any) => {
+		onGet: (key: keyof Interfaces.InterfaceMap<T>, callback: any) => {
 			return e.characteristics[key].onGet(callback);
 		},
-		onSet: (key: keyof ServiceMap<T>, callback: any) => {
+		onSet: (key: keyof Interfaces.InterfaceMap<T>, callback: any) => {
 			return e.characteristics[key].onSet(callback);
 		},
-		update: (key: keyof ServiceMap<T>, value: any) => {
+		update: (key: keyof Interfaces.InterfaceMap<T>, value: any) => {
 			return e.characteristics[key].updateValue(value);
 		}
 	} satisfies ServiceMap<T>;
 }
 
-function camelcase(displayName: string): any {
-	throw new Error('Function not implemented.');
-}
+
 // Example usage (to be replaced with generated interfaces)
 // import { AccessoryInformationCharacteristics } from 'hap-codegen/hap-interfaces';
 // const infoService = new FluentService<AccessoryInformationCharacteristics>({ ... });

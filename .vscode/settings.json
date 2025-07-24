@@ -1,5 +1,5 @@
 {
-	"editor.formatOnSave": true,
+	"editor.formatOnSave": false,
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"editor.codeActionsOnSave": {
 		"source.fixAll.eslint": "explicit",
@@ -20,5 +20,17 @@
 	"github.copilot.chat.agent.thinkingTool": true,
 	"github.copilot.chat.codeGeneration.useInstructionFiles": true,
 	"prettier.prettierPath": "node_modules/prettier/bin",
-	"prettier.requireConfig": true
+	"prettier.requireConfig": true,
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"typescript.experimental.useTsgo": false,
+	"prettier.configPath": "node_modules/prettier/bin",
+	"npm-intellisense.packageSubfoldersIntellisense": true,
+	"packageManager": "npm",
+	"pnpm.enableTouchbar": false,
+	"npm.enableRunFromFolder": true,
+	"npm.scriptRunner": "pnpm",
+	"npm.packageManager": "pnpm",
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	}
 }

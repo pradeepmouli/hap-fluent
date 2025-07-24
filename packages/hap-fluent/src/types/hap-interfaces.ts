@@ -1,10 +1,12 @@
 // Auto-generated HAP Service Interfaces
 
-import { Characteristic } from 'hap-nodejs';
+
+
 
 import { Enums } from './hap-enums.js';
 
 import { Service } from 'homebridge';
+
 
 export interface AccessCode {
 	accessCodeControlPoint: Buffer;
@@ -783,225 +785,235 @@ export type ServiceMap = {
 	WindowCovering: typeof Service.WindowCovering;
 };
 
+
+type IsKeyForService<T extends typeof Service, K extends keyof ServiceMap> =
+	T extends ServiceMap[K] ? ServiceMap[K] extends T ? true : false : false;
+
 //@ts-ignore
-declare module 'homebridge/node_modules/hap-nodejs/dist/lib/definitions/ServiceDefinitions' {
-	namespace AccessCode {
-		export const interface: InterfaceMap['AccessCode'];
-	}
-	namespace AccessControl {
-		export const interface: InterfaceMap['AccessControl'];
-	}
-	namespace AccessoryInformation {
-		export const interface: InterfaceMap['AccessoryInformation'];
-	}
-	namespace AccessoryMetrics {
-		export const interface: InterfaceMap['AccessoryMetrics'];
-	}
-	namespace AccessoryRuntimeInformation {
-		export const interface: InterfaceMap['AccessoryRuntimeInformation'];
-	}
-	namespace AirPurifier {
-		export const interface: InterfaceMap['AirPurifier'];
-	}
-	namespace AirQualitySensor {
-		export const interface: InterfaceMap['AirQualitySensor'];
-	}
-	namespace AssetUpdate {
-		export const interface: InterfaceMap['AssetUpdate'];
-	}
-	namespace Assistant {
-		export const interface: InterfaceMap['Assistant'];
-	}
-	namespace AudioStreamManagement {
-		export const interface: InterfaceMap['AudioStreamManagement'];
-	}
-	namespace Battery {
-		export const interface: InterfaceMap['Battery'];
-	}
-	namespace CameraOperatingMode {
-		export const interface: InterfaceMap['CameraOperatingMode'];
-	}
-	namespace CameraRecordingManagement {
-		export const interface: InterfaceMap['CameraRecordingManagement'];
-	}
-	namespace CameraRTPStreamManagement {
-		export const interface: InterfaceMap['CameraRTPStreamManagement'];
-	}
-	namespace CarbonDioxideSensor {
-		export const interface: InterfaceMap['CarbonDioxideSensor'];
-	}
-	namespace CarbonMonoxideSensor {
-		export const interface: InterfaceMap['CarbonMonoxideSensor'];
-	}
-	namespace CloudRelay {
-		export const interface: InterfaceMap['CloudRelay'];
-	}
-	namespace ContactSensor {
-		export const interface: InterfaceMap['ContactSensor'];
-	}
-	namespace DataStreamTransportManagement {
-		export const interface: InterfaceMap['DataStreamTransportManagement'];
-	}
-	namespace Diagnostics {
-		export const interface: InterfaceMap['Diagnostics'];
-	}
-	namespace Door {
-		export const interface: InterfaceMap['Door'];
-	}
-	namespace Doorbell {
-		export const interface: InterfaceMap['Doorbell'];
-	}
-	namespace Fan {
-		export const interface: InterfaceMap['Fan'];
-	}
-	namespace Fanv2 {
-		export const interface: InterfaceMap['Fanv2'];
-	}
-	namespace Faucet {
-		export const interface: InterfaceMap['Faucet'];
-	}
-	namespace FilterMaintenance {
-		export const interface: InterfaceMap['FilterMaintenance'];
-	}
-	namespace FirmwareUpdate {
-		export const interface: InterfaceMap['FirmwareUpdate'];
-	}
-	namespace GarageDoorOpener {
-		export const interface: InterfaceMap['GarageDoorOpener'];
-	}
-	namespace HeaterCooler {
-		export const interface: InterfaceMap['HeaterCooler'];
-	}
-	namespace HumidifierDehumidifier {
-		export const interface: InterfaceMap['HumidifierDehumidifier'];
-	}
-	namespace HumiditySensor {
-		export const interface: InterfaceMap['HumiditySensor'];
-	}
-	namespace InputSource {
-		export const interface: InterfaceMap['InputSource'];
-	}
-	namespace IrrigationSystem {
-		export const interface: InterfaceMap['IrrigationSystem'];
-	}
-	namespace LeakSensor {
-		export const interface: InterfaceMap['LeakSensor'];
-	}
-	namespace Lightbulb {
-		export const interface: InterfaceMap['Lightbulb'];
-	}
-	namespace LightSensor {
-		export const interface: InterfaceMap['LightSensor'];
-	}
-	namespace LockManagement {
-		export const interface: InterfaceMap['LockManagement'];
-	}
-	namespace LockMechanism {
-		export const interface: InterfaceMap['LockMechanism'];
-	}
-	namespace Microphone {
-		export const interface: InterfaceMap['Microphone'];
-	}
-	namespace MotionSensor {
-		export const interface: InterfaceMap['MotionSensor'];
-	}
-	namespace NFCAccess {
-		export const interface: InterfaceMap['NFCAccess'];
-	}
-	namespace OccupancySensor {
-		export const interface: InterfaceMap['OccupancySensor'];
-	}
-	namespace Outlet {
-		export const interface: InterfaceMap['Outlet'];
-	}
-	namespace Pairing {
-		export const interface: InterfaceMap['Pairing'];
-	}
-	namespace PowerManagement {
-		export const interface: InterfaceMap['PowerManagement'];
-	}
-	namespace ProtocolInformation {
-		export const interface: InterfaceMap['ProtocolInformation'];
-	}
-	namespace SecuritySystem {
-		export const interface: InterfaceMap['SecuritySystem'];
-	}
-	namespace ServiceLabel {
-		export const interface: InterfaceMap['ServiceLabel'];
-	}
-	namespace Siri {
-		export const interface: InterfaceMap['Siri'];
-	}
-	namespace SiriEndpoint {
-		export const interface: InterfaceMap['SiriEndpoint'];
-	}
-	namespace Slats {
-		export const interface: InterfaceMap['Slats'];
-	}
-	namespace SmartSpeaker {
-		export const interface: InterfaceMap['SmartSpeaker'];
-	}
-	namespace SmokeSensor {
-		export const interface: InterfaceMap['SmokeSensor'];
-	}
-	namespace Speaker {
-		export const interface: InterfaceMap['Speaker'];
-	}
-	namespace StatefulProgrammableSwitch {
-		export const interface: InterfaceMap['StatefulProgrammableSwitch'];
-	}
-	namespace StatelessProgrammableSwitch {
-		export const interface: InterfaceMap['StatelessProgrammableSwitch'];
-	}
-	namespace Switch {
-		export const interface: InterfaceMap['Switch'];
-	}
-	namespace TapManagement {
-		export const interface: InterfaceMap['TapManagement'];
-	}
-	namespace TargetControl {
-		export const interface: InterfaceMap['TargetControl'];
-	}
-	namespace TargetControlManagement {
-		export const interface: InterfaceMap['TargetControlManagement'];
-	}
-	namespace Television {
-		export const interface: InterfaceMap['Television'];
-	}
-	namespace TelevisionSpeaker {
-		export const interface: InterfaceMap['TelevisionSpeaker'];
-	}
-	namespace TemperatureSensor {
-		export const interface: InterfaceMap['TemperatureSensor'];
-	}
-	namespace Thermostat {
-		export const interface: InterfaceMap['Thermostat'];
-	}
-	namespace ThreadTransport {
-		export const interface: InterfaceMap['ThreadTransport'];
-	}
-	namespace TransferTransportManagement {
-		export const interface: InterfaceMap['TransferTransportManagement'];
-	}
-	namespace Tunnel {
-		export const interface: InterfaceMap['Tunnel'];
-	}
-	namespace Valve {
-		export const interface: InterfaceMap['Valve'];
-	}
-	namespace WiFiRouter {
-		export const interface: InterfaceMap['WiFiRouter'];
-	}
-	namespace WiFiSatellite {
-		export const interface: InterfaceMap['WiFiSatellite'];
-	}
-	namespace WiFiTransport {
-		export const interface: InterfaceMap['WiFiTransport'];
-	}
-	namespace Window {
-		export const interface: InterfaceMap['Window'];
-	}
-	namespace WindowCovering {
-		export const interface: InterfaceMap['WindowCovering'];
+declare module 'hap-nodejs' {
+
+	namespace _definitions {
+		namespace Services {
+			namespace AccessCode {
+				export const interface: InterfaceMap['AccessCode'];
+			}
+
+			namespace AccessControl {
+				export const interface: InterfaceMap['AccessControl'];
+			}
+			namespace AccessoryInformation {
+				export const interface: InterfaceMap['AccessoryInformation'];
+			}
+			namespace AccessoryMetrics {
+				export const interface: InterfaceMap['AccessoryMetrics'];
+			}
+			namespace AccessoryRuntimeInformation {
+				export const interface: InterfaceMap['AccessoryRuntimeInformation'];
+			}
+			namespace AirPurifier {
+				export const interface: InterfaceMap['AirPurifier'];
+			}
+			namespace AirQualitySensor {
+				export const interface: InterfaceMap['AirQualitySensor'];
+			}
+			namespace AssetUpdate {
+				export const interface: InterfaceMap['AssetUpdate'];
+			}
+			namespace Assistant {
+				export const interface: InterfaceMap['Assistant'];
+			}
+			namespace AudioStreamManagement {
+				export const interface: InterfaceMap['AudioStreamManagement'];
+			}
+			namespace Battery {
+				export const interface: InterfaceMap['Battery'];
+			}
+			namespace CameraOperatingMode {
+				export const interface: InterfaceMap['CameraOperatingMode'];
+			}
+			namespace CameraRecordingManagement {
+				export const interface: InterfaceMap['CameraRecordingManagement'];
+			}
+			namespace CameraRTPStreamManagement {
+				export const interface: InterfaceMap['CameraRTPStreamManagement'];
+			}
+			namespace CarbonDioxideSensor {
+				export const interface: InterfaceMap['CarbonDioxideSensor'];
+			}
+			namespace CarbonMonoxideSensor {
+				export const interface: InterfaceMap['CarbonMonoxideSensor'];
+			}
+			namespace CloudRelay {
+				export const interface: InterfaceMap['CloudRelay'];
+			}
+			namespace ContactSensor {
+				export const interface: InterfaceMap['ContactSensor'];
+			}
+			namespace DataStreamTransportManagement {
+				export const interface: InterfaceMap['DataStreamTransportManagement'];
+			}
+			namespace Diagnostics {
+				export const interface: InterfaceMap['Diagnostics'];
+			}
+			namespace Door {
+				export const interface: InterfaceMap['Door'];
+			}
+			namespace Doorbell {
+				export const interface: InterfaceMap['Doorbell'];
+			}
+			namespace Fan {
+				export const interface: InterfaceMap['Fan'];
+			}
+			namespace Fanv2 {
+				export const interface: InterfaceMap['Fanv2'];
+			}
+			namespace Faucet {
+				export const interface: InterfaceMap['Faucet'];
+			}
+			namespace FilterMaintenance {
+				export const interface: InterfaceMap['FilterMaintenance'];
+			}
+			namespace FirmwareUpdate {
+				export const interface: InterfaceMap['FirmwareUpdate'];
+			}
+			namespace GarageDoorOpener {
+				export const interface: InterfaceMap['GarageDoorOpener'];
+			}
+			namespace HeaterCooler {
+				export const interface: InterfaceMap['HeaterCooler'];
+			}
+			namespace HumidifierDehumidifier {
+				export const interface: InterfaceMap['HumidifierDehumidifier'];
+			}
+			namespace HumiditySensor {
+				export const interface: InterfaceMap['HumiditySensor'];
+			}
+			namespace InputSource {
+				export const interface: InterfaceMap['InputSource'];
+			}
+			namespace IrrigationSystem {
+				export const interface: InterfaceMap['IrrigationSystem'];
+			}
+			namespace LeakSensor {
+				export const interface: InterfaceMap['LeakSensor'];
+			}
+			namespace Lightbulb {
+				export const interface: InterfaceMap['Lightbulb'];
+			}
+			namespace LightSensor {
+				export const interface: InterfaceMap['LightSensor'];
+			}
+			namespace LockManagement {
+				export const interface: InterfaceMap['LockManagement'];
+			}
+			namespace LockMechanism {
+				export const interface: InterfaceMap['LockMechanism'];
+			}
+			namespace Microphone {
+				export const interface: InterfaceMap['Microphone'];
+			}
+			namespace MotionSensor {
+				export const interface: InterfaceMap['MotionSensor'];
+			}
+			namespace NFCAccess {
+				export const interface: InterfaceMap['NFCAccess'];
+			}
+			namespace OccupancySensor {
+				export const interface: InterfaceMap['OccupancySensor'];
+			}
+			namespace Outlet {
+				export const interface: InterfaceMap['Outlet'];
+			}
+			namespace Pairing {
+				export const interface: InterfaceMap['Pairing'];
+			}
+			namespace PowerManagement {
+				export const interface: InterfaceMap['PowerManagement'];
+			}
+			namespace ProtocolInformation {
+				export const interface: InterfaceMap['ProtocolInformation'];
+			}
+			namespace SecuritySystem {
+				export const interface: InterfaceMap['SecuritySystem'];
+			}
+			namespace ServiceLabel {
+				export const interface: InterfaceMap['ServiceLabel'];
+			}
+			namespace Siri {
+				export const interface: InterfaceMap['Siri'];
+			}
+			namespace SiriEndpoint {
+				export const interface: InterfaceMap['SiriEndpoint'];
+			}
+			namespace Slats {
+				export const interface: InterfaceMap['Slats'];
+			}
+			namespace SmartSpeaker {
+				export const interface: InterfaceMap['SmartSpeaker'];
+			}
+			namespace SmokeSensor {
+				export const interface: InterfaceMap['SmokeSensor'];
+			}
+			namespace Speaker {
+				export const interface: InterfaceMap['Speaker'];
+			}
+			namespace StatefulProgrammableSwitch {
+				export const interface: InterfaceMap['StatefulProgrammableSwitch'];
+			}
+			namespace StatelessProgrammableSwitch {
+				export const interface: InterfaceMap['StatelessProgrammableSwitch'];
+			}
+			namespace Switch {
+				export const interface: InterfaceMap['Switch'];
+			}
+			namespace TapManagement {
+				export const interface: InterfaceMap['TapManagement'];
+			}
+			namespace TargetControl {
+				export const interface: InterfaceMap['TargetControl'];
+			}
+			namespace TargetControlManagement {
+				export const interface: InterfaceMap['TargetControlManagement'];
+			}
+			namespace Television {
+				export const interface: InterfaceMap['Television'];
+			}
+			namespace TelevisionSpeaker {
+				export const interface: InterfaceMap['TelevisionSpeaker'];
+			}
+			namespace TemperatureSensor {
+				export const interface: InterfaceMap['TemperatureSensor'];
+			}
+			namespace Thermostat {
+				export const interface: InterfaceMap['Thermostat'];
+			}
+			namespace ThreadTransport {
+				export const interface: InterfaceMap['ThreadTransport'];
+			}
+			namespace TransferTransportManagement {
+				export const interface: InterfaceMap['TransferTransportManagement'];
+			}
+			namespace Tunnel {
+				export const interface: InterfaceMap['Tunnel'];
+			}
+			namespace Valve {
+				export const interface: InterfaceMap['Valve'];
+			}
+			namespace WiFiRouter {
+				export const interface: InterfaceMap['WiFiRouter'];
+			}
+			namespace WiFiSatellite {
+				export const interface: InterfaceMap['WiFiSatellite'];
+			}
+			namespace WiFiTransport {
+				export const interface: InterfaceMap['WiFiTransport'];
+			}
+			namespace Window {
+				export const interface: InterfaceMap['Window'];
+			}
+			namespace WindowCovering {
+				export const interface: InterfaceMap['WindowCovering'];
+			}
+		}
 	}
 }
