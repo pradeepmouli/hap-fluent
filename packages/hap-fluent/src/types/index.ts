@@ -4,7 +4,6 @@ export * from './hap-enums.js';
 import './hap-interfaces.js';
 import { Service, HAP } from 'homebridge';
 
-const d = typeof HAP['_accessoryInformation'];
 
 // Re-export with explicit names to resolve ambiguity
 

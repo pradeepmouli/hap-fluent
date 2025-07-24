@@ -16,11 +16,11 @@ export type ServiceMap<T extends typeof Service> = InterfaceForService<T> & {
 	};
 	onGet<K extends keyof InterfaceForService<T>>(
 		key: K,
-		callback: (value: InterfaceForService<T>[K]) => void
+		callback: () => Promise<InterfaceForService<T>[K]>
 	): void;
 	onSet<K extends keyof InterfaceForService<T>>(
 		key: K,
-		callback: (value: InterfaceForService<T>[K]) => void
+		callback: (value: InterfaceForService<T>[K]) => Promise<void>
 	): void;
 	update<K extends keyof InterfaceForService<T>>(
 		key: K,
@@ -75,16 +75,16 @@ export function wrapService<T extends typeof Service>(
 			])
 		),
 
-		onGet: (key: keyof Interfaces.InterfaceMap<T>, callback: any) => {
-			return e.characteristics[key].onGet(callback);
+		onGet: <K extends keyof InterfaceForService<T>>(key: K, callback: () => Promise<InterfaceForService<T>[K]>) => {
+			return e.characteristics[key].onGet(callback as any);
 		},
-		onSet: (key: keyof Interfaces.InterfaceMap<T>, callback: any) => {
-			return e.characteristics[key].onSet(callback);
+		onSet: <K extends keyof InterfaceForService<T>>(key: K, callback: (value: InterfaceForService<T>[K]) => Promise<void>) => {
+			return e.characteristics[key].onSet(callback as any);
 		},
-		update: (key: keyof Interfaces.InterfaceMap<T>, value: any) => {
-			return e.characteristics[key].updateValue(value);
+		update: <K extends keyof InterfaceForService<T>>(key: K, value: InterfaceForService<T>[K]) => {
+			e.characteristics[key].updateValue(value as any);
 		}
-	} satisfies ServiceMap<T>;
+	} as any;
 }
 
 
