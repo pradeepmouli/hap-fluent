@@ -73,7 +73,7 @@ export function wrapService<T extends typeof Service>(
 				camelcase(key),
 				char.value
 			])
-		),
+		) as any,
 
 		onGet: <K extends keyof InterfaceForService<T>>(key: K, callback: () => Promise<InterfaceForService<T>[K]>) => {
 			return e.characteristics[key].onGet(callback as any);
@@ -84,7 +84,7 @@ export function wrapService<T extends typeof Service>(
 		update: <K extends keyof InterfaceForService<T>>(key: K, value: InterfaceForService<T>[K]) => {
 			e.characteristics[key].updateValue(value as any);
 		}
-	} as any;
+	} satisfies ServiceMap<T>;
 }
 
 
