@@ -303,10 +303,12 @@ function generateInterfaces(
 	characteristics: Record<string, { type: string; enums?: string[] }> = {}
 ) {
 	let output = '// Auto-generated HAP Service Interfaces\n\n';
-	output += "import { Characteristic } from 'hap-nodejs';\n\n";
+	output += "import { Characteristic, Service } from 'hap-nodejs';\n\n";
 	output += "import { Enums } from './hap-enums.js';\n\n";
 	for (const service of services) {
 		output += `export interface ${service.name} {\n`;
+		output += `  UUID: '${service.UUID}';\n`;
+		output += `  serviceName: '${service.name}';\n`;
 		for (const char of service.required) {
 			output += `  ${camelcase(char.name)}: ${characteristics[char.className]?.type ?? 'any'};\n`;
 		}
@@ -326,12 +328,19 @@ function generateInterfaces(
 	} // Close the ServiceMap interface
 	output += '}\n\n';
 	output +=
-		"declare module 'hap-nodejs/dist/lib/definitions/ServiceDefinitions' {";
+		"declare module 'hap-nodejs' {";
+	output += '\n\t namespace _definitions {';
+	output += '\n\t\t namespace Services {';
 	// Add module augmentations
 	for (const service of services) {
-		output += `\n namespace ${service.name} { export const interface: InterfaceMap['${service.name}']; }`;
+		output += `\n\t\t\t namespace ${service.name} {`
+		output += `\n\t\t\t\t export const interface: InterfaceMap['${service.name}']; \n`
+		output += `\n\t\t\t\t export const serviceName: '${service.name}'; \n`
+		output += `\n\t\t\t}`;
 	}
 	// Close the module augmentation
+	output += '\n}';
+	output += '\n}';
 	output += '\n}';
 
 	return output;

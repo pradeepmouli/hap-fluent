@@ -1,25 +1,27 @@
 // Auto-generated HAP Service Interfaces
 
-
-
+import { Characteristic, Service } from 'hap-nodejs';
 
 import { Enums } from './hap-enums.js';
 
-import { Service } from 'homebridge';
-
-
 export interface AccessCode {
+	UUID: '00000260-0000-1000-8000-0026BB765291';
+	serviceName: 'AccessCode';
 	accessCodeControlPoint: Buffer;
 	accessCodeSupportedConfiguration: Buffer;
 	configurationState: number;
 }
 
 export interface AccessControl {
+	UUID: '000000DA-0000-1000-8000-0026BB765291';
+	serviceName: 'AccessControl';
 	accessControlLevel: number;
 	passwordSetting?: Buffer;
 }
 
 export interface AccessoryInformation {
+	UUID: '0000003E-0000-1000-8000-0026BB765291';
+	serviceName: 'AccessoryInformation';
 	identify: boolean;
 	manufacturer: string;
 	model: string;
@@ -37,12 +39,16 @@ export interface AccessoryInformation {
 }
 
 export interface AccessoryMetrics {
+	UUID: '00000270-0000-1000-8000-0026BB765291';
+	serviceName: 'AccessoryMetrics';
 	active: Enums.Active;
 	metricsBufferFullState: boolean;
 	supportedMetrics: Buffer;
 }
 
 export interface AccessoryRuntimeInformation {
+	UUID: '00000239-0000-1000-8000-0026BB765291';
+	serviceName: 'AccessoryRuntimeInformation';
 	ping: Buffer;
 	activityInterval?: number;
 	heartBeat?: number;
@@ -50,6 +56,8 @@ export interface AccessoryRuntimeInformation {
 }
 
 export interface AirPurifier {
+	UUID: '000000BB-0000-1000-8000-0026BB765291';
+	serviceName: 'AirPurifier';
 	active: Enums.Active;
 	currentAirPurifierState: Enums.CurrentAirPurifierState;
 	targetAirPurifierState: Enums.TargetAirPurifierState;
@@ -60,6 +68,8 @@ export interface AirPurifier {
 }
 
 export interface AirQualitySensor {
+	UUID: '0000008D-0000-1000-8000-0026BB765291';
+	serviceName: 'AirQualitySensor';
 	airQuality: Enums.AirQuality;
 	nitrogenDioxideDensity?: number;
 	ozoneDensity?: number;
@@ -75,22 +85,30 @@ export interface AirQualitySensor {
 }
 
 export interface AssetUpdate {
+	UUID: '00000267-0000-1000-8000-0026BB765291';
+	serviceName: 'AssetUpdate';
 	assetUpdateReadiness: number;
 	supportedAssetTypes: number;
 }
 
 export interface Assistant {
+	UUID: '0000026A-0000-1000-8000-0026BB765291';
+	serviceName: 'Assistant';
 	active: Enums.Active;
 	identifier: number;
 	name: string;
 }
 
 export interface AudioStreamManagement {
+	UUID: '00000127-0000-1000-8000-0026BB765291';
+	serviceName: 'AudioStreamManagement';
 	supportedAudioStreamConfiguration: Buffer;
 	selectedAudioStreamConfiguration: Buffer;
 }
 
 export interface Battery {
+	UUID: '00000096-0000-1000-8000-0026BB765291';
+	serviceName: 'Battery';
 	statusLowBattery: Enums.StatusLowBattery;
 	batteryLevel?: number;
 	chargingState?: Enums.ChargingState;
@@ -98,6 +116,8 @@ export interface Battery {
 }
 
 export interface CameraOperatingMode {
+	UUID: '0000021A-0000-1000-8000-0026BB765291';
+	serviceName: 'CameraOperatingMode';
 	eventSnapshotsActive: Enums.EventSnapshotsActive;
 	homeKitCameraActive: Enums.HomeKitCameraActive;
 	cameraOperatingModeIndicator?: Enums.CameraOperatingModeIndicator;
@@ -109,6 +129,8 @@ export interface CameraOperatingMode {
 }
 
 export interface CameraRecordingManagement {
+	UUID: '00000204-0000-1000-8000-0026BB765291';
+	serviceName: 'CameraRecordingManagement';
 	active: Enums.Active;
 	selectedCameraRecordingConfiguration: Buffer;
 	supportedAudioRecordingConfiguration: Buffer;
@@ -118,6 +140,8 @@ export interface CameraRecordingManagement {
 }
 
 export interface CameraRTPStreamManagement {
+	UUID: '00000110-0000-1000-8000-0026BB765291';
+	serviceName: 'CameraRTPStreamManagement';
 	selectedRtpStreamConfiguration: Buffer;
 	setupEndpoints: Buffer;
 	streamingStatus: Buffer;
@@ -128,6 +152,8 @@ export interface CameraRTPStreamManagement {
 }
 
 export interface CarbonDioxideSensor {
+	UUID: '00000097-0000-1000-8000-0026BB765291';
+	serviceName: 'CarbonDioxideSensor';
 	carbonDioxideDetected: Enums.CarbonDioxideDetected;
 	carbonDioxideLevel?: number;
 	carbonDioxidePeakLevel?: number;
@@ -139,6 +165,8 @@ export interface CarbonDioxideSensor {
 }
 
 export interface CarbonMonoxideSensor {
+	UUID: '0000007F-0000-1000-8000-0026BB765291';
+	serviceName: 'CarbonMonoxideSensor';
 	carbonMonoxideDetected: Enums.CarbonMonoxideDetected;
 	carbonMonoxideLevel?: number;
 	carbonMonoxidePeakLevel?: number;
@@ -150,12 +178,16 @@ export interface CarbonMonoxideSensor {
 }
 
 export interface CloudRelay {
+	UUID: '0000005A-0000-1000-8000-0026BB765291';
+	serviceName: 'CloudRelay';
 	relayControlPoint: Buffer;
 	relayState: number;
 	relayEnabled: boolean;
 }
 
 export interface ContactSensor {
+	UUID: '00000080-0000-1000-8000-0026BB765291';
+	serviceName: 'ContactSensor';
 	contactSensorState: Enums.ContactSensorState;
 	name?: string;
 	statusActive?: boolean;
@@ -165,18 +197,24 @@ export interface ContactSensor {
 }
 
 export interface DataStreamTransportManagement {
+	UUID: '00000129-0000-1000-8000-0026BB765291';
+	serviceName: 'DataStreamTransportManagement';
 	setupDataStreamTransport: Buffer;
 	supportedDataStreamTransportConfiguration: Buffer;
 	version: string;
 }
 
 export interface Diagnostics {
+	UUID: '00000237-0000-1000-8000-0026BB765291';
+	serviceName: 'Diagnostics';
 	supportedDiagnosticsSnapshot: Buffer;
 	selectedDiagnosticsModes?: number;
 	supportedDiagnosticsModes?: number;
 }
 
 export interface Door {
+	UUID: '00000081-0000-1000-8000-0026BB765291';
+	serviceName: 'Door';
 	currentPosition: number;
 	positionState: Enums.PositionState;
 	targetPosition: number;
@@ -186,6 +224,8 @@ export interface Door {
 }
 
 export interface Doorbell {
+	UUID: '00000121-0000-1000-8000-0026BB765291';
+	serviceName: 'Doorbell';
 	programmableSwitchEvent: Enums.ProgrammableSwitchEvent;
 	brightness?: number;
 	mute?: boolean;
@@ -195,6 +235,8 @@ export interface Doorbell {
 }
 
 export interface Fan {
+	UUID: '00000040-0000-1000-8000-0026BB765291';
+	serviceName: 'Fan';
 	on: boolean;
 	name?: string;
 	rotationDirection?: Enums.RotationDirection;
@@ -202,6 +244,8 @@ export interface Fan {
 }
 
 export interface Fanv2 {
+	UUID: '000000B7-0000-1000-8000-0026BB765291';
+	serviceName: 'Fanv2';
 	active: Enums.Active;
 	currentFanState?: Enums.CurrentFanState;
 	targetFanState?: Enums.TargetFanState;
@@ -213,12 +257,16 @@ export interface Fanv2 {
 }
 
 export interface Faucet {
+	UUID: '000000D7-0000-1000-8000-0026BB765291';
+	serviceName: 'Faucet';
 	active: Enums.Active;
 	name?: string;
 	statusFault?: Enums.StatusFault;
 }
 
 export interface FilterMaintenance {
+	UUID: '000000BA-0000-1000-8000-0026BB765291';
+	serviceName: 'FilterMaintenance';
 	filterChangeIndication: Enums.FilterChangeIndication;
 	filterLifeLevel?: number;
 	resetFilterIndication?: number;
@@ -226,6 +274,8 @@ export interface FilterMaintenance {
 }
 
 export interface FirmwareUpdate {
+	UUID: '00000236-0000-1000-8000-0026BB765291';
+	serviceName: 'FirmwareUpdate';
 	firmwareUpdateReadiness: Buffer;
 	firmwareUpdateStatus: Buffer;
 	matterFirmwareUpdateStatus?: Buffer;
@@ -234,6 +284,8 @@ export interface FirmwareUpdate {
 }
 
 export interface GarageDoorOpener {
+	UUID: '00000041-0000-1000-8000-0026BB765291';
+	serviceName: 'GarageDoorOpener';
 	currentDoorState: Enums.CurrentDoorState;
 	targetDoorState: Enums.TargetDoorState;
 	obstructionDetected: boolean;
@@ -243,6 +295,8 @@ export interface GarageDoorOpener {
 }
 
 export interface HeaterCooler {
+	UUID: '000000BC-0000-1000-8000-0026BB765291';
+	serviceName: 'HeaterCooler';
 	active: Enums.Active;
 	currentHeaterCoolerState: Enums.CurrentHeaterCoolerState;
 	targetHeaterCoolerState: Enums.TargetHeaterCoolerState;
@@ -257,6 +311,8 @@ export interface HeaterCooler {
 }
 
 export interface HumidifierDehumidifier {
+	UUID: '000000BD-0000-1000-8000-0026BB765291';
+	serviceName: 'HumidifierDehumidifier';
 	active: Enums.Active;
 	currentHumidifierDehumidifierState: Enums.CurrentHumidifierDehumidifierState;
 	targetHumidifierDehumidifierState: Enums.TargetHumidifierDehumidifierState;
@@ -271,6 +327,8 @@ export interface HumidifierDehumidifier {
 }
 
 export interface HumiditySensor {
+	UUID: '00000082-0000-1000-8000-0026BB765291';
+	serviceName: 'HumiditySensor';
 	currentRelativeHumidity: number;
 	name?: string;
 	statusActive?: boolean;
@@ -280,6 +338,8 @@ export interface HumiditySensor {
 }
 
 export interface InputSource {
+	UUID: '000000D9-0000-1000-8000-0026BB765291';
+	serviceName: 'InputSource';
 	configuredName: string;
 	inputSourceType: Enums.InputSourceType;
 	isConfigured: Enums.IsConfigured;
@@ -291,6 +351,8 @@ export interface InputSource {
 }
 
 export interface IrrigationSystem {
+	UUID: '000000CF-0000-1000-8000-0026BB765291';
+	serviceName: 'IrrigationSystem';
 	active: Enums.Active;
 	programMode: Enums.ProgramMode;
 	inUse: Enums.InUse;
@@ -300,6 +362,8 @@ export interface IrrigationSystem {
 }
 
 export interface LeakSensor {
+	UUID: '00000083-0000-1000-8000-0026BB765291';
+	serviceName: 'LeakSensor';
 	leakDetected: Enums.LeakDetected;
 	name?: string;
 	statusActive?: boolean;
@@ -309,6 +373,8 @@ export interface LeakSensor {
 }
 
 export interface Lightbulb {
+	UUID: '00000043-0000-1000-8000-0026BB765291';
+	serviceName: 'Lightbulb';
 	on: boolean;
 	brightness?: number;
 	characteristicValueActiveTransitionCount?: number;
@@ -321,6 +387,8 @@ export interface Lightbulb {
 }
 
 export interface LightSensor {
+	UUID: '00000084-0000-1000-8000-0026BB765291';
+	serviceName: 'LightSensor';
 	currentAmbientLightLevel: number;
 	name?: string;
 	statusActive?: boolean;
@@ -330,6 +398,8 @@ export interface LightSensor {
 }
 
 export interface LockManagement {
+	UUID: '00000044-0000-1000-8000-0026BB765291';
+	serviceName: 'LockManagement';
 	lockControlPoint: Buffer;
 	version: string;
 	administratorOnlyAccess?: boolean;
@@ -342,17 +412,23 @@ export interface LockManagement {
 }
 
 export interface LockMechanism {
+	UUID: '00000045-0000-1000-8000-0026BB765291';
+	serviceName: 'LockMechanism';
 	lockCurrentState: Enums.LockCurrentState;
 	lockTargetState: Enums.LockTargetState;
 	name?: string;
 }
 
 export interface Microphone {
+	UUID: '00000112-0000-1000-8000-0026BB765291';
+	serviceName: 'Microphone';
 	mute: boolean;
 	volume?: number;
 }
 
 export interface MotionSensor {
+	UUID: '00000085-0000-1000-8000-0026BB765291';
+	serviceName: 'MotionSensor';
 	motionDetected: boolean;
 	name?: string;
 	statusActive?: boolean;
@@ -362,12 +438,16 @@ export interface MotionSensor {
 }
 
 export interface NFCAccess {
+	UUID: '00000266-0000-1000-8000-0026BB765291';
+	serviceName: 'NFCAccess';
 	configurationState: number;
 	nfcAccessControlPoint: Buffer;
 	nfcAccessSupportedConfiguration: Buffer;
 }
 
 export interface OccupancySensor {
+	UUID: '00000086-0000-1000-8000-0026BB765291';
+	serviceName: 'OccupancySensor';
 	occupancyDetected: Enums.OccupancyDetected;
 	name?: string;
 	statusActive?: boolean;
@@ -377,12 +457,16 @@ export interface OccupancySensor {
 }
 
 export interface Outlet {
+	UUID: '00000047-0000-1000-8000-0026BB765291';
+	serviceName: 'Outlet';
 	on: boolean;
 	name?: string;
 	outletInUse?: boolean;
 }
 
 export interface Pairing {
+	UUID: '00000055-0000-1000-8000-0026BB765291';
+	serviceName: 'Pairing';
 	listPairings: Buffer;
 	pairSetup: Buffer;
 	pairVerify: Buffer;
@@ -390,16 +474,22 @@ export interface Pairing {
 }
 
 export interface PowerManagement {
+	UUID: '00000221-0000-1000-8000-0026BB765291';
+	serviceName: 'PowerManagement';
 	wakeConfiguration: Buffer;
 	selectedSleepConfiguration?: Buffer;
 	supportedSleepConfiguration?: Buffer;
 }
 
 export interface ProtocolInformation {
+	UUID: '000000A2-0000-1000-8000-0026BB765291';
+	serviceName: 'ProtocolInformation';
 	version: string;
 }
 
 export interface SecuritySystem {
+	UUID: '0000007E-0000-1000-8000-0026BB765291';
+	serviceName: 'SecuritySystem';
 	securitySystemCurrentState: Enums.SecuritySystemCurrentState;
 	securitySystemTargetState: Enums.SecuritySystemTargetState;
 	name?: string;
@@ -409,10 +499,14 @@ export interface SecuritySystem {
 }
 
 export interface ServiceLabel {
+	UUID: '000000CC-0000-1000-8000-0026BB765291';
+	serviceName: 'ServiceLabel';
 	serviceLabelNamespace: Enums.ServiceLabelNamespace;
 }
 
 export interface Siri {
+	UUID: '00000133-0000-1000-8000-0026BB765291';
+	serviceName: 'Siri';
 	siriInputType: Enums.SiriInputType;
 	multifunctionButton?: number;
 	siriEnable?: number;
@@ -423,6 +517,8 @@ export interface Siri {
 }
 
 export interface SiriEndpoint {
+	UUID: '00000253-0000-1000-8000-0026BB765291';
+	serviceName: 'SiriEndpoint';
 	siriEndpointSessionStatus: Buffer;
 	version: string;
 	activeIdentifier?: number;
@@ -430,6 +526,8 @@ export interface SiriEndpoint {
 }
 
 export interface Slats {
+	UUID: '000000B9-0000-1000-8000-0026BB765291';
+	serviceName: 'Slats';
 	currentSlatState: Enums.CurrentSlatState;
 	slatType: Enums.SlatType;
 	name?: string;
@@ -439,6 +537,8 @@ export interface Slats {
 }
 
 export interface SmartSpeaker {
+	UUID: '00000228-0000-1000-8000-0026BB765291';
+	serviceName: 'SmartSpeaker';
 	currentMediaState: Enums.CurrentMediaState;
 	targetMediaState: Enums.TargetMediaState;
 	airPlayEnable?: number;
@@ -449,6 +549,8 @@ export interface SmartSpeaker {
 }
 
 export interface SmokeSensor {
+	UUID: '00000087-0000-1000-8000-0026BB765291';
+	serviceName: 'SmokeSensor';
 	smokeDetected: Enums.SmokeDetected;
 	name?: string;
 	statusActive?: boolean;
@@ -458,29 +560,39 @@ export interface SmokeSensor {
 }
 
 export interface Speaker {
+	UUID: '00000113-0000-1000-8000-0026BB765291';
+	serviceName: 'Speaker';
 	mute: boolean;
 	active?: Enums.Active;
 	volume?: number;
 }
 
 export interface StatefulProgrammableSwitch {
+	UUID: '00000088-0000-1000-8000-0026BB765291';
+	serviceName: 'StatefulProgrammableSwitch';
 	programmableSwitchEvent: Enums.ProgrammableSwitchEvent;
 	programmableSwitchOutputState: number;
 	name?: string;
 }
 
 export interface StatelessProgrammableSwitch {
+	UUID: '00000089-0000-1000-8000-0026BB765291';
+	serviceName: 'StatelessProgrammableSwitch';
 	programmableSwitchEvent: Enums.ProgrammableSwitchEvent;
 	name?: string;
 	serviceLabelIndex?: number;
 }
 
 export interface Switch {
+	UUID: '00000049-0000-1000-8000-0026BB765291';
+	serviceName: 'Switch';
 	on: boolean;
 	name?: string;
 }
 
 export interface TapManagement {
+	UUID: '0000022E-0000-1000-8000-0026BB765291';
+	serviceName: 'TapManagement';
 	active: Enums.Active;
 	cryptoHash: Buffer;
 	tapType: number;
@@ -488,6 +600,8 @@ export interface TapManagement {
 }
 
 export interface TargetControl {
+	UUID: '00000125-0000-1000-8000-0026BB765291';
+	serviceName: 'TargetControl';
 	active: Enums.Active;
 	activeIdentifier: number;
 	buttonEvent: Buffer;
@@ -495,11 +609,15 @@ export interface TargetControl {
 }
 
 export interface TargetControlManagement {
+	UUID: '00000122-0000-1000-8000-0026BB765291';
+	serviceName: 'TargetControlManagement';
 	targetControlSupportedConfiguration: Buffer;
 	targetControlList: Buffer;
 }
 
 export interface Television {
+	UUID: '000000D8-0000-1000-8000-0026BB765291';
+	serviceName: 'Television';
 	active: Enums.Active;
 	activeIdentifier: number;
 	configuredName: string;
@@ -516,6 +634,8 @@ export interface Television {
 }
 
 export interface TelevisionSpeaker {
+	UUID: '00000113-0000-1000-8000-0026BB765291';
+	serviceName: 'TelevisionSpeaker';
 	mute: boolean;
 	active?: Enums.Active;
 	volume?: number;
@@ -524,6 +644,8 @@ export interface TelevisionSpeaker {
 }
 
 export interface TemperatureSensor {
+	UUID: '0000008A-0000-1000-8000-0026BB765291';
+	serviceName: 'TemperatureSensor';
 	currentTemperature: number;
 	name?: string;
 	statusActive?: boolean;
@@ -533,6 +655,8 @@ export interface TemperatureSensor {
 }
 
 export interface Thermostat {
+	UUID: '0000004A-0000-1000-8000-0026BB765291';
+	serviceName: 'Thermostat';
 	currentHeatingCoolingState: Enums.CurrentHeatingCoolingState;
 	targetHeatingCoolingState: Enums.TargetHeatingCoolingState;
 	currentTemperature: number;
@@ -546,6 +670,8 @@ export interface Thermostat {
 }
 
 export interface ThreadTransport {
+	UUID: '00000701-0000-1000-8000-0026BB765291';
+	serviceName: 'ThreadTransport';
 	currentTransport: boolean;
 	threadControlPoint: Buffer;
 	threadNodeCapabilities: number;
@@ -565,11 +691,15 @@ export interface ThreadTransport {
 }
 
 export interface TransferTransportManagement {
+	UUID: '00000203-0000-1000-8000-0026BB765291';
+	serviceName: 'TransferTransportManagement';
 	supportedTransferTransportConfiguration: Buffer;
 	setupTransferTransport: Buffer;
 }
 
 export interface Tunnel {
+	UUID: '00000056-0000-1000-8000-0026BB765291';
+	serviceName: 'Tunnel';
 	accessoryIdentifier: string;
 	tunnelConnectionTimeout: number;
 	tunneledAccessoryAdvertising: boolean;
@@ -578,6 +708,8 @@ export interface Tunnel {
 }
 
 export interface Valve {
+	UUID: '000000D0-0000-1000-8000-0026BB765291';
+	serviceName: 'Valve';
 	active: Enums.Active;
 	inUse: Enums.InUse;
 	valveType: Enums.ValveType;
@@ -590,6 +722,8 @@ export interface Valve {
 }
 
 export interface WiFiRouter {
+	UUID: '0000020A-0000-1000-8000-0026BB765291';
+	serviceName: 'WiFiRouter';
 	configuredName: string;
 	managedNetworkEnable: Enums.ManagedNetworkEnable;
 	networkAccessViolationControl: Buffer;
@@ -602,16 +736,22 @@ export interface WiFiRouter {
 }
 
 export interface WiFiSatellite {
+	UUID: '0000020F-0000-1000-8000-0026BB765291';
+	serviceName: 'WiFiSatellite';
 	wiFiSatelliteStatus: Enums.WiFiSatelliteStatus;
 }
 
 export interface WiFiTransport {
+	UUID: '0000022A-0000-1000-8000-0026BB765291';
+	serviceName: 'WiFiTransport';
 	currentTransport: boolean;
 	wiFiCapabilities: number;
 	wiFiConfigurationControl?: Buffer;
 }
 
 export interface Window {
+	UUID: '0000008B-0000-1000-8000-0026BB765291';
+	serviceName: 'Window';
 	currentPosition: number;
 	positionState: Enums.PositionState;
 	targetPosition: number;
@@ -621,6 +761,8 @@ export interface Window {
 }
 
 export interface WindowCovering {
+	UUID: '0000008C-0000-1000-8000-0026BB765291';
+	serviceName: 'WindowCovering';
 	currentPosition: number;
 	positionState: Enums.PositionState;
 	targetPosition: number;
@@ -785,234 +927,446 @@ export type ServiceMap = {
 	WindowCovering: typeof Service.WindowCovering;
 };
 
-
-type IsKeyForService<T extends typeof Service, K extends keyof ServiceMap> =
-	T extends ServiceMap[K] ? ServiceMap[K] extends T ? true : false : false;
-
-//@ts-ignore
 declare module 'hap-nodejs' {
-
 	namespace _definitions {
 		namespace Services {
 			namespace AccessCode {
 				export const interface: InterfaceMap['AccessCode'];
-			}
 
+				export const serviceName: 'AccessCode';
+
+			}
 			namespace AccessControl {
 				export const interface: InterfaceMap['AccessControl'];
+
+				export const serviceName: 'AccessControl';
+
 			}
 			namespace AccessoryInformation {
 				export const interface: InterfaceMap['AccessoryInformation'];
+
+				export const serviceName: 'AccessoryInformation';
+
 			}
 			namespace AccessoryMetrics {
 				export const interface: InterfaceMap['AccessoryMetrics'];
+
+				export const serviceName: 'AccessoryMetrics';
+
 			}
 			namespace AccessoryRuntimeInformation {
 				export const interface: InterfaceMap['AccessoryRuntimeInformation'];
+
+				export const serviceName: 'AccessoryRuntimeInformation';
+
 			}
 			namespace AirPurifier {
 				export const interface: InterfaceMap['AirPurifier'];
+
+				export const serviceName: 'AirPurifier';
+
 			}
 			namespace AirQualitySensor {
 				export const interface: InterfaceMap['AirQualitySensor'];
+
+				export const serviceName: 'AirQualitySensor';
+
 			}
 			namespace AssetUpdate {
 				export const interface: InterfaceMap['AssetUpdate'];
+
+				export const serviceName: 'AssetUpdate';
+
 			}
 			namespace Assistant {
 				export const interface: InterfaceMap['Assistant'];
+
+				export const serviceName: 'Assistant';
+
 			}
 			namespace AudioStreamManagement {
 				export const interface: InterfaceMap['AudioStreamManagement'];
+
+				export const serviceName: 'AudioStreamManagement';
+
 			}
 			namespace Battery {
 				export const interface: InterfaceMap['Battery'];
+
+				export const serviceName: 'Battery';
+
 			}
 			namespace CameraOperatingMode {
 				export const interface: InterfaceMap['CameraOperatingMode'];
+
+				export const serviceName: 'CameraOperatingMode';
+
 			}
 			namespace CameraRecordingManagement {
 				export const interface: InterfaceMap['CameraRecordingManagement'];
+
+				export const serviceName: 'CameraRecordingManagement';
+
 			}
 			namespace CameraRTPStreamManagement {
 				export const interface: InterfaceMap['CameraRTPStreamManagement'];
+
+				export const serviceName: 'CameraRTPStreamManagement';
+
 			}
 			namespace CarbonDioxideSensor {
 				export const interface: InterfaceMap['CarbonDioxideSensor'];
+
+				export const serviceName: 'CarbonDioxideSensor';
+
 			}
 			namespace CarbonMonoxideSensor {
 				export const interface: InterfaceMap['CarbonMonoxideSensor'];
+
+				export const serviceName: 'CarbonMonoxideSensor';
+
 			}
 			namespace CloudRelay {
 				export const interface: InterfaceMap['CloudRelay'];
+
+				export const serviceName: 'CloudRelay';
+
 			}
 			namespace ContactSensor {
 				export const interface: InterfaceMap['ContactSensor'];
+
+				export const serviceName: 'ContactSensor';
+
 			}
 			namespace DataStreamTransportManagement {
 				export const interface: InterfaceMap['DataStreamTransportManagement'];
+
+				export const serviceName: 'DataStreamTransportManagement';
+
 			}
 			namespace Diagnostics {
 				export const interface: InterfaceMap['Diagnostics'];
+
+				export const serviceName: 'Diagnostics';
+
 			}
 			namespace Door {
 				export const interface: InterfaceMap['Door'];
+
+				export const serviceName: 'Door';
+
 			}
 			namespace Doorbell {
 				export const interface: InterfaceMap['Doorbell'];
+
+				export const serviceName: 'Doorbell';
+
 			}
 			namespace Fan {
 				export const interface: InterfaceMap['Fan'];
+
+				export const serviceName: 'Fan';
+
 			}
 			namespace Fanv2 {
 				export const interface: InterfaceMap['Fanv2'];
+
+				export const serviceName: 'Fanv2';
+
 			}
 			namespace Faucet {
 				export const interface: InterfaceMap['Faucet'];
+
+				export const serviceName: 'Faucet';
+
 			}
 			namespace FilterMaintenance {
 				export const interface: InterfaceMap['FilterMaintenance'];
+
+				export const serviceName: 'FilterMaintenance';
+
 			}
 			namespace FirmwareUpdate {
 				export const interface: InterfaceMap['FirmwareUpdate'];
+
+				export const serviceName: 'FirmwareUpdate';
+
 			}
 			namespace GarageDoorOpener {
 				export const interface: InterfaceMap['GarageDoorOpener'];
+
+				export const serviceName: 'GarageDoorOpener';
+
 			}
 			namespace HeaterCooler {
 				export const interface: InterfaceMap['HeaterCooler'];
+
+				export const serviceName: 'HeaterCooler';
+
 			}
 			namespace HumidifierDehumidifier {
 				export const interface: InterfaceMap['HumidifierDehumidifier'];
+
+				export const serviceName: 'HumidifierDehumidifier';
+
 			}
 			namespace HumiditySensor {
 				export const interface: InterfaceMap['HumiditySensor'];
+
+				export const serviceName: 'HumiditySensor';
+
 			}
 			namespace InputSource {
 				export const interface: InterfaceMap['InputSource'];
+
+				export const serviceName: 'InputSource';
+
 			}
 			namespace IrrigationSystem {
 				export const interface: InterfaceMap['IrrigationSystem'];
+
+				export const serviceName: 'IrrigationSystem';
+
 			}
 			namespace LeakSensor {
 				export const interface: InterfaceMap['LeakSensor'];
+
+				export const serviceName: 'LeakSensor';
+
 			}
 			namespace Lightbulb {
 				export const interface: InterfaceMap['Lightbulb'];
+
+				export const serviceName: 'Lightbulb';
+
 			}
 			namespace LightSensor {
 				export const interface: InterfaceMap['LightSensor'];
+
+				export const serviceName: 'LightSensor';
+
 			}
 			namespace LockManagement {
 				export const interface: InterfaceMap['LockManagement'];
+
+				export const serviceName: 'LockManagement';
+
 			}
 			namespace LockMechanism {
 				export const interface: InterfaceMap['LockMechanism'];
+
+				export const serviceName: 'LockMechanism';
+
 			}
 			namespace Microphone {
 				export const interface: InterfaceMap['Microphone'];
+
+				export const serviceName: 'Microphone';
+
 			}
 			namespace MotionSensor {
 				export const interface: InterfaceMap['MotionSensor'];
+
+				export const serviceName: 'MotionSensor';
+
 			}
 			namespace NFCAccess {
 				export const interface: InterfaceMap['NFCAccess'];
+
+				export const serviceName: 'NFCAccess';
+
 			}
 			namespace OccupancySensor {
 				export const interface: InterfaceMap['OccupancySensor'];
+
+				export const serviceName: 'OccupancySensor';
+
 			}
 			namespace Outlet {
 				export const interface: InterfaceMap['Outlet'];
+
+				export const serviceName: 'Outlet';
+
 			}
 			namespace Pairing {
 				export const interface: InterfaceMap['Pairing'];
+
+				export const serviceName: 'Pairing';
+
 			}
 			namespace PowerManagement {
 				export const interface: InterfaceMap['PowerManagement'];
+
+				export const serviceName: 'PowerManagement';
+
 			}
 			namespace ProtocolInformation {
 				export const interface: InterfaceMap['ProtocolInformation'];
+
+				export const serviceName: 'ProtocolInformation';
+
 			}
 			namespace SecuritySystem {
 				export const interface: InterfaceMap['SecuritySystem'];
+
+				export const serviceName: 'SecuritySystem';
+
 			}
 			namespace ServiceLabel {
 				export const interface: InterfaceMap['ServiceLabel'];
+
+				export const serviceName: 'ServiceLabel';
+
 			}
 			namespace Siri {
 				export const interface: InterfaceMap['Siri'];
+
+				export const serviceName: 'Siri';
+
 			}
 			namespace SiriEndpoint {
 				export const interface: InterfaceMap['SiriEndpoint'];
+
+				export const serviceName: 'SiriEndpoint';
+
 			}
 			namespace Slats {
 				export const interface: InterfaceMap['Slats'];
+
+				export const serviceName: 'Slats';
+
 			}
 			namespace SmartSpeaker {
 				export const interface: InterfaceMap['SmartSpeaker'];
+
+				export const serviceName: 'SmartSpeaker';
+
 			}
 			namespace SmokeSensor {
 				export const interface: InterfaceMap['SmokeSensor'];
+
+				export const serviceName: 'SmokeSensor';
+
 			}
 			namespace Speaker {
 				export const interface: InterfaceMap['Speaker'];
+
+				export const serviceName: 'Speaker';
+
 			}
 			namespace StatefulProgrammableSwitch {
 				export const interface: InterfaceMap['StatefulProgrammableSwitch'];
+
+				export const serviceName: 'StatefulProgrammableSwitch';
+
 			}
 			namespace StatelessProgrammableSwitch {
 				export const interface: InterfaceMap['StatelessProgrammableSwitch'];
+
+				export const serviceName: 'StatelessProgrammableSwitch';
+
 			}
 			namespace Switch {
 				export const interface: InterfaceMap['Switch'];
+
+				export const serviceName: 'Switch';
+
 			}
 			namespace TapManagement {
 				export const interface: InterfaceMap['TapManagement'];
+
+				export const serviceName: 'TapManagement';
+
 			}
 			namespace TargetControl {
 				export const interface: InterfaceMap['TargetControl'];
+
+				export const serviceName: 'TargetControl';
+
 			}
 			namespace TargetControlManagement {
 				export const interface: InterfaceMap['TargetControlManagement'];
+
+				export const serviceName: 'TargetControlManagement';
+
 			}
 			namespace Television {
 				export const interface: InterfaceMap['Television'];
+
+				export const serviceName: 'Television';
+
 			}
 			namespace TelevisionSpeaker {
 				export const interface: InterfaceMap['TelevisionSpeaker'];
+
+				export const serviceName: 'TelevisionSpeaker';
+
 			}
 			namespace TemperatureSensor {
 				export const interface: InterfaceMap['TemperatureSensor'];
+
+				export const serviceName: 'TemperatureSensor';
+
 			}
 			namespace Thermostat {
 				export const interface: InterfaceMap['Thermostat'];
+
+				export const serviceName: 'Thermostat';
+
 			}
 			namespace ThreadTransport {
 				export const interface: InterfaceMap['ThreadTransport'];
+
+				export const serviceName: 'ThreadTransport';
+
 			}
 			namespace TransferTransportManagement {
 				export const interface: InterfaceMap['TransferTransportManagement'];
+
+				export const serviceName: 'TransferTransportManagement';
+
 			}
 			namespace Tunnel {
 				export const interface: InterfaceMap['Tunnel'];
+
+				export const serviceName: 'Tunnel';
+
 			}
 			namespace Valve {
 				export const interface: InterfaceMap['Valve'];
+
+				export const serviceName: 'Valve';
+
 			}
 			namespace WiFiRouter {
 				export const interface: InterfaceMap['WiFiRouter'];
+
+				export const serviceName: 'WiFiRouter';
+
 			}
 			namespace WiFiSatellite {
 				export const interface: InterfaceMap['WiFiSatellite'];
+
+				export const serviceName: 'WiFiSatellite';
+
 			}
 			namespace WiFiTransport {
 				export const interface: InterfaceMap['WiFiTransport'];
+
+				export const serviceName: 'WiFiTransport';
+
 			}
 			namespace Window {
 				export const interface: InterfaceMap['Window'];
+
+				export const serviceName: 'Window';
+
 			}
 			namespace WindowCovering {
 				export const interface: InterfaceMap['WindowCovering'];
+
+				export const serviceName: 'WindowCovering';
+
 			}
 		}
 	}
