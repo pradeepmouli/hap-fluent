@@ -2,12 +2,12 @@ import { Service, Characteristic, type WithUUID, type CharacteristicValue } from
 import { PlatformAccessory } from 'homebridge';
 import camelcase from 'camelcase';
 import type { InterfaceForService } from './types/index.js';
-import { PascalCase } from 'type-fest';
+import { PascalCase, CamelCase } from 'type-fest';
 import { FluentCharacteristic } from './FluentCharacteristic.js';
 
 export type FluentService<T extends typeof Service> = InterfaceForService<T> & {
 	characteristics: {
-		[K in keyof InterfaceForService<T> as PascalCase<K> &
+		[K in keyof InterfaceForService<T> as CamelCase<K> &
 		//@ts-ignore
 		keyof typeof Characteristic]: FluentCharacteristic<InterfaceForService<T>[K]>;
 	};

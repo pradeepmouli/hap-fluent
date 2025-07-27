@@ -3,7 +3,7 @@ import { DynamicPlatformPlugin, PlatformAccessory, type UnknownContext, API, typ
 import { Service, Characteristic, type CharacteristicValue } from 'hap-nodejs';
 
 import { getOrAddService, wrapService, FluentService } from './FluentService.js';
-import type { InterfaceMap, Lightbulb, AirPurifier, AccessoryInformation } from './types/hap-interfaces.js';
+import type { InterfaceMap, Lightbulb, AirPurifier, AccessoryInformation, ServiceMap } from './types/hap-interfaces.js';
 import type { CamelCase, PartialDeep } from 'type-fest';
 import camelcase from 'camelcase';
 
@@ -17,21 +17,26 @@ export function isMultiService<T extends InterfaceMap[keyof InterfaceMap]>(state
 	return Object.keys(state).length > 1 && Object.values(state)[0] instanceof Object;
 }
 
-export type ServiceObject<T> = T extends [infer U, ...infer Rest]
-	? U extends InterfaceMap[keyof InterfaceMap] & {serviceName: infer I extends string} ?  { [K in CamelCase<I>] : Partial<Omit<U, 'UUID' | 'serviceName'>> } & ServiceObject<Rest>
-	: ServiceObject<Rest> : {};
+export type ServicesObject<T> = T extends [infer U, ...infer Rest]
+	? U extends InterfaceMap[keyof InterfaceMap] & {serviceName: infer I extends keyof ServiceMap} ?  { [K in I as CamelCase<K>] : FluentService<ServiceMap[I]>} & ServicesObject<Rest>
+	: ServicesObject<Rest> : {};
+
+export type ServicesStateObject<T> = T extends [infer U, ...infer Rest]
+	? U extends InterfaceMap[keyof InterfaceMap] & {serviceName: infer I extends keyof ServiceMap} ?  { [K in I as CamelCase<K>] : Partial<Omit<InterfaceMap[I], 'UUID'|'serviceName'>>} & ServicesStateObject<Rest>
+	: ServicesStateObject<Rest>
+	: {};
 
 type Interfaces = InterfaceMap[keyof InterfaceMap];
 
-type test = ServiceObject<[Lightbulb, AirPurifier, AccessoryInformation]>; // Should resolve to { lightbulb: Lightbulb, airPurifier: AirPurifier, accessoryInformation: AccessoryInformation }
+type test = ServicesObject<[Lightbulb, AirPurifier, AccessoryInformation]>; // Should resolve to { lightbulb: Lightbulb, airPurifier: AirPurifier, accessoryInformation: AccessoryInformation }
 
 export class FluentAccessory<TContext extends UnknownContext, Services extends Interfaces[]> {
 
-  services: ServiceObject<Services> = {} as ServiceObject<Services>;
+  services: ServicesObject<Services> = {} as ServicesObject<Services>;
   constructor(private plugin: DynamicPlatformPlugin, public readonly accessory: PlatformAccessory<TContext>) {
 	}
 
-  async initialize(initialState: Partial<ServiceObject<Services>>): Promise<void> {
+  async initialize(initialState: ServicesStateObject<Services>): Promise<void> {
 
 	for (const key in initialState) {
 	  if(typeof initialState[key] === 'object') {
@@ -78,4 +83,15 @@ export class FluentAccessory<TContext extends UnknownContext, Services extends I
   }
 
   // Add your methods and properties here
+}
+
+class test2 extends FluentAccessory<UnknownContext, [Lightbulb, AirPurifier, AccessoryInformation]> {
+	constructor(plugin: DynamicPlatformPlugin, accessory: PlatformAccessory<UnknownContext>) {
+		super(plugin, accessory);
+		this.initialize({
+			lightbulb: { on: true, brightness: 100,   },
+			airPurifier: { active: true, targetAirPurifierState: 'auto' },
+			accessoryInformation: { manufacturer: 'My Manufacturer', model: 'My Model', serialNumber: 'My Serial Number' }
+		});
+	}
 }

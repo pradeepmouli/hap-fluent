@@ -1,6 +1,6 @@
 {
 	"name": "hap-fluent",
-	"version": "0.1.0",
+	"version": "0.2.1",
 	"description": "Fluent, strongly-typed wrapper for HAP-NodeJS services and characteristics.",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
