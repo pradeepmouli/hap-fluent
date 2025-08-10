@@ -1,29 +1,29 @@
-import { Service, Characteristic, type WithUUID, type CharacteristicValue } from 'homebridge';
+import { Service, Characteristic, type WithUUID, type CharacteristicValue, type PrimitiveTypes } from 'homebridge';
 import { PlatformAccessory } from 'homebridge';
 import camelcase from 'camelcase';
 import type { InterfaceForService } from './types/index.js';
-import { PascalCase, CamelCase } from 'type-fest';
+import { PascalCase } from 'type-fest';
 import { FluentCharacteristic } from './FluentCharacteristic.js';
 
 export type FluentService<T extends typeof Service> = InterfaceForService<T> & {
 	characteristics: {
-		[K in keyof InterfaceForService<T> as CamelCase<K> &
-		//@ts-ignore
-		keyof typeof Characteristic]: FluentCharacteristic<InterfaceForService<T>[K]>;
+		[K in CharacteristicNamesOf<T> as PascalCase<K>]: FluentCharacteristic<InterfaceForService<T>[K] & CharacteristicValue>;
 	};
-	onGet<K extends keyof InterfaceForService<T>>(
-		key: K,
+	onGet<K extends CharacteristicNamesOf<T>>(
+		key: PascalCase<K>,
 		callback: () => Promise<InterfaceForService<T>[K]>
 	): void;
-	onSet<K extends keyof InterfaceForService<T>>(
-		key: K,
+	onSet<K extends CharacteristicNamesOf<T>>(
+		key: PascalCase<K>,
 		callback: (value: InterfaceForService<T>[K]) => Promise<void>
 	): void;
-	update<K extends keyof InterfaceForService<T>>(
-		key: K,
+	update<K extends CharacteristicNamesOf<T>>(
+		key: PascalCase<K>,
 		value: InterfaceForService<T>[K]
 	): void;
 };
+
+export type CharacteristicNamesOf<T extends typeof Service> = keyof Omit< InterfaceForService<T>, 'UUID' | 'serviceName'>;
 
 /**
  * FluentService wraps a HAP service with strong typing and fluent API

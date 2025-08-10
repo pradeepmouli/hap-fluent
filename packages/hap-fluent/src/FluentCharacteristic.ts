@@ -1,4 +1,4 @@
-import { Characteristic, type CharacteristicValue, type CharacteristicSetHandler } from 'homebridge';
+import { Characteristic, type CharacteristicValue, type CharacteristicSetHandler, type PrimitiveTypes } from 'homebridge';
 
 /**
  * FluentCharacteristic wraps a HAP characteristic with strong typing and fluent API

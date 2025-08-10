@@ -1,6 +1,6 @@
-import { DynamicPlatformPlugin, PlatformAccessory, type UnknownContext, API, type WithUUID} from 'homebridge';
+import { type DynamicPlatformPlugin, PlatformAccessory, type UnknownContext, API, type WithUUID} from 'homebridge';
 
-import { Service, Characteristic, type CharacteristicValue } from 'hap-nodejs';
+import { Service, type Characteristic, type CharacteristicValue } from 'hap-nodejs';
 
 import { getOrAddService, wrapService, FluentService } from './FluentService.js';
 import type { InterfaceMap, Lightbulb, AirPurifier, AccessoryInformation, ServiceMap } from './types/hap-interfaces.js';
@@ -8,32 +8,185 @@ import type { CamelCase, PartialDeep } from 'type-fest';
 import camelcase from 'camelcase';
 
 
-
-
-
-let PlatformAccessoryClass: API['platformAccessory'];
-
-export function isMultiService<T extends InterfaceMap[keyof InterfaceMap]>(state: Partial<T> | {[key: string]: T & {UUID: string}}): state is {[key: string]: T & {UUID: string}} {
+export function isMultiService<T extends InterfaceMap[keyof InterfaceMap]>(state: Partial<T> | {[key: string]: Partial<T>}): state is {[key: string]: Partial<T>} {
 	return Object.keys(state).length > 1 && Object.values(state)[0] instanceof Object;
 }
 
-export type ServicesObject<T> = T extends [infer U, ...infer Rest]
+export type ServicesObject<T> = T extends [infer U, ...infer Rest, AccessoryInformation]
 	? U extends InterfaceMap[keyof InterfaceMap] & {serviceName: infer I extends keyof ServiceMap} ?  { [K in I as CamelCase<K>] : FluentService<ServiceMap[I]>} & ServicesObject<Rest>
 	: ServicesObject<Rest> : {};
+
+
+
+
+function hasSubTypes<T extends ServiceMap[keyof ServiceMap]>(service: Record<string, T> | T): service is Record<string,T> & object {
+	return !Object.keys(service).includes('UUID');
+}
+
+export function createServicesObject<T extends ServiceMap[keyof ServiceMap]>(...services: InstanceType<T>[]): ServicesObject<T[]> {
+	return services.reduce<ServicesObject<T[]>>((acc, service) : Partial<ServicesObject<T[]>> => {
+		const serviceName = camelcase(service.constructor.name /* get service name */, { pascalCase: true }) as keyof ServicesObject<T[]>;
+
+		let serviceObject = acc[serviceName] || {};
+		if(service.subtype)
+		{
+
+			const subTypeName = camelcase(service.subtype, { pascalCase: true });
+			// If the service has subtypes, we need to handle them differently
+			if(hasSubTypes(serviceObject))
+			{
+				//@ts-ignore
+				serviceObject = { ...serviceObject, [camelcase(service.subtype, { pascalCase: true })]: wrapService(service as any) };
+			}
+			else {
+				//@ts-ignore
+				serviceObject = {'primary': serviceObject, [subTypeName]: wrapService(service as any)};
+			}
+		}
+		else
+		{
+			serviceObject = wrapService(service as any);
+		}
+		if(!acc[serviceName]) {
+			Object.defineProperty(acc, serviceName, {
+				value: serviceObject,
+				writable: true,
+				enumerable: true,
+				configurable: true
+			});
+		}
+		else
+		{
+			acc[serviceName] = serviceObject;
+		}
+		return acc;
+	} , {} as ServicesObject<T[]>);
+}
 
 export type ServicesStateObject<T> = T extends [infer U, ...infer Rest]
 	? U extends InterfaceMap[keyof InterfaceMap] & {serviceName: infer I extends keyof ServiceMap} ?  { [K in I as CamelCase<K>] : Partial<Omit<InterfaceMap[I], 'UUID'|'serviceName'>>} & ServicesStateObject<Rest>
 	: ServicesStateObject<Rest>
 	: {};
 
-type Interfaces = InterfaceMap[keyof InterfaceMap];
+
+// /* export function createServiceStateObject<T extends InterfaceMap[keyof InterfaceMap][]>(services: ServicesObject<T[]>): ServicesStateObject<T[]> {
+// 	return services.reduce<ServicesStateObject<T[]>>((acc, service) => {
+// 		const serviceName = camelcase(service.constructor.name /* get service name */, { pascalCase: true }) as keyof ServicesStateObject<T[]>;
+
+// 		acc[serviceName] = Object.keys(service.characteristics).reduce((charAcc, charKey) => {
+// 			charAcc[charKey] = service.characteristics[charKey].getValue();
+// 			return charAcc;
+// 		}, {} as Partial<Omit<InterfaceMap[keyof InterfaceMap], 'UUID' | 'serviceName'>>);
+
+// 		return acc;
+// 	}, {} as ServicesStateObject<T[]>);
+// }
+
+export type Interfaces = InterfaceMap[keyof InterfaceMap];
 
 type test = ServicesObject<[Lightbulb, AirPurifier, AccessoryInformation]>; // Should resolve to { lightbulb: Lightbulb, airPurifier: AirPurifier, accessoryInformation: AccessoryInformation }
 
-export class FluentAccessory<TContext extends UnknownContext, Services extends Interfaces[]> {
+export type  FluentAccessory<TContext extends UnknownContext, Services extends Interfaces[]> = ServicesObject<Services> & PlatformAccessory<TContext>;
 
-  services: ServicesObject<Services> = {} as ServicesObject<Services>;
-  constructor(private plugin: DynamicPlatformPlugin, public readonly accessory: PlatformAccessory<TContext>) {
+
+export function initializeAccessory<TContext extends UnknownContext, Services extends Interfaces[]>(
+	accessory: PlatformAccessory<TContext>,
+	initialState: ServicesStateObject<Services>,
+): FluentAccessory<TContext, Services> {
+	const services = createServicesObject(...accessory.services);
+	for (const key in initialState) {
+	  if(typeof initialState[key] === 'object') {
+		const serviceClass = Service[camelcase(key, {pascalCase: true}) as keyof InterfaceMap] as WithUUID<typeof Service.AccessoryInformation>;
+		if(serviceClass) {
+			let singleService = true;
+			if(isMultiService(initialState[key] as any)) {
+				singleService = false;
+			}
+			else
+			{
+				const service = accessory.getService(serviceClass)
+				|| accessory.addService(new serviceClass()) as InstanceType<typeof serviceClass>;
+
+				const wrappedService = wrapService(service as InstanceType<typeof serviceClass>) as FluentService<any>;
+				//@ts-expect-error
+				services[camelcase(key, {pascalCase: true}) as keyof ServicesObject<Services>] = wrappedService as any;
+					for(const charKey in initialState[key]) {
+						if(charKey in wrappedService.characteristics) {
+							const characteristic = wrappedService.characteristics[charKey as keyof typeof wrappedService.characteristics] as Characteristic;
+							if (characteristic) {
+								characteristic.setValue(initialState[key][charKey] as CharacteristicValue);
+							}
+						}
+					}
+			}
+		}
+	  }
+
+	}
+	return Object.assign(accessory, services as ServicesObject<Services>);
+
+}
+
+export class AccessoryHandler<TContext extends UnknownContext, Services extends Interfaces[]> {
+
+  public context: TContext;
+  public services: ServicesObject<Services> = {} as ServicesObject<Services>;
+
+	constructor(protected plugin: DynamicPlatformPlugin, public readonly accessory: PlatformAccessory<TContext>) {
+		this.context = accessory.context as TContext;
+		this.services = createServicesObject(...accessory.services) as ServicesObject<Services>;
+
+	}
+
+	addService<S extends typeof Service>(
+		serviceClass: WithUUID<S>,
+		displayName?: string,
+		subType?: string
+	): FluentService<S> {
+		return getOrAddService(this.accessory, serviceClass, displayName, subType);
+	}
+
+
+
+	async initialize(initialState?: ServicesStateObject<Services>): Promise<void> {
+		if (initialState) {
+			for (const key in initialState) {
+				if (typeof initialState[key] === 'object') {
+					const serviceClass = Service[camelcase(key, { pascalCase: true }) as keyof InterfaceMap] as WithUUID<typeof Service.AccessoryInformation>;
+					if (serviceClass) {
+						let singleService = true;
+						if (isMultiService(initialState[key] as any)) {
+							singleService = false;
+						} else {
+							const service = this.accessory.getService(serviceClass)
+								|| this.accessory.addService(new serviceClass()) as InstanceType<typeof serviceClass>;
+
+							const wrappedService = wrapService(service as InstanceType<typeof serviceClass>) as FluentService<any>;
+							this.services[camelcase(key, { pascalCase: true }) as keyof ServicesObject<Services>] = wrappedService as any;
+							for (const charKey in initialState[key]) {
+								if (charKey in wrappedService.characteristics) {
+									const characteristic = wrappedService.characteristics[charKey as keyof typeof wrappedService.characteristics] as Characteristic;
+									if (characteristic) {
+										characteristic.setValue(initialState[key][charKey] as CharacteristicValue);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+		}
+	}
+
+
+}
+
+/*export class FFluentAccessory<TContext extends UnknownContext, Services extends Interfaces[]> {
+
+  public services: ServicesObject<Services> = {} as ServicesObject<Services>;
+  constructor(protected plugin: DynamicPlatformPlugin, public readonly accessory: PlatformAccessory<TContext>) {
+
 	}
 
   async initialize(initialState: ServicesStateObject<Services>): Promise<void> {
@@ -83,15 +236,4 @@ export class FluentAccessory<TContext extends UnknownContext, Services extends I
   }
 
   // Add your methods and properties here
-}
-
-class test2 extends FluentAccessory<UnknownContext, [Lightbulb, AirPurifier, AccessoryInformation]> {
-	constructor(plugin: DynamicPlatformPlugin, accessory: PlatformAccessory<UnknownContext>) {
-		super(plugin, accessory);
-		this.initialize({
-			lightbulb: { on: true, brightness: 100,   },
-			airPurifier: { active: true, targetAirPurifierState: 'auto' },
-			accessoryInformation: { manufacturer: 'My Manufacturer', model: 'My Model', serialNumber: 'My Serial Number' }
-		});
-	}
-}
+}*/

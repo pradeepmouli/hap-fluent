@@ -14,11 +14,11 @@ import camelcase from 'camelcase';
 /**
  * FluentCharacteristic wraps a HAP characteristic with strong typing and fluent API
  */
-export {FluentCharacteristic} from './FluentCharacteristic.js';
+export * from './FluentCharacteristic.js';
 
-export type {FluentService} from './FluentService.js';
+export * from './FluentService.js';
 
-export {FluentAccessory} from './FluentAccessory.js';
+export * from './FluentAccessory.js';
 
 export * from './types/index.js';
 

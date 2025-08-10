@@ -34,14 +34,14 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.5.3",
-    "jiti": "^2.5.0",
+    "jiti": "^2.5.1",
     "lint-staged": "^16.1.2",
     "mocha": "^11.7.1",
     "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.3",
     "type-fest": "^4.41.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.2"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
@@ -51,5 +51,9 @@
     "*.{json,md,yml,yaml}": [
       "prettier --write"
     ]
+  },
+  "dependencies": {
+    "hap-fluent": "workspace:^",
+    "homebridge-lib": "^7.1.6"
   }
 }

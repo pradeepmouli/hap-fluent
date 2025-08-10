@@ -1,11 +1,12 @@
 {
 	"name": "hap-fluent",
-	"version": "0.2.1",
+	"version": "0.2.7",
 	"description": "Fluent, strongly-typed wrapper for HAP-NodeJS services and characteristics.",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"type": "module",
 	"scripts": {
+		"prepublishOnly": "npm run build",
 		"build": "tsc",
 		"lint": "eslint 'src/**/*.{ts,tsx}'",
 		"test": "mocha -r ts-node/register src/**/*.spec.ts",
@@ -14,16 +15,17 @@
 	"author": "Pradeep Mouli",
 	"license": "Apache-2.0",
 	"devDependencies": {
-		"eslint": "^9.31.0",
+		"eslint": "^9.32.0",
+		"homebridge": "^1.11.0",
 		"mocha": "^11.7.1",
 		"prettier": "^3.6.2",
 		"ts-node": "^10.9.2",
 		"type-fest": "^4.41.0",
-		"typescript": "^5.8.3"
+		"typescript": "^5.9.2",
+		"hap-nodejs": "0.13.1"
 	},
 	"dependencies": {
-		"camelcase": "^8.0.0",
-		"hap-nodejs": "^0.13.1",
-		"homebridge": "^1.11.0"
+		"camelcase": "^8.0.0"
+
 	}
 }
