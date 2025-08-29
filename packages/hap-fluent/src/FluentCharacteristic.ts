@@ -1,4 +1,4 @@
-import { Characteristic, type CharacteristicValue, type CharacteristicSetHandler, type PrimitiveTypes } from 'homebridge';
+import { Characteristic, type CharacteristicValue, type CharacteristicSetHandler, type PrimitiveTypes, type CharacteristicProps, type PartialAllowingNull } from 'homebridge';
 
 /**
  * FluentCharacteristic wraps a HAP characteristic with strong typing and fluent API
@@ -6,6 +6,11 @@ import { Characteristic, type CharacteristicValue, type CharacteristicSetHandler
 export class FluentCharacteristic<T extends CharacteristicValue> {
 	constructor(private characteristic: Characteristic) {}
 
+	setProps(props: PartialAllowingNull<CharacteristicProps>)
+	{
+		 this.characteristic.setProps(props);
+		 return this;
+	}
 	get(): T | undefined {
 		return this.characteristic.value as T | undefined;
 	}
