@@ -8,7 +8,8 @@
 		"build": "tsc",
 		"clean": "rm -rf dist",
 		"dev": "tsc --watch",
-		"test": "mocha",
+		"test": "vitest run",
+		"test:watch": "vitest",
 		"type-check": "tsc --noEmit"
 	},
 	"dependencies": {},

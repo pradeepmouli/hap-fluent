@@ -6,11 +6,11 @@ import { Characteristic, type CharacteristicValue, type CharacteristicSetHandler
 export class FluentCharacteristic<T extends CharacteristicValue> {
 	constructor(private characteristic: Characteristic) {}
 
-	setProps(props: PartialAllowingNull<CharacteristicProps>)
-	{
-		 this.characteristic.setProps(props);
-		 return this;
+	setProps(props: PartialAllowingNull<CharacteristicProps>): this {
+		this.characteristic.setProps(props);
+		return this;
 	}
+
 	get(): T | undefined {
 		return this.characteristic.value as T | undefined;
 	}
