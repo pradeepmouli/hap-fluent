@@ -43,7 +43,7 @@ export function getOrAddService<T extends typeof Service>(
 	const existingService = subType
 		? platformAccessory.getServiceById(serviceClass, subType)
 		: platformAccessory.getService(serviceClass);
-	
+
 	if (existingService) {
 		return wrapService(existingService as InstanceType<T>);
 	} else {

@@ -15,7 +15,7 @@ describe('Integration Tests - Full Accessory Scenarios', () => {
 	describe('Accessory Information Service', () => {
 		it('should set and get accessory information using fluent API', () => {
 			const infoService = getOrAddService(platformAccessory, Service.AccessoryInformation);
-			
+
 			infoService.characteristics.Manufacturer.set('RabbitAir');
 			infoService.characteristics.Model.set('MinusA2');
 			infoService.characteristics.SerialNumber.set('RA-12345');
@@ -93,7 +93,7 @@ describe('Integration Tests - Full Accessory Scenarios', () => {
 
 			expect(mainSensor.characteristics.AirQuality.get()).to.equal(Characteristic.AirQuality.GOOD);
 			expect(secondarySensor.characteristics.AirQuality.get()).to.equal(Characteristic.AirQuality.FAIR);
-			
+
 			// Verify both services exist
 			expect(platformAccessory.getServiceById(Service.AirQualitySensor, 'main')).to.exist;
 			expect(platformAccessory.getServiceById(Service.AirQualitySensor, 'secondary')).to.exist;
