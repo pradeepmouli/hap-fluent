@@ -1,6 +1,6 @@
 {
 	"name": "hap-fluent",
-	"version": "0.2.8",
+	"version": "0.3.0",
 	"description": "Fluent, strongly-typed wrapper for HAP-NodeJS services and characteristics.",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
@@ -9,23 +9,29 @@
 		"prepublishOnly": "npm run build",
 		"build": "tsc",
 		"lint": "eslint 'src/**/*.{ts,tsx}'",
-		"test": "mocha -r ts-node/register src/**/*.spec.ts",
+		"test": "npm run test:unit && npm run test:integration",
+		"test:unit": "NODE_OPTIONS='--import tsx' mocha --spec test/*.test.ts",
+		"test:integration": "NODE_OPTIONS='--import tsx' mocha --spec test/integration/*.test.ts",
+		"test:watch": "NODE_OPTIONS='--import tsx' mocha --watch --spec 'test/**/*.test.ts'",
 		"clean": "rimraf dist"
 	},
 	"author": "Pradeep Mouli",
 	"license": "Apache-2.0",
 	"devDependencies": {
-		"eslint": "^9.32.0",
+		"@types/chai": "^5.2.3",
+		"@types/mocha": "^10.0.10",
+		"chai": "^5.3.3",
+		"eslint": "^9.38.0",
+		"glob": "^11.0.3",
+		"hap-nodejs": "0.13.1",
 		"homebridge": "^1.11.0",
-		"mocha": "^11.7.1",
+		"mocha": "^11.7.4",
 		"prettier": "^3.6.2",
 		"ts-node": "^10.9.2",
 		"type-fest": "^4.41.0",
-		"typescript": "^5.9.2",
-		"hap-nodejs": "0.13.1"
+		"typescript": "^5.9.3"
 	},
 	"dependencies": {
 		"camelcase": "^8.0.0"
-
 	}
 }

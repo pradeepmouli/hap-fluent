@@ -1,6 +1,6 @@
 {
 	"$schema": "https://raw.githubusercontent.com/pradeepmouli/repoweaver/master/schemas/weaver.schema.json",
-	"name": "react-fullstack-project",
+	"name": "hap-fluent",
 	"description": "A full-stack React application with advanced merge strategies",
 	"templates": [
 		{

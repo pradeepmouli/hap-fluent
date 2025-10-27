@@ -18,7 +18,7 @@ export * from './FluentCharacteristic.js';
 
 export * from './FluentService.js';
 
-export * from './FluentAccessory.js';
+export * from './AccessoryHandler.js';
 
 export * from './types/index.js';
 

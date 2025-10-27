@@ -338,6 +338,12 @@ function generateInterfaces(
 		output += `\n\t\t\t\t export const serviceName: '${service.name}'; \n`
 		output += `\n\t\t\t}`;
 	}
+	/* for (const service of services) {
+		output += `\n\t\t\t interface ${service.name} {`
+		output += `\n\t\t\t\t UUID: '${service.UUID}'; \n`
+		output += `\n\t\t\t\t displayName: '${service.name}'; \n`
+		output += `\n\t\t\t}`;
+	} */
 	// Close the module augmentation
 	output += '\n}';
 	output += '\n}';

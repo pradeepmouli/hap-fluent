@@ -40,11 +40,14 @@ export function getOrAddService<T extends typeof Service>(
 	if (!('UUID' in serviceClass)) {
 		throw new Error('Service class must have a UUID property');
 	}
-	const existingService = platformAccessory.getService(serviceClass) as InstanceType<T> | undefined;
+	const existingService = subType
+		? platformAccessory.getServiceById(serviceClass, subType)
+		: platformAccessory.getService(serviceClass);
+	
 	if (existingService) {
-		return wrapService(existingService);
+		return wrapService(existingService as InstanceType<T>);
 	} else {
-		const newService = new serviceClass(displayName, serviceClass.UUID, subType) as InstanceType<T>;
+		const newService = new serviceClass(displayName ?? '', subType ?? '') as InstanceType<T>;
 		platformAccessory.addService(newService);
 
 		return wrapService(newService);
@@ -54,7 +57,7 @@ export function getOrAddService<T extends typeof Service>(
 export function wrapService<T extends typeof Service>(service: InstanceType<T>): FluentService<T> {
 	const e = {
 		characteristics: Object.fromEntries(
-			service.characteristics.map((p) => [camelcase(p.displayName), new FluentCharacteristic(p)])
+			service.characteristics.map((p) => [camelcase(p.displayName, { pascalCase: true }), new FluentCharacteristic(p)])
 		) as { [R in keyof FluentService<T>]: FluentCharacteristic<CharacteristicValue> },
 	};
 
