@@ -1,0 +1,13 @@
+{
+	"$schema": "https://oxc.rs/schema/oxlintrc.json",
+	"rules": {
+		"typescript": "error",
+		"import": "error",
+		"unicorn": "warn"
+	},
+	"settings": {},
+	"env": {
+		"node": true,
+		"es2022": true
+	}
+}

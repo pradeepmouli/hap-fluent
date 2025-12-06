@@ -8,7 +8,10 @@
 	"scripts": {
 		"prepublishOnly": "npm run build",
 		"build": "tsc",
-		"lint": "eslint 'src/**/*.{ts,tsx}'",
+		"lint": "oxlint src",
+		"lint:fix": "oxlint --fix src",
+		"format": "oxfmt src",
+		"format:check": "oxfmt --check src",
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"test:ui": "vitest --ui",
@@ -17,11 +20,9 @@
 	"author": "Pradeep Mouli",
 	"license": "Apache-2.0",
 	"devDependencies": {
-		"eslint": "^9.38.0",
 		"glob": "^11.0.3",
 		"hap-nodejs": "0.13.1",
 		"homebridge": "^1.11.0",
-		"prettier": "^3.6.2",
 		"ts-node": "^10.9.2",
 		"type-fest": "^4.41.0",
 		"typescript": "^5.9.3",

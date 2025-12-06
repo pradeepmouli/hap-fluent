@@ -15,26 +15,21 @@
   "scripts": {
     "build": "pnpm -r run build",
     "test": "pnpm -r run test",
-    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
-    "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix .",
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check .",
     "type-check": "pnpm -r run type-check",
     "clean": "pnpm -r run clean",
     "dev": "pnpm -r --parallel run dev"
   },
   "devDependencies": {
     "@types/node": "^24.9.1",
-    "@typescript-eslint/eslint-plugin": "^8.46.2",
-    "@typescript-eslint/parser": "^8.46.2",
     "@vitest/ui": "^3.0.0",
-    "eslint": "^9.38.0",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-prettier": "^5.5.4",
     "jiti": "^2.6.1",
     "lint-staged": "^16.2.6",
-    "prettier": "^3.6.2",
+    "oxfmt": "^0.16.0",
+    "oxlint": "^0.15.6",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
     "type-fest": "^4.41.0",
@@ -48,11 +43,11 @@
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
-      "eslint --fix",
-      "prettier --write"
+      "oxlint --fix",
+      "oxfmt"
     ],
     "*.{json,md,yml,yaml}": [
-      "prettier --write"
+      "oxfmt"
     ]
   },
   "dependencies": {
