@@ -13,13 +13,14 @@ Transform hap-fluent from a prototype with 40% test failures and 17 type safety 
 
 **Language/Version**: TypeScript 5.9.3 (strict mode) targeting ES2022  
 **Primary Dependencies**: 
-- Runtime: `camelcase@8.0.0`
+- Runtime: `camelcase@8.0.0`, `pino` (logging)
 - Peer: `homebridge@^1.8.0 || ^2.0.0`, `hap-nodejs@^0.11.0 || ^0.12.0 || ^0.13.0` (currently misconfigured)
-- Build: TypeScript, ESLint, Prettier, Vitest
-- To Add: `debug` (logging), `@fast-check/vitest` (property testing)
+- Build: `tsgo` (build/type-check), `oxlint` (linting), `oxfmt` (formatting), Vitest (testing)
+- To Add: `@fast-check/vitest` (property testing)
 
 **Storage**: N/A (stateless library wrapping HAP-NodeJS)  
 **Testing**: Vitest 3.2.4 with mock implementations of HAP-NodeJS  
+**Logging**: Pino for structured logging (configurable levels)  
 **Target Platform**: Node.js >=18.0.0 (Homebridge plugin environment)  
 **Project Type**: Single library package in monorepo (packages/hap-fluent)  
 
