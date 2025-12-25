@@ -4,6 +4,8 @@ import camelcase from 'camelcase';
 import type { InterfaceForService } from './types/index.js';
 import { PascalCase } from 'type-fest';
 import { FluentCharacteristic } from './FluentCharacteristic.js';
+import { FluentServiceError, ValidationError } from './errors.js';
+import { isService } from './type-guards.js';
 
 export type FluentService<T extends typeof Service> = InterfaceForService<T> & {
 	characteristics: {
@@ -66,8 +68,17 @@ export function getOrAddService<T extends typeof Service>(
  *
  * @param service - Service instance to wrap.
  * @returns A fluent, strongly-typed service wrapper.
+ * @throws {ValidationError} If service is invalid
  */
 export function wrapService<T extends typeof Service>(service: InstanceType<T>): FluentService<T> {
+	if (!isService(service)) {
+		throw new ValidationError('Invalid service object', {
+			value: service,
+			expected: 'HAP Service instance',
+			actual: typeof service,
+		});
+	}
+	
 	const e = {
 		characteristics: Object.fromEntries(
 			service.characteristics.map((p) => [camelcase(p.displayName, { pascalCase: true }), new FluentCharacteristic(p)])
@@ -80,16 +91,22 @@ export function wrapService<T extends typeof Service>(service: InstanceType<T>):
 			key: K,
 			callback: () => Promise<InterfaceForService<T>[K]>
 		) => {
-			return e.characteristics[key].onGet(callback as any);
+			// Type assertion needed: TypeScript can't prove InterfaceForService[K] extends CharacteristicValue
+			// Runtime validation happens in FluentCharacteristic
+			return e.characteristics[key].onGet(callback as unknown as () => Promise<CharacteristicValue>);
 		},
 		onSet: <K extends keyof InterfaceForService<T>>(
 			key: K,
 			callback: (value: InterfaceForService<T>[K]) => Promise<void>
 		) => {
-			return e.characteristics[key].onSet(callback as any);
+			// Type assertion needed: TypeScript can't prove CharacteristicValue extends InterfaceForService[K]
+			// Runtime validation happens in FluentCharacteristic
+			return e.characteristics[key].onSet(callback as unknown as (value: CharacteristicValue) => Promise<void>);
 		},
 		update: <K extends keyof InterfaceForService<T>>(key: K, value: InterfaceForService<T>[K]) => {
-			e.characteristics[key].update(value as any);
+			// Type assertion needed: TypeScript can't prove InterfaceForService[K] extends CharacteristicValue
+			// Runtime validation happens in FluentCharacteristic.update()
+			e.characteristics[key].update(value as unknown as CharacteristicValue);
 		},
 	};
 

@@ -1,4 +1,6 @@
 import { Characteristic, type CharacteristicValue, type CharacteristicSetHandler, type PrimitiveTypes, type CharacteristicProps, type PartialAllowingNull } from 'homebridge';
+import { FluentCharacteristicError } from './errors.js';
+import { isCharacteristicValue } from './type-guards.js';
 
 /**
  * FluentCharacteristic wraps a HAP characteristic with strong typing and fluent API
@@ -34,10 +36,28 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 	 *
 	 * @param value - New value to set.
 	 * @returns This FluentCharacteristic instance for chaining.
+	 * @throws {FluentCharacteristicError} If value is invalid or setValue fails
 	 */
 	set(value: T): this {
-		this.characteristic.setValue(value);
-		return this;
+		try {
+			if (!isCharacteristicValue(value)) {
+				throw new FluentCharacteristicError('Invalid characteristic value', {
+					characteristic: this.characteristic.displayName,
+					value,
+				});
+			}
+			this.characteristic.setValue(value);
+			return this;
+		} catch (error) {
+			if (error instanceof FluentCharacteristicError) {
+				throw error;
+			}
+			throw new FluentCharacteristicError('Failed to set characteristic value', {
+				characteristic: this.characteristic.displayName,
+				value,
+				originalError: error,
+			});
+		}
 	}
 
 	/**
@@ -45,10 +65,28 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 	 *
 	 * @param value - New value to apply.
 	 * @returns This FluentCharacteristic instance for chaining.
+	 * @throws {FluentCharacteristicError} If value is invalid or updateValue fails
 	 */
 	update(value: T): this {
-		this.characteristic.updateValue(value);
-		return this;
+		try {
+			if (!isCharacteristicValue(value)) {
+				throw new FluentCharacteristicError('Invalid characteristic value', {
+					characteristic: this.characteristic.displayName,
+					value,
+				});
+			}
+			this.characteristic.updateValue(value);
+			return this;
+		} catch (error) {
+			if (error instanceof FluentCharacteristicError) {
+				throw error;
+			}
+			throw new FluentCharacteristicError('Failed to update characteristic value', {
+				characteristic: this.characteristic.displayName,
+				value,
+				originalError: error,
+			});
+		}
 	}
 
 	/**
