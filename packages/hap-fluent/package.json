@@ -7,16 +7,20 @@
 	"type": "module",
 	"scripts": {
 		"prepublishOnly": "npm run build",
-		"build": "tsc",
+		"build": "tsgo --build",
+		"build:tsc": "tsc",
 		"lint": "eslint 'src/**/*.{ts,tsx}'",
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"test:ui": "vitest --ui",
+		"type-check": "tsgo --noEmit",
+		"type-check:tsc": "tsc --noEmit",
 		"clean": "rimraf dist"
 	},
 	"author": "Pradeep Mouli",
 	"license": "Apache-2.0",
 	"devDependencies": {
+		"@fast-check/vitest": "^0.2.4",
 		"eslint": "^9.38.0",
 		"glob": "^11.0.3",
 		"hap-nodejs": "0.13.1",
@@ -28,6 +32,7 @@
 		"vitest": "^3.0.0"
 	},
 	"dependencies": {
-		"camelcase": "^8.0.0"
+		"camelcase": "^8.0.0",
+		"pino": "^10.1.0"
 	}
 }

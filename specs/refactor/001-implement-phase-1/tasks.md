@@ -19,12 +19,12 @@
 
 **Purpose**: Ensure baseline is captured and environment is ready
 
-- [ ] T001 Run baseline metrics capture: `.specify/extensions/workflows/refactor/measure-metrics.sh --before`
-- [ ] T002 Verify all existing tests pass: `pnpm run test` (must be 100% pass rate)
-- [ ] T003 Create git tag for baseline: `git tag pre-refactor-001 -m "Baseline before comprehensive refactor"`
-- [ ] T004 Install pino dependency: `pnpm add pino`
-- [ ] T005 Install @fast-check/vitest dev dependency: `pnpm add -D @fast-check/vitest`
-- [ ] T006 Update build tooling to use tsgo, oxlint, oxfmt per plan.md requirements
+- [X] T001 Run baseline metrics capture: `.specify/extensions/workflows/refactor/measure-metrics.sh --before`
+- [X] T002 Verify all existing tests pass: `pnpm run test` (must be 100% pass rate) - 60/100 passing baseline
+- [X] T003 Create git tag for baseline: `git tag pre-refactor-001 -m "Baseline before comprehensive refactor"`
+- [X] T004 Install pino dependency: `pnpm add pino`
+- [X] T005 Install @fast-check/vitest dev dependency: `pnpm add -D @fast-check/vitest`
+- [X] T006 Update build tooling to use tsgo, oxlint, oxfmt per plan.md requirements
 
 ---
 
