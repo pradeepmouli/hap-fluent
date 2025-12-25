@@ -6,7 +6,7 @@
 
 ### Behavior 1: FluentService Creation and Characteristic Access
 **Input**: Create a FluentService wrapping a HAP Lightbulb service
-**Expected Output**: 
+**Expected Output**:
 - Service created successfully
 - Characteristic properties accessible (On, Brightness, Hue, Saturation)
 - Each characteristic is a FluentCharacteristic instance
@@ -21,7 +21,7 @@
 
 ### Behavior 3: Characteristic Value Setting
 **Input**: Set a characteristic value (e.g., Brightness to 75)
-**Expected Output**: 
+**Expected Output**:
 - Value updated on underlying HAP characteristic
 - No exceptions thrown for valid values
 - HAP-NodeJS updateValue called
@@ -30,7 +30,7 @@
 
 ### Behavior 4: Handler Registration (onGet/onSet)
 **Input**: Register async GET and SET handlers on a characteristic
-**Expected Output**: 
+**Expected Output**:
 - Handlers registered successfully
 - GET handler called when HomeKit reads value
 - SET handler called when HomeKit writes value
@@ -39,7 +39,7 @@
 
 ### Behavior 5: Service with Subtype
 **Input**: Create service with subtype parameter (e.g., for multiple lights)
-**Expected Output**: 
+**Expected Output**:
 - Service created with subtype
 - Can retrieve same service later using subtype
 - Different from service without subtype
@@ -48,7 +48,7 @@
 
 ### Behavior 6: AccessoryHandler Initialization
 **Input**: Initialize AccessoryHandler with platform accessory
-**Expected Output**: 
+**Expected Output**:
 - Handler created successfully
 - Can access services via handler
 - Services properly wrapped
