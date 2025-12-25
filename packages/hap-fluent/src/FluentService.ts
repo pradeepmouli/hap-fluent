@@ -25,8 +25,15 @@ export type FluentService<T extends typeof Service> = InterfaceForService<T> & {
 
 export type CharacteristicNamesOf<T extends typeof Service> = keyof Omit< InterfaceForService<T>, 'UUID' | 'serviceName'>;
 
+
 /**
- * FluentService wraps a HAP service with strong typing and fluent API
+ * Add or retrieve a service on a platform accessory and wrap it with fluent helpers.
+ *
+ * @param platformAccessory - Accessory that owns the service.
+ * @param serviceClass - HAP service constructor.
+ * @param displayName - Optional display name for the service.
+ * @param subType - Optional subtype identifier.
+ * @returns A fluent, strongly-typed service wrapper.
  */
 export function getOrAddService<T extends typeof Service>(
 	platformAccessory: PlatformAccessory,
@@ -54,6 +61,12 @@ export function getOrAddService<T extends typeof Service>(
 	}
 }
 
+/**
+ * Wrap a HAP service with typed characteristic access and fluent helpers.
+ *
+ * @param service - Service instance to wrap.
+ * @returns A fluent, strongly-typed service wrapper.
+ */
 export function wrapService<T extends typeof Service>(service: InstanceType<T>): FluentService<T> {
 	const e = {
 		characteristics: Object.fromEntries(

@@ -1,23 +1,15 @@
-# TypeScript Monorepo Template
+# HAP Fluent Monorepo
 
-A production-ready TypeScript monorepo template with pnpm, ESLint, Prettier, and Mocha.
+Type-safe, fluent wrappers and tooling for working with HAP-NodeJS and Homebridge.
 
-## Features
+## Packages
 
-- 🏗️ **Monorepo Structure**: pnpm workspaces for efficient dependency management
-- 🔧 **TypeScript**: Strict TypeScript configuration with project references
-- 🎯 **ESLint + Prettier**: Consistent code style and quality
-- 🧪 **Testing**: Mocha test framework with Chai assertions
-- 🚀 **CI/CD**: GitHub Actions workflow for testing and building
-- 🎣 **Git Hooks**: Pre-commit hooks with Husky and lint-staged
+- **`packages/hap-fluent`**: Fluent, strongly-typed wrapper for HAP-NodeJS services and characteristics.
+- **`packages/hap-codegen`**: Code generator for HAP-NodeJS service and characteristic TypeScript interfaces.
 
-## Quick Start
+## Quick Start (Development)
 
 ```bash
-# Clone the template
-git clone <repository-url>
-cd ts-template
-
 # Install dependencies
 pnpm install
 
@@ -35,19 +27,18 @@ pnpm run dev
 
 ```
 ├── packages/
-│   ├── core/           # Core utilities and shared functionality
-│   └── utils/          # Additional utilities building on core
+│   ├── hap-codegen/    # HAP interface code generation
+│   └── hap-fluent/     # Fluent Homebridge/HAP wrapper
 ├── .github/
 │   ├── workflows/      # CI/CD workflows
 │   └── copilot-instructions.md
-├── .eslintrc.js        # ESLint configuration
-├── .prettierrc         # Prettier configuration
-├── .mocharc.json       # Mocha test configuration
+├── eslint.config.ts    # ESLint configuration
+├── prettier.config.ts  # Prettier configuration
 ├── tsconfig.json       # Root TypeScript configuration
 └── pnpm-workspace.yaml # pnpm workspace configuration
 ```
 
-## Scripts
+## Common Scripts
 
 - `pnpm run build` - Build all packages
 - `pnpm run test` - Run tests for all packages
@@ -56,13 +47,12 @@ pnpm run dev
 - `pnpm run type-check` - Run TypeScript type checking
 - `pnpm run clean` - Clean all build artifacts
 
-## Adding New Packages
+## Package-Specific Scripts
 
-1. Create a new directory in `packages/`
-2. Copy the structure from an existing package
-3. Update `package.json` with the new package name
-4. Add dependencies and TypeScript references as needed
+- `pnpm --filter hap-codegen run download` - Fetch HAP definitions.
+- `pnpm --filter hap-codegen run generate` - Generate TypeScript interfaces.
+- `pnpm --filter hap-fluent run test` - Run hap-fluent tests.
 
 ## License
 
-MIT
+Apache-2.0
