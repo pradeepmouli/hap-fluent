@@ -13,6 +13,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 	 * Update the characteristic's metadata properties.
 	 *
 	 * @param props - Partial characteristic properties to apply.
+	 * @returns This FluentCharacteristic instance for chaining.
 	 */
 	setProps(props: PartialAllowingNull<CharacteristicProps>): this {
 		this.characteristic.setProps(props);
@@ -21,6 +22,8 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 
 	/**
 	 * Get the current characteristic value.
+	 *
+	 * @returns The current characteristic value, or undefined if not set.
 	 */
 	get(): T | undefined {
 		return this.characteristic.value as T | undefined;
@@ -30,6 +33,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 	 * Set the characteristic value.
 	 *
 	 * @param value - New value to set.
+	 * @returns This FluentCharacteristic instance for chaining.
 	 */
 	set(value: T): this {
 		this.characteristic.setValue(value);
@@ -37,12 +41,13 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 	}
 
 	/**
-	 * Update the characteristic value without changing the underlying reference.
+	 * Update the characteristic value without calling SET handlers.
 	 *
 	 * @param value - New value to apply.
+	 * @returns This FluentCharacteristic instance for chaining.
 	 */
 	update(value: T): this {
-		this.characteristic.setValue(value);
+		this.characteristic.updateValue(value);
 		return this;
 	}
 
@@ -50,6 +55,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 	 * Register an async getter for the characteristic.
 	 *
 	 * @param handler - Async getter returning the current value.
+	 * @returns This FluentCharacteristic instance for chaining.
 	 */
 	onGet(handler: () => Promise<T>): this {
 		this.characteristic.onGet(handler);
@@ -60,6 +66,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 	 * Register an async setter for the characteristic.
 	 *
 	 * @param handler - Async setter receiving the new value.
+	 * @returns This FluentCharacteristic instance for chaining.
 	 */
 	onSet(handler: (value: T) => Promise<void>): this {
 		this.characteristic.onSet(handler as unknown as CharacteristicSetHandler);

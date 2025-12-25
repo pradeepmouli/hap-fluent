@@ -25,9 +25,7 @@ export type FluentService<T extends typeof Service> = InterfaceForService<T> & {
 
 export type CharacteristicNamesOf<T extends typeof Service> = keyof Omit< InterfaceForService<T>, 'UUID' | 'serviceName'>;
 
-/**
- * FluentService wraps a HAP service with strong typing and fluent API
- */
+
 /**
  * Add or retrieve a service on a platform accessory and wrap it with fluent helpers.
  *
