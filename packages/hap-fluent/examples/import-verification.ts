@@ -11,7 +11,6 @@ import { FluentService, FluentCharacteristic, getOrAddService, wrapService } fro
 // T140: Verify subpath imports work correctly
 import { FluentCharacteristicError, ValidationError, ConfigurationError } from 'hap-fluent/errors';
 import { isCharacteristicValue, isService, isCharacteristic } from 'hap-fluent/type-guards';
-import { Nullable, Optional, Result } from 'hap-fluent/type-utils';
 import { configureLogger, createLogger } from 'hap-fluent/logger';
 
 // Example: Main exports usage
