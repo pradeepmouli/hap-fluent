@@ -6,19 +6,88 @@ import { PascalCase } from 'type-fest';
 import { FluentCharacteristic } from './FluentCharacteristic.js';
 import { FluentServiceError, ValidationError } from './errors.js';
 import { isService } from './type-guards.js';
+import { getLogger } from './logger.js';
 
+/**
+ * Fluent wrapper for HAP Service with strong typing and characteristic access
+ * 
+ * @template T - HAP Service class type
+ * 
+ * @example
+ * ```typescript
+ * const lightbulb: FluentService<typeof Lightbulb> = getOrAddService(
+ *   accessory,
+ *   hap.Service.Lightbulb,
+ *   'My Light'
+ * );
+ * 
+ * // Access characteristics with camelCase or PascalCase
+ * lightbulb.characteristics.On.set(true);
+ * lightbulb.on = true; // Shorthand property access
+ * 
+ * // Register handlers
+ * lightbulb.onGet('On', async () => await getLightState());
+ * lightbulb.onSet('On', async (value) => await setLightState(value));
+ * 
+ * // Update without triggering handlers
+ * lightbulb.update('Brightness', 75);
+ * ```
+ */
 export type FluentService<T extends typeof Service> = InterfaceForService<T> & {
+	/**
+	 * Collection of all characteristics for this service
+	 * Keys are PascalCase characteristic names (e.g., 'On', 'Brightness')
+	 */
 	characteristics: {
 		[K in CharacteristicNamesOf<T> as PascalCase<K>]: FluentCharacteristic<InterfaceForService<T>[K] & CharacteristicValue>;
 	};
+	/**
+	 * Register an async getter for a characteristic
+	 * 
+	 * @param key - Characteristic name (PascalCase)
+	 * @param callback - Async function returning the characteristic value
+	 * 
+	 * @example
+	 * ```typescript
+	 * service.onGet('On', async () => {
+	 *   const state = await getDeviceState();
+	 *   return state.isOn;
+	 * });
+	 * ```
+	 */
 	onGet<K extends CharacteristicNamesOf<T>>(
 		key: PascalCase<K>,
 		callback: () => Promise<InterfaceForService<T>[K]>
 	): void;
+	/**
+	 * Register an async setter for a characteristic
+	 * 
+	 * @param key - Characteristic name (PascalCase)
+	 * @param callback - Async function receiving the new value
+	 * 
+	 * @example
+	 * ```typescript
+	 * service.onSet('On', async (value) => {
+	 *   await setDeviceState({ isOn: value });
+	 * });
+	 * ```
+	 */
 	onSet<K extends CharacteristicNamesOf<T>>(
 		key: PascalCase<K>,
 		callback: (value: InterfaceForService<T>[K]) => Promise<void>
 	): void;
+	/**
+	 * Update a characteristic value without triggering SET handlers
+	 * 
+	 * @param key - Characteristic name (PascalCase)
+	 * @param value - New characteristic value
+	 * 
+	 * @example
+	 * ```typescript
+	 * // Update brightness from external state change
+	 * service.update('Brightness', newBrightness);
+	 * ```
+	 */
 	update<K extends CharacteristicNamesOf<T>>(
 		key: PascalCase<K>,
 		value: InterfaceForService<T>[K]
@@ -43,21 +112,39 @@ export function getOrAddService<T extends typeof Service>(
 	displayName?: string,
 	subType?: string
 ): FluentService<T> {
+	const logger = getLogger();
+	
 	if (typeof serviceClass !== 'function') {
+		logger.error({ serviceClass }, 'Service class must be a constructor function');
 		throw new Error('Service class must be a constructor function');
 	}
 	if (!('UUID' in serviceClass)) {
+		logger.error({ serviceClass }, 'Service class must have a UUID property');
 		throw new Error('Service class must have a UUID property');
 	}
+	
 	const existingService = subType
 		? platformAccessory.getServiceById(serviceClass, subType)
 		: platformAccessory.getService(serviceClass);
 
 	if (existingService) {
+		logger.debug(
+			{ displayName, subType, uuid: serviceClass.UUID },
+			'Found existing service',
+		);
 		return wrapService(existingService as InstanceType<T>);
 	} else {
+		logger.debug(
+			{ displayName, subType, uuid: serviceClass.UUID },
+			'Creating new service',
+		);
 		const newService = new serviceClass(displayName ?? '', subType ?? '') as InstanceType<T>;
 		platformAccessory.addService(newService);
+		
+		logger.info(
+			{ displayName, subType, uuid: serviceClass.UUID, characteristicCount: newService.characteristics.length },
+			'Created and added new service',
+		);
 
 		return wrapService(newService);
 	}
@@ -71,13 +158,25 @@ export function getOrAddService<T extends typeof Service>(
  * @throws {ValidationError} If service is invalid
  */
 export function wrapService<T extends typeof Service>(service: InstanceType<T>): FluentService<T> {
+	const logger = getLogger();
+	
 	if (!isService(service)) {
+		logger.error({ service }, 'Invalid service object');
 		throw new ValidationError('Invalid service object', {
 			value: service,
 			expected: 'HAP Service instance',
 			actual: typeof service,
 		});
 	}
+	
+	logger.debug(
+		{ 
+			serviceName: service.displayName,
+			uuid: service.UUID,
+			characteristicCount: service.characteristics.length 
+		},
+		'Wrapping service with fluent interface',
+	);
 
 	const e = {
 		characteristics: Object.fromEntries(

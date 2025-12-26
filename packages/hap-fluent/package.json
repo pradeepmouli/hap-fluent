@@ -18,6 +18,14 @@
 			"types": "./dist/type-guards.d.ts",
 			"import": "./dist/type-guards.js"
 		},
+		"./type-utils": {
+			"types": "./dist/type-utils.d.ts",
+			"import": "./dist/type-utils.js"
+		},
+		"./logger": {
+			"types": "./dist/logger.d.ts",
+			"import": "./dist/logger.js"
+		},
 		"./types": {
 			"types": "./dist/types/index.d.ts",
 			"import": "./dist/types/index.js"

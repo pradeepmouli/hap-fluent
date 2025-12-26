@@ -1,3 +1,31 @@
+/**
+ * Accessory handler providing strongly-typed service management for Homebridge accessories
+ * 
+ * @module AccessoryHandler
+ * 
+ * @example
+ * ```typescript
+ * import { createAccessoryHandler, initializeAccessory } from 'hap-fluent';
+ * 
+ * // Create a handler for a lightbulb accessory
+ * const handler = createAccessoryHandler(
+ *   plugin,
+ *   'my-light',
+ *   'My Light Bulb',
+ *   [hap.Service.Lightbulb]
+ * );
+ * 
+ * // Initialize with state
+ * const accessory = initializeAccessory(platformAccessory, {
+ *   lightbulb: { on: true, brightness: 75 },
+ *   accessoryInformation: { manufacturer: 'ACME', model: 'Light-1' }
+ * });
+ * 
+ * // Access services with strong typing
+ * accessory.lightbulb.characteristics.On.set(false);
+ * ```
+ */
+
 import { type DynamicPlatformPlugin, PlatformAccessory, type UnknownContext, type WithUUID } from 'homebridge';
 import { Service } from 'hap-nodejs';
 
@@ -10,6 +38,7 @@ import type { AccessoryInformation } from './types/hap-interfaces.js';
 import type { CamelCase, SimplifyDeep } from 'type-fest';
 import camelcase from 'camelcase';
 import type { ServiceForInterface, Interfaces, InterfaceMap, ServiceMap } from './types/index.js';
+import { getLogger } from './logger.js';
 
 
 
@@ -123,11 +152,30 @@ export type  FluentAccessory<TContext extends UnknownContext, Services extends I
  * @param accessory - The Homebridge platform accessory instance.
  * @param initialState - Initial characteristic values for each service.
  * @returns The accessory augmented with fluent service wrappers.
+ * 
+ * @example
+ * ```typescript
+ * const accessory = initializeAccessory(platformAccessory, {
+ *   lightbulb: { on: true, brightness: 100 },
+ *   accessoryInformation: { manufacturer: 'ACME', model: 'Light-1' }
+ * });
+ * ```
  */
 export function initializeAccessory<TContext extends UnknownContext, Services extends Interfaces[]>(
 	accessory: PlatformAccessory<TContext>,
 	initialState: InternalServicesStateObject<Services>,
 ): FluentAccessory<TContext, Services> {
+	const logger = getLogger();
+	logger.info(
+		{ 
+			accessoryUUID: accessory.UUID,
+			accessoryName: accessory.displayName,
+			serviceCount: accessory.services.length,
+			stateKeys: Object.keys(initialState)
+		},
+		'Initializing accessory with state',
+	);
+	
 	const services = createServicesObject(...accessory.services as unknown as InstanceType<ServiceForInterface<Services[number]>>[]);
 	for (const key in initialState) {
 	  if(typeof initialState[key] === 'object') {
