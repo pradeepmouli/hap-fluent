@@ -5,7 +5,7 @@
  * across a wide range of values.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, expect } from 'vitest';
 import { fc, test } from '@fast-check/vitest';
 import { FluentCharacteristic } from '../../src/FluentCharacteristic.js';
 import { MockCharacteristic } from '../mocks/homebridge.mock.js';
