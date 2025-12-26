@@ -25,13 +25,13 @@ function stateManagement() {
 		hue: 120,
 		saturation: 50,
 	};
-	
+
 	// Partial state for updates
 	const update: PartialServiceState = {
 		on: false,
 		brightness: 0,
 	};
-	
+
 	// Merge states
 	const newState = { ...lightState, ...update };
 	console.log('New state:', newState);
@@ -43,11 +43,11 @@ function stateManagement() {
 function clampingValues() {
 	// Create a transformer that clamps brightness to 0-100
 	const clampBrightness = createClampTransformer(0, 100);
-	
+
 	console.log(clampBrightness(150));  // Returns 100
 	console.log(clampBrightness(-10));  // Returns 0
 	console.log(clampBrightness(50));   // Returns 50
-	
+
 	// Use in characteristic updates
 	const userInput = 150;
 	const _safeBrightness = clampBrightness(userInput);
@@ -60,14 +60,14 @@ function clampingValues() {
 function scalingValues() {
 	// Convert percentage (0-100) to decimal (0-1)
 	const percentToDecimal = createScaleTransformer(0, 100, 0, 1);
-	
+
 	console.log(percentToDecimal(0));    // Returns 0
 	console.log(percentToDecimal(50));   // Returns 0.5
 	console.log(percentToDecimal(100));  // Returns 1
-	
+
 	// Convert Kelvin (2000-6500) to HomeKit color temperature (140-500)
 	const kelvinToMired = createScaleTransformer(2000, 6500, 500, 140);
-	
+
 	console.log(kelvinToMired(2700));  // Warm white
 	console.log(kelvinToMired(6500));  // Cool daylight
 }
@@ -80,18 +80,18 @@ function validatingValues() {
 	const isValidHue = createRangePredicate(0, 360);
 	const isValidBrightness = createRangePredicate(0, 100);
 	const isValidTemperature = createRangePredicate(-50, 50, false); // Exclusive
-	
+
 	// Validate user input
 	const userHue = 180;
 	if (isValidHue(userHue)) {
 		console.log('Valid hue:', userHue);
 	}
-	
+
 	const userBrightness = 150;
 	if (!isValidBrightness(userBrightness)) {
 		console.error('Invalid brightness:', userBrightness);
 	}
-	
+
 	// _isValidTemperature reserved for future use
 	const _isValidTemperature = createRangePredicate(-50, 50, false);
 }
@@ -102,18 +102,18 @@ function validatingValues() {
 function combineTransformersAndPredicates() {
 	const clampBrightness = createClampTransformer(0, 100);
 	const isValidBrightness = createRangePredicate(0, 100);
-	
+
 	function setBrightness(value: number) {
 		// Validate first
 		if (!isValidBrightness(value)) {
 			console.warn(`Invalid brightness ${value}, clamping...`);
 			value = clampBrightness(value);
 		}
-		
+
 		console.log('Setting brightness to:', value);
 		// Set to characteristic...
 	}
-	
+
 	setBrightness(150);  // Clamps to 100
 	setBrightness(-10);  // Clamps to 0
 	setBrightness(75);   // Valid, uses as-is
@@ -127,15 +127,15 @@ function customTransformers() {
 	const roundToNearest5: ValueTransformer<number, number> = (value) => {
 		return Math.round(value / 5) * 5;
 	};
-	
+
 	console.log(roundToNearest5(73));  // Returns 75
 	console.log(roundToNearest5(72));  // Returns 70
-	
+
 	// Transformer to convert boolean to number
 	const boolToNumber: ValueTransformer<boolean, number> = (value) => {
 		return value ? 1 : 0;
 	};
-	
+
 	console.log(boolToNumber(true));   // Returns 1
 	console.log(boolToNumber(false));  // Returns 0
 }
@@ -148,12 +148,12 @@ function customPredicates() {
 	const isPercentage: ValuePredicate<number> = (value) => {
 		return Number.isFinite(value) && value >= 0 && value <= 100;
 	};
-	
+
 	// Predicate for valid color temperature
 	const isValidColorTemp: ValuePredicate<number> = (value) => {
 		return Number.isInteger(value) && value >= 140 && value <= 500;
 	};
-	
+
 	// Use predicates
 	console.log(isPercentage(50));      // true
 	console.log(isPercentage(150));     // false
@@ -169,18 +169,18 @@ function typeSafeStateUpdates() {
 		on: true,
 		brightness: 50,
 	};
-	
+
 	// Type-safe partial update
 	const update = {
 		brightness: 75,
 		hue: 200,
 	};
-	
+
 	const newState = {
 		...currentState,
 		...update,
 	};
-	
+
 	console.log('Updated state:', newState);
 }
 
@@ -189,7 +189,7 @@ function typeSafeStateUpdates() {
  */
 function typeGuardExample() {
 	const obj: unknown = {}; // Could be anything
-	
+
 	if (isFluentCharacteristic(obj)) {
 		// TypeScript now knows obj is FluentCharacteristic
 		obj.get();
@@ -209,25 +209,25 @@ class AccessoryStateManager {
 	private readonly isValidValue = (value: unknown): value is number | boolean | string => {
 		return typeof value === 'number' || typeof value === 'boolean' || typeof value === 'string';
 	};
-	
+
 	updateCharacteristic(name: string, value: unknown) {
 		if (!this.isValidValue(value)) {
 			throw new Error(`Invalid value for ${name}: ${value}`);
 		}
-		
+
 		// Apply transformations based on characteristic type
 		let transformedValue = value;
-		
+
 		if (name === 'brightness' && typeof value === 'number') {
 			transformedValue = this.clampBrightness(value);
 		} else if (name === 'hue' && typeof value === 'number') {
 			transformedValue = this.clampHue(value);
 		}
-		
+
 		this.state[name] = transformedValue;
 		console.log(`Updated ${name}:`, transformedValue);
 	}
-	
+
 	getState(): ServiceState {
 		return { ...this.state };
 	}

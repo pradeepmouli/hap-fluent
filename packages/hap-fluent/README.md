@@ -53,33 +53,33 @@ class MyAccessory {
     // Create accessory
     const uuid = api.hap.uuid.generate('my-unique-id');
     const accessory = new api.platformAccessory('My Light', uuid);
-    
+
     // Add lightbulb service with fluent API
     const lightbulb = getOrAddService(
       accessory,
       api.hap.Service.Lightbulb,
       'My Light'
     );
-    
+
     // Set up characteristic handlers
     lightbulb.onGet('On', async () => {
       return await this.getLightState();
     });
-    
+
     lightbulb.onSet('On', async (value) => {
       await this.setLightState(value);
     });
-    
+
     // Set initial values
     lightbulb.characteristics.On.set(true);
     lightbulb.characteristics.Brightness.set(100);
   }
-  
+
   private async getLightState(): Promise<boolean> {
     // Your implementation
     return true;
   }
-  
+
   private async setLightState(value: boolean): Promise<void> {
     // Your implementation
   }
@@ -202,7 +202,7 @@ try {
       value: error.context?.value,
       originalError: error.context?.originalError,
     });
-    
+
     // Implement retry, fallback, or user notification
   } else if (error instanceof ValidationError) {
     console.error('Validation Error:', error.context);
@@ -451,13 +451,13 @@ configureLogger({
 ```typescript
 class MyAccessory {
   private readonly logger;
-  
+
   constructor(accessory: PlatformAccessory) {
     this.logger = createChildLogger({
       accessory: accessory.displayName,
       uuid: accessory.UUID,
     });
-    
+
     this.logger.info('Accessory initialized');
   }
 }
@@ -493,7 +493,7 @@ function setBrightness(value: number) {
     logger.warn({ value }, 'Invalid brightness, clamping');
     value = clamp(value);
   }
-  
+
   characteristic.set(value);
 }
 ```

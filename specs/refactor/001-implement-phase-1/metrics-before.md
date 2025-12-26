@@ -46,14 +46,14 @@ packages/hap-fluent/src/
    - Characteristic property access issues
    - onGet/onSet/update method failures
    - Service UUID mismatches
-   
+
 2. **FluentCharacteristic.test.ts**: 6 failed / 31 total
    - `updateValue` not a function (mock implementation issue)
-   
+
 3. **FluentAccessory.test.ts**: 6 failed / 28 total
    - Service naming convention issues (PascalCase vs camelCase)
    - Subtype handling
-   
+
 4. **integration.test.ts**: 13 failed / 17 total
    - End-to-end workflow failures
    - Multi-service coordination issues

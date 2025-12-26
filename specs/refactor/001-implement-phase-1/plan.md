@@ -11,31 +11,31 @@ Transform hap-fluent from a prototype with 40% test failures and 17 type safety 
 
 ## Technical Context
 
-**Language/Version**: TypeScript 5.9.3 (strict mode) targeting ES2022  
-**Primary Dependencies**: 
+**Language/Version**: TypeScript 5.9.3 (strict mode) targeting ES2022
+**Primary Dependencies**:
 - Runtime: `camelcase@8.0.0`, `pino` (logging)
 - Peer: `homebridge@^1.8.0 || ^2.0.0`, `hap-nodejs@^0.11.0 || ^0.12.0 || ^0.13.0` (currently misconfigured)
 - Build: `tsgo` (build/type-check), `oxlint` (linting), `oxfmt` (formatting), Vitest (testing)
 - To Add: `@fast-check/vitest` (property testing)
 
-**Storage**: N/A (stateless library wrapping HAP-NodeJS)  
-**Testing**: Vitest 3.2.4 with mock implementations of HAP-NodeJS  
-**Logging**: Pino for structured logging (configurable levels)  
-**Target Platform**: Node.js >=18.0.0 (Homebridge plugin environment)  
-**Project Type**: Single library package in monorepo (packages/hap-fluent)  
+**Storage**: N/A (stateless library wrapping HAP-NodeJS)
+**Testing**: Vitest 3.2.4 with mock implementations of HAP-NodeJS
+**Logging**: Pino for structured logging (configurable levels)
+**Target Platform**: Node.js >=18.0.0 (Homebridge plugin environment)
+**Project Type**: Single library package in monorepo (packages/hap-fluent)
 
-**Performance Goals**: 
+**Performance Goals**:
 - No observable performance regression (≤5% variance acceptable)
 - Method call overhead <1ms per characteristic operation
 - Memory footprint <100KB additional over raw HAP-NodeJS
 
-**Constraints**: 
+**Constraints**:
 - MUST maintain backwards compatibility for 0.x users during transition
 - Cannot break existing Homebridge plugins using the library
 - All changes must pass existing tests (after fixing test infrastructure)
 - Type safety improvements cannot weaken existing types
 
-**Scale/Scope**: 
+**Scale/Scope**:
 - Current: ~2,338 LOC, 4 test files, 100 tests (60 passing, 40 failing)
 - Target: ~4,000-5,000 LOC (with new features), >80% test coverage, 100% tests passing
 - Expected to support 10-100 Homebridge plugins in production
@@ -45,45 +45,45 @@ Transform hap-fluent from a prototype with 40% test failures and 17 type safety 
 *GATE: All phases must comply with HAP Fluent Constitution v1.0.0*
 
 ### ✅ Principle I: Type Safety First (NON-NEGOTIABLE)
-**Current Status**: ❌ VIOLATING (17 violations: 14 `as any`, 3 suppressions)  
-**Plan Compliance**: Phase 1 eliminates ALL violations with proper type guards  
+**Current Status**: ❌ VIOLATING (17 violations: 14 `as any`, 3 suppressions)
+**Plan Compliance**: Phase 1 eliminates ALL violations with proper type guards
 **Gate**: MUST pass before Phase 2
 
 ### ✅ Principle II: Library-First Architecture
-**Current Status**: ⚠️ PARTIAL (incorrect peerDependencies)  
-**Plan Compliance**: Phase 1 fixes package.json dependencies, Phase 6 adds modern exports  
+**Current Status**: ⚠️ PARTIAL (incorrect peerDependencies)
+**Plan Compliance**: Phase 1 fixes package.json dependencies, Phase 6 adds modern exports
 **Gate**: Phase 1 achieves full compliance
 
 ### ⚠️ Principle III: Test-First Development
-**Current Status**: ❌ VIOLATING (40% test failure rate, no TDD process)  
-**Plan Compliance**: Phase 3 establishes TDD infrastructure, coverage thresholds  
-**Gate**: Must fix existing tests in Phase 1, establish TDD in Phase 3  
+**Current Status**: ❌ VIOLATING (40% test failure rate, no TDD process)
+**Plan Compliance**: Phase 3 establishes TDD infrastructure, coverage thresholds
+**Gate**: Must fix existing tests in Phase 1, establish TDD in Phase 3
 **EXCEPTION**: Existing code predates constitution - refactor will bring into compliance
 
 ### ✅ Principle IV: Fluent API Design
-**Current Status**: ✅ COMPLIANT (good method chaining, type safety)  
-**Plan Compliance**: Phases 4-5 enhance with validators, events, batching  
+**Current Status**: ✅ COMPLIANT (good method chaining, type safety)
+**Plan Compliance**: Phases 4-5 enhance with validators, events, batching
 **Gate**: No blocking issues
 
 ### ⚠️ Principle V: Developer Experience (DX)
-**Current Status**: ❌ VIOLATING (no README, broken examples, poor errors)  
-**Plan Compliance**: Phase 2 adds comprehensive docs, error messages, debug logging  
+**Current Status**: ❌ VIOLATING (no README, broken examples, poor errors)
+**Plan Compliance**: Phase 2 adds comprehensive docs, error messages, debug logging
 **Gate**: Phase 2 achieves full compliance
 
 ### Additional Quality Standards
 
-**Code Quality**: ❌ Dead code, commented blocks - **Phase 1 fixes**  
-**Error Handling**: ❌ Missing try-catch - **Phase 1 adds**  
+**Code Quality**: ❌ Dead code, commented blocks - **Phase 1 fixes**
+**Error Handling**: ❌ Missing try-catch - **Phase 1 adds**
 **Dependency Management**: ❌ Misconfigured - **Phase 1 corrects**
 
 ### Overall Assessment
 
-**CRITICAL VIOLATIONS**: 3 (Type Safety, Testing, DX)  
-**BLOCKING FOR 1.0.0**: YES - must complete Phases 1-2 minimum  
+**CRITICAL VIOLATIONS**: 3 (Type Safety, Testing, DX)
+**BLOCKING FOR 1.0.0**: YES - must complete Phases 1-2 minimum
 **JUSTIFICATION FOR PROCEEDING**: This refactor's explicit purpose is to bring codebase into constitutional compliance before 1.0.0 release
 
-**Post-Phase 1**: Type Safety ✅, Dependencies ✅  
-**Post-Phase 2**: DX ✅  
+**Post-Phase 1**: Type Safety ✅, Dependencies ✅
+**Post-Phase 2**: DX ✅
 **Post-Phase 3**: Testing ✅ → **FULL CONSTITUTIONAL COMPLIANCE**
 
 ## Project Structure
@@ -108,7 +108,7 @@ packages/hap-fluent/
 ├── src/
 │   ├── AccessoryHandler.ts      # Accessory wrapper with service management
 │   ├── FluentCharacteristic.ts  # Fluent wrapper for HAP characteristics
-│   ├── FluentService.ts          # Fluent wrapper for HAP services  
+│   ├── FluentService.ts          # Fluent wrapper for HAP services
 │   ├── index.ts                  # Main exports
 │   └── types/
 │       ├── hap-enums.ts          # Generated HAP enumerations

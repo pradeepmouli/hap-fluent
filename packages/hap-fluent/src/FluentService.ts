@@ -10,9 +10,9 @@ import { getLogger } from './logger.js';
 
 /**
  * Fluent wrapper for HAP Service with strong typing and characteristic access
- * 
+ *
  * @template T - HAP Service class type
- * 
+ *
  * @example
  * ```typescript
  * const lightbulb: FluentService<typeof Lightbulb> = getOrAddService(
@@ -20,15 +20,15 @@ import { getLogger } from './logger.js';
  *   hap.Service.Lightbulb,
  *   'My Light'
  * );
- * 
+ *
  * // Access characteristics with camelCase or PascalCase
  * lightbulb.characteristics.On.set(true);
  * lightbulb.on = true; // Shorthand property access
- * 
+ *
  * // Register handlers
  * lightbulb.onGet('On', async () => await getLightState());
  * lightbulb.onSet('On', async (value) => await setLightState(value));
- * 
+ *
  * // Update without triggering handlers
  * lightbulb.update('Brightness', 75);
  * ```
@@ -43,10 +43,10 @@ export type FluentService<T extends typeof Service> = InterfaceForService<T> & {
 	};
 	/**
 	 * Register an async getter for a characteristic
-	 * 
+	 *
 	 * @param key - Characteristic name (PascalCase)
 	 * @param callback - Async function returning the characteristic value
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * service.onGet('On', async () => {
@@ -61,10 +61,10 @@ export type FluentService<T extends typeof Service> = InterfaceForService<T> & {
 	): void;
 	/**
 	 * Register an async setter for a characteristic
-	 * 
+	 *
 	 * @param key - Characteristic name (PascalCase)
 	 * @param callback - Async function receiving the new value
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * service.onSet('On', async (value) => {
@@ -78,10 +78,10 @@ export type FluentService<T extends typeof Service> = InterfaceForService<T> & {
 	): void;
 	/**
 	 * Update a characteristic value without triggering SET handlers
-	 * 
+	 *
 	 * @param key - Characteristic name (PascalCase)
 	 * @param value - New characteristic value
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * // Update brightness from external state change
@@ -113,7 +113,7 @@ export function getOrAddService<T extends typeof Service>(
 	subType?: string
 ): FluentService<T> {
 	const logger = getLogger();
-	
+
 	if (typeof serviceClass !== 'function') {
 		logger.error({ serviceClass }, 'Service class must be a constructor function');
 		throw new Error('Service class must be a constructor function');
@@ -122,7 +122,7 @@ export function getOrAddService<T extends typeof Service>(
 		logger.error({ serviceClass }, 'Service class must have a UUID property');
 		throw new Error('Service class must have a UUID property');
 	}
-	
+
 	const existingService = subType
 		? platformAccessory.getServiceById(serviceClass, subType)
 		: platformAccessory.getService(serviceClass);
@@ -140,7 +140,7 @@ export function getOrAddService<T extends typeof Service>(
 		);
 		const newService = new serviceClass(displayName ?? '', subType ?? '') as InstanceType<T>;
 		platformAccessory.addService(newService);
-		
+
 		logger.info(
 			{ displayName, subType, uuid: serviceClass.UUID, characteristicCount: newService.characteristics.length },
 			'Created and added new service',
@@ -159,7 +159,7 @@ export function getOrAddService<T extends typeof Service>(
  */
 export function wrapService<T extends typeof Service>(service: InstanceType<T>): FluentService<T> {
 	const logger = getLogger();
-	
+
 	if (!isService(service)) {
 		logger.error({ service }, 'Invalid service object');
 		throw new ValidationError('Invalid service object', {
@@ -168,12 +168,12 @@ export function wrapService<T extends typeof Service>(service: InstanceType<T>):
 			actual: typeof service,
 		});
 	}
-	
+
 	logger.debug(
-		{ 
+		{
 			serviceName: service.displayName,
 			uuid: service.UUID,
-			characteristicCount: service.characteristics.length 
+			characteristicCount: service.characteristics.length
 		},
 		'Wrapping service with fluent interface',
 	);
@@ -219,7 +219,7 @@ export function wrapService<T extends typeof Service>(service: InstanceType<T>):
 			get: () => e.characteristics[key as keyof typeof e.characteristics].get(),
 			set: (value) => e.characteristics[key as keyof typeof e.characteristics].set(value),
 		});
-		
+
 		// Also create lowercase property for backward compatibility (e.g., "on", "brightness")
 		const lowercaseKey = key.charAt(0).toLowerCase() + key.slice(1);
 		if (lowercaseKey !== key) {

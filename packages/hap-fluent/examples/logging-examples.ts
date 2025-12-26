@@ -14,9 +14,9 @@ function basicLogging() {
 		level: 'debug',
 		pretty: true,
 	});
-	
+
 	const logger = getLogger();
-	
+
 	logger.info('Plugin initialized');
 	logger.debug({ deviceCount: 5 }, 'Discovered devices');
 	logger.warn('Device not responding, will retry');
@@ -37,7 +37,7 @@ function productionLogging() {
 			environment: 'production',
 		},
 	});
-	
+
 	const logger = getLogger();
 	logger.info('Running in production mode');
 }
@@ -47,16 +47,16 @@ function productionLogging() {
  */
 function childLoggers() {
 	configureLogger({ level: 'debug', pretty: true });
-	
+
 	// Create a child logger with device context
 	const deviceLogger = createChildLogger({
 		device: 'living-room-light',
 		deviceId: '12345',
 	});
-	
+
 	deviceLogger.info('Device state changed');
 	// Output includes: {"device":"living-room-light","deviceId":"12345",...}
-	
+
 	deviceLogger.debug({ brightness: 75 }, 'Brightness updated');
 	// Output includes device context + brightness value
 }
@@ -66,7 +66,7 @@ function childLoggers() {
  */
 class MyHomebridgePlugin {
 	private readonly logger;
-	
+
 	constructor() {
 		// Configure once during plugin initialization
 		configureLogger({
@@ -76,25 +76,25 @@ class MyHomebridgePlugin {
 				plugin: 'homebridge-my-plugin',
 			},
 		});
-		
+
 		this.logger = getLogger();
 		this.logger.info('Plugin constructed');
 	}
-	
+
 	discoverDevices() {
 		this.logger.debug('Starting device discovery');
-		
+
 		// Simulate discovery
 		const devices = ['device1', 'device2'];
-		
+
 		this.logger.info({ deviceCount: devices.length }, 'Devices discovered');
-		
+
 		return devices;
 	}
-	
+
 	handleError(error: Error) {
 		this.logger.error({ err: error }, 'Operation failed');
-		
+
 		// Pino automatically serializes error objects
 		// Output includes: name, message, stack
 	}
@@ -105,17 +105,17 @@ class MyHomebridgePlugin {
  */
 class AccessoryLogger {
 	private readonly logger;
-	
+
 	constructor(accessoryName: string, accessoryId: string) {
 		// Create child logger for this accessory
 		this.logger = createChildLogger({
 			accessory: accessoryName,
 			id: accessoryId,
 		});
-		
+
 		this.logger.info('Accessory initialized');
 	}
-	
+
 	logCharacteristicChange(characteristic: string, oldValue: unknown, newValue: unknown) {
 		this.logger.debug(
 			{
@@ -126,7 +126,7 @@ class AccessoryLogger {
 			'Characteristic changed',
 		);
 	}
-	
+
 	logServiceAdded(serviceName: string, serviceType: string) {
 		this.logger.info(
 			{
@@ -136,7 +136,7 @@ class AccessoryLogger {
 			'Service added',
 		);
 	}
-	
+
 	logError(operation: string, error: Error) {
 		this.logger.error(
 			{
@@ -154,13 +154,13 @@ class AccessoryLogger {
 function conditionalLogging() {
 	configureLogger({ level: 'info' });
 	const logger = getLogger();
-	
+
 	// This will NOT be logged (level is 'info', not 'debug')
 	logger.debug('Detailed debug information');
-	
+
 	// This WILL be logged
 	logger.info('Important status update');
-	
+
 	// For expensive operations, check level first
 	if (logger.level === 'debug') {
 		const expensiveData = computeExpensiveData();
@@ -179,7 +179,7 @@ function computeExpensiveData() {
 function metricsLogging() {
 	configureLogger({ level: 'info' });
 	const logger = getLogger();
-	
+
 	// Log performance metrics
 	logger.info(
 		{
@@ -190,7 +190,7 @@ function metricsLogging() {
 		},
 		'Performance metric',
 	);
-	
+
 	// Log resource usage
 	logger.info(
 		{
@@ -207,22 +207,22 @@ function metricsLogging() {
  */
 function logLevelsGuide() {
 	const logger = getLogger();
-	
+
 	// TRACE: Very detailed, typically not used
 	logger.trace('Entering function');
-	
+
 	// DEBUG: Detailed for debugging during development
 	logger.debug({ state: { on: true, brightness: 75 } }, 'Current device state');
-	
+
 	// INFO: General informational messages
 	logger.info('Device connected successfully');
-	
+
 	// WARN: Warning messages for recoverable issues
 	logger.warn('Device slow to respond, retrying...');
-	
+
 	// ERROR: Error messages for failures
 	logger.error({ err: new Error('Connection timeout') }, 'Failed to connect');
-	
+
 	// FATAL: Critical errors causing shutdown (rarely used)
 	logger.fatal('Unrecoverable error, shutting down');
 }
