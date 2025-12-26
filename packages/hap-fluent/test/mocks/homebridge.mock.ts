@@ -23,6 +23,11 @@ export class MockCharacteristic {
 		return this;
 	}
 
+	updateValue(value: CharacteristicValue): this {
+		this.value = value;
+		return this;
+	}
+
 	getValue(): CharacteristicValue | undefined {
 		return this.value;
 	}

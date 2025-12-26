@@ -81,7 +81,11 @@ export function wrapService<T extends typeof Service>(service: InstanceType<T>):
 
 	const e = {
 		characteristics: Object.fromEntries(
-			service.characteristics.map((p) => [camelcase(p.displayName, { pascalCase: true }), new FluentCharacteristic(p)])
+			service.characteristics.map((p) => {
+				const pascalName = camelcase(p.displayName, { pascalCase: true });
+				const camelName = pascalName.charAt(0).toLowerCase() + pascalName.slice(1);
+				return [camelName, new FluentCharacteristic(p)];
+			})
 		) as { [R in keyof FluentService<T>]: FluentCharacteristic<CharacteristicValue> },
 	};
 
@@ -111,10 +115,20 @@ export function wrapService<T extends typeof Service>(service: InstanceType<T>):
 	};
 
 	for (const key in e.characteristics) {
+		// Create PascalCase property (e.g., "On", "Brightness")
 		Object.defineProperty(obj, key, {
 			get: () => e.characteristics[key as keyof typeof e.characteristics].get(),
 			set: (value) => e.characteristics[key as keyof typeof e.characteristics].set(value),
 		});
+		
+		// Also create lowercase property for backward compatibility (e.g., "on", "brightness")
+		const lowercaseKey = key.charAt(0).toLowerCase() + key.slice(1);
+		if (lowercaseKey !== key) {
+			Object.defineProperty(obj, lowercaseKey, {
+				get: () => e.characteristics[key as keyof typeof e.characteristics].get(),
+				set: (value) => e.characteristics[key as keyof typeof e.characteristics].set(value),
+			});
+		}
 	}
 
 	return obj as FluentService<T>;
