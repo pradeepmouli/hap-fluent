@@ -2,11 +2,14 @@ import { Characteristic, type CharacteristicValue, type CharacteristicSetHandler
 import { FluentCharacteristicError } from './errors.js';
 import { isCharacteristicValue } from './type-guards.js';
 import { getLogger } from './logger.js';
+import type { Validator, ValidationResult } from './validation.js';
 
 /**
  * FluentCharacteristic wraps a HAP characteristic with strong typing and fluent API
  */
 export class FluentCharacteristic<T extends CharacteristicValue> {
+	private validators: Validator[] = [];
+
 	/**
 	 * @param characteristic - HAP characteristic to wrap.
 	 */
@@ -62,6 +65,29 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 					value,
 				});
 			}
+
+			// Run validators if any are registered
+			if (this.validators.length > 0) {
+				const validationResult = this.runValidators(value);
+				if (!validationResult.valid) {
+					logger.warn(
+						{ characteristic: this.characteristic.displayName, value, error: validationResult.error },
+						'Value failed validation',
+					);
+					throw new FluentCharacteristicError(
+						validationResult.error || 'Validation failed',
+						{
+							characteristic: this.characteristic.displayName,
+							value,
+						}
+					);
+				}
+				// Use the validated/transformed value
+				if (validationResult.value !== undefined) {
+					value = validationResult.value as T;
+				}
+			}
+
 			this.characteristic.setValue(value);
 			logger.debug(
 				{ characteristic: this.characteristic.displayName, value },
@@ -150,5 +176,60 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 	onSet(handler: (value: T) => Promise<void>): this {
 		this.characteristic.onSet(handler as unknown as CharacteristicSetHandler);
 		return this;
+	}
+
+	/**
+	 * Add a validator to this characteristic.
+	 * 
+	 * Validators are run in the order they are added. If any validator fails,
+	 * the value is rejected and an error is thrown.
+	 * 
+	 * @param validator - Validator to add
+	 * @returns This FluentCharacteristic instance for chaining
+	 * 
+	 * @example
+	 * ```typescript
+	 * import { RangeValidator } from 'hap-fluent/validation';
+	 * 
+	 * characteristic.addValidator(new RangeValidator(0, 100, 'Brightness'));
+	 * ```
+	 */
+	addValidator(validator: Validator): this {
+		this.validators.push(validator);
+		return this;
+	}
+
+	/**
+	 * Remove all validators from this characteristic.
+	 * 
+	 * @returns This FluentCharacteristic instance for chaining
+	 */
+	clearValidators(): this {
+		this.validators = [];
+		return this;
+	}
+
+	/**
+	 * Run all validators on a value
+	 * 
+	 * @param value - Value to validate
+	 * @returns Validation result
+	 * @private
+	 */
+	private runValidators(value: CharacteristicValue): ValidationResult {
+		let currentValue = value;
+		
+		for (const validator of this.validators) {
+			const result = validator.validate(currentValue);
+			if (!result.valid) {
+				return result;
+			}
+			// Use transformed value if validator provided one
+			if (result.value !== undefined) {
+				currentValue = result.value;
+			}
+		}
+		
+		return { valid: true, value: currentValue };
 	}
 }
