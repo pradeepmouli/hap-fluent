@@ -3,12 +3,14 @@ import { FluentCharacteristicError } from './errors.js';
 import { isCharacteristicValue } from './type-guards.js';
 import { getLogger } from './logger.js';
 import type { Validator, ValidationResult } from './validation.js';
+import type { Interceptor, InterceptorContext } from './interceptors.js';
 
 /**
  * FluentCharacteristic wraps a HAP characteristic with strong typing and fluent API
  */
 export class FluentCharacteristic<T extends CharacteristicValue> {
 	private validators: Validator[] = [];
+	private interceptors: Interceptor[] = [];
 
 	/**
 	 * @param characteristic - HAP characteristic to wrap.
@@ -54,6 +56,20 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 			{ characteristic: this.characteristic.displayName, value },
 			'Setting characteristic value',
 		);
+
+		// If we have interceptors, we need to handle them
+		if (this.interceptors.length > 0) {
+			// Run async operation but return synchronously for fluent API
+			this.setAsync(value).catch((error) => {
+				logger.error(
+					{ characteristic: this.characteristic.displayName, value, error },
+					'Async set operation failed',
+				);
+			});
+			return this;
+		}
+
+		// Synchronous path when no interceptors
 		try {
 			if (!isCharacteristicValue(value)) {
 				logger.warn(
@@ -101,6 +117,91 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 			logger.error(
 				{ characteristic: this.characteristic.displayName, value, error },
 				'Failed to set characteristic value',
+			);
+			throw new FluentCharacteristicError('Failed to set characteristic value', {
+				characteristic: this.characteristic.displayName,
+				value,
+				originalError: error,
+			});
+		}
+	}
+
+	/**
+	 * Asynchronously set the characteristic value with interceptor support.
+	 *
+	 * @param value - New value to set.
+	 * @returns Promise that resolves when value is set
+	 * @throws {FluentCharacteristicError} If value is invalid or setValue fails
+	 */
+	async setAsync(value: T): Promise<void> {
+		const logger = getLogger();
+		logger.debug(
+			{ characteristic: this.characteristic.displayName, value },
+			'Setting characteristic value (async)',
+		);
+
+		try {
+			if (!isCharacteristicValue(value)) {
+				logger.warn(
+					{ characteristic: this.characteristic.displayName, value },
+					'Invalid characteristic value',
+				);
+				throw new FluentCharacteristicError('Invalid characteristic value', {
+					characteristic: this.characteristic.displayName,
+					value,
+				});
+			}
+
+			// Run beforeSet interceptors
+			if (this.interceptors.length > 0) {
+				value = (await this.runBeforeSetInterceptors(value)) as T;
+			}
+
+			// Run validators if any are registered
+			if (this.validators.length > 0) {
+				const validationResult = this.runValidators(value);
+				if (!validationResult.valid) {
+					logger.warn(
+						{ characteristic: this.characteristic.displayName, value, error: validationResult.error },
+						'Value failed validation',
+					);
+					throw new FluentCharacteristicError(
+						validationResult.error || 'Validation failed',
+						{
+							characteristic: this.characteristic.displayName,
+							value,
+						}
+					);
+				}
+				// Use the validated/transformed value
+				if (validationResult.value !== undefined) {
+					value = validationResult.value as T;
+				}
+			}
+
+			this.characteristic.setValue(value);
+
+			// Run afterSet interceptors
+			if (this.interceptors.length > 0) {
+				await this.runAfterSetInterceptors(value);
+			}
+
+			logger.debug(
+				{ characteristic: this.characteristic.displayName, value },
+				'Successfully set characteristic value (async)',
+			);
+		} catch (error) {
+			// Run error interceptors
+			if (this.interceptors.length > 0 && error instanceof Error) {
+				await this.runErrorInterceptors(error);
+			}
+
+			if (error instanceof FluentCharacteristicError) {
+				throw error;
+			}
+			logger.error(
+				{ characteristic: this.characteristic.displayName, value, error },
+				'Failed to set characteristic value (async)',
 			);
 			throw new FluentCharacteristicError('Failed to set characteristic value', {
 				characteristic: this.characteristic.displayName,
@@ -231,5 +332,142 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 		}
 		
 		return { valid: true, value: currentValue };
+	}
+
+	/**
+	 * Add an interceptor to this characteristic.
+	 * 
+	 * Interceptors provide hooks for pre/post processing of get/set operations.
+	 * They are executed in the order they are added.
+	 * 
+	 * @param interceptor - Interceptor to add
+	 * @returns This FluentCharacteristic instance for chaining
+	 * 
+	 * @example
+	 * ```typescript
+	 * import { createLoggingInterceptor, createRateLimitInterceptor } from 'hap-fluent/interceptors';
+	 * 
+	 * characteristic
+	 *   .intercept(createLoggingInterceptor())
+	 *   .intercept(createRateLimitInterceptor(5, 1000));
+	 * ```
+	 */
+	intercept(interceptor: Interceptor): this {
+		this.interceptors.push(interceptor);
+		return this;
+	}
+
+	/**
+	 * Remove all interceptors from this characteristic.
+	 * 
+	 * @returns This FluentCharacteristic instance for chaining
+	 */
+	clearInterceptors(): this {
+		this.interceptors = [];
+		return this;
+	}
+
+	/**
+	 * Create interceptor context for the current operation
+	 * 
+	 * @param value - Optional value for the context
+	 * @returns Interceptor context
+	 * @private
+	 */
+	private createInterceptorContext(value?: CharacteristicValue): InterceptorContext {
+		return {
+			characteristicName: this.characteristic.displayName,
+			value,
+			timestamp: Date.now(),
+		};
+	}
+
+	/**
+	 * Run beforeSet interceptors
+	 * 
+	 * @param value - Value to be set
+	 * @returns Modified value
+	 * @private
+	 */
+	private async runBeforeSetInterceptors(value: CharacteristicValue): Promise<CharacteristicValue> {
+		let currentValue = value;
+		const context = this.createInterceptorContext(value);
+
+		for (const interceptor of this.interceptors) {
+			if (interceptor.beforeSet) {
+				currentValue = await interceptor.beforeSet(currentValue, context);
+				context.value = currentValue;
+			}
+		}
+
+		return currentValue;
+	}
+
+	/**
+	 * Run afterSet interceptors
+	 * 
+	 * @param value - Value that was set
+	 * @private
+	 */
+	private async runAfterSetInterceptors(value: CharacteristicValue): Promise<void> {
+		const context = this.createInterceptorContext(value);
+
+		for (const interceptor of this.interceptors) {
+			if (interceptor.afterSet) {
+				await interceptor.afterSet(value, context);
+			}
+		}
+	}
+
+	/**
+	 * Run beforeGet interceptors
+	 * 
+	 * @private
+	 */
+	private async runBeforeGetInterceptors(): Promise<void> {
+		const context = this.createInterceptorContext();
+
+		for (const interceptor of this.interceptors) {
+			if (interceptor.beforeGet) {
+				await interceptor.beforeGet(context);
+			}
+		}
+	}
+
+	/**
+	 * Run afterGet interceptors
+	 * 
+	 * @param value - Value that was retrieved
+	 * @returns Modified value
+	 * @private
+	 */
+	private async runAfterGetInterceptors(value: CharacteristicValue | undefined): Promise<CharacteristicValue | undefined> {
+		let currentValue = value;
+		const context = this.createInterceptorContext(value);
+
+		for (const interceptor of this.interceptors) {
+			if (interceptor.afterGet) {
+				currentValue = await interceptor.afterGet(currentValue, context);
+				context.value = currentValue;
+			}
+		}
+
+		return currentValue;
+	}
+
+	/**
+	 * Run error interceptors
+	 * 
+	 * @param error - Error that occurred
+	 * @private
+	 */
+	private async runErrorInterceptors(error: Error): Promise<void> {
+		const context = this.createInterceptorContext();
+
+		for (const interceptor of this.interceptors) {
+			if (interceptor.onError) {
+				await interceptor.onError(error, context);
+			}
+		}
 	}
 }
