@@ -389,26 +389,32 @@ characteristic
 
 Transforms values when setting (encode) and retrieving (decode). Perfect for unit conversions or format transformations.
 
+> Note: Codecs apply to values that flow through `onSet` / `onGet` handlers. Direct `characteristic.set()` calls bypass codecs.
+
 ```typescript
 // Convert between Celsius and Fahrenheit
 characteristic.codec(
   (fahrenheit) => (fahrenheit - 32) * 5/9,  // encode: F to C
   (celsius) => (celsius * 9/5) + 32         // decode: C to F
 ).onSet(async (value) => {
-  console.log('Temperature in Fahrenheit:', value);
+  console.log('Temperature in Fahrenheit (decoded):', value);
 });
 
 // String format conversion
 characteristic.codec(
   (value) => String(value).toUpperCase(),  // encode
   (value) => String(value).toLowerCase()   // decode
-);
+).onSet(async (value) => {
+  console.log('Received lower-case string (decoded):', value);
+});
 
 // JSON serialization
 characteristic.codec(
   (obj) => JSON.stringify(obj),           // encode
   (str) => JSON.parse(String(str))        // decode
-);
+).onSet(async (value) => {
+  console.log('Received object (decoded from JSON):', value);
+});
 ```
 
 #### `.audit()` - Audit Trail
