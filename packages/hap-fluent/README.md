@@ -5,6 +5,7 @@
 [![npm version](https://img.shields.io/npm/v/hap-fluent.svg)](https://www.npmjs.com/package/hap-fluent)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/hap-fluent)](https://bundlephobia.com/package/hap-fluent)
 
 HAP Fluent provides a type-safe, fluent API for working with HomeKit Accessory Protocol (HAP) services and characteristics in Homebridge plugins. It eliminates boilerplate code, provides compile-time type safety, and offers excellent developer experience with comprehensive error handling and structured logging.
 

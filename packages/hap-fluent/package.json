@@ -42,8 +42,33 @@
 		"test:coverage": "vitest run --coverage",
 		"type-check": "tsgo --noEmit",
 		"type-check:tsc": "tsc --noEmit",
-		"clean": "rimraf dist"
+		"clean": "rimraf dist",
+		"size": "size-limit",
+		"size:why": "size-limit --why"
 	},
+	"size-limit": [
+		{
+			"name": "Main export (FluentService, FluentCharacteristic)",
+			"path": "dist/index.js",
+			"limit": "50 KB",
+			"import": "{ FluentService, FluentCharacteristic }"
+		},
+		{
+			"name": "Validation utilities",
+			"path": "dist/validation.js",
+			"limit": "10 KB"
+		},
+		{
+			"name": "Error classes",
+			"path": "dist/errors.js",
+			"limit": "5 KB"
+		},
+		{
+			"name": "Type guards",
+			"path": "dist/type-guards.js",
+			"limit": "5 KB"
+		}
+	],
 	"author": "Pradeep Mouli",
 	"license": "Apache-2.0",
 	"peerDependencies": {
@@ -52,6 +77,7 @@
 	},
 	"devDependencies": {
 		"@fast-check/vitest": "^0.2.4",
+		"@size-limit/preset-small-lib": "^12.0.0",
 		"@vitest/coverage-v8": "^4.0.16",
 		"@vitest/ui": "^4.0.0",
 		"eslint": "^9.38.0",
@@ -59,6 +85,7 @@
 		"hap-nodejs": "0.13.1",
 		"homebridge": "^1.11.0",
 		"prettier": "^3.6.2",
+		"size-limit": "^12.0.0",
 		"ts-node": "^10.9.2",
 		"type-fest": "^4.41.0",
 		"typescript": "^5.9.3",
