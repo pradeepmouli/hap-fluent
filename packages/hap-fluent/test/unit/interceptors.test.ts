@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { FluentCharacteristic } from '../../src/FluentCharacteristic.js';
 
 // Mock Characteristic class for testing
