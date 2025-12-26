@@ -431,6 +431,309 @@ function processValue(obj: unknown) {
 }
 ```
 
+## Using with Homebridge Plugins
+
+HAP Fluent is designed to work seamlessly with Homebridge dynamic platform plugins, providing a more maintainable and type-safe alternative to directly using HAP-NodeJS APIs.
+
+### Complete Homebridge Plugin Example
+
+Here's a complete example of a Homebridge dynamic platform plugin using hap-fluent to manage smart light accessories:
+
+```typescript
+import {
+  API,
+  DynamicPlatformPlugin,
+  PlatformAccessory,
+  PlatformConfig,
+  Service,
+  Characteristic,
+  Logger,
+} from 'homebridge';
+import { FluentService, getOrAddService } from 'hap-fluent';
+import { RangeValidator } from 'hap-fluent/validation';
+import { configureLogger } from 'hap-fluent/logger';
+
+const PLUGIN_NAME = 'homebridge-smart-lights';
+const PLATFORM_NAME = 'SmartLights';
+
+export = (api: API) => {
+  api.registerPlatform(PLATFORM_NAME, SmartLightsPlatform);
+};
+
+class SmartLightsPlatform implements DynamicPlatformPlugin {
+  private readonly accessories: Map<string, PlatformAccessory> = new Map();
+
+  constructor(
+    private readonly log: Logger,
+    private readonly config: PlatformConfig,
+    private readonly api: API
+  ) {
+    // Configure hap-fluent logging
+    configureLogger({
+      level: config.debug ? 'debug' : 'info',
+      pretty: true,
+    });
+
+    this.api.on('didFinishLaunching', () => {
+      this.discoverDevices();
+    });
+  }
+
+  /**
+   * Called when Homebridge restores cached accessories from disk at startup
+   */
+  configureAccessory(accessory: PlatformAccessory) {
+    this.log.info('Loading accessory from cache:', accessory.displayName);
+    
+    // Re-attach handlers to cached accessory
+    this.setupAccessoryHandlers(accessory);
+    this.accessories.set(accessory.UUID, accessory);
+  }
+
+  /**
+   * Discover and register devices
+   */
+  async discoverDevices() {
+    // Example: Fetch devices from your smart home API
+    const devices = await this.fetchDevices();
+
+    for (const device of devices) {
+      const uuid = this.api.hap.uuid.generate(device.id);
+      const existingAccessory = this.accessories.get(uuid);
+
+      if (existingAccessory) {
+        // Update existing accessory
+        this.log.info('Restoring existing accessory:', device.name);
+        existingAccessory.context.device = device;
+        this.setupAccessoryHandlers(existingAccessory);
+        this.api.updatePlatformAccessories([existingAccessory]);
+      } else {
+        // Create new accessory
+        this.log.info('Adding new accessory:', device.name);
+        const accessory = new this.api.platformAccessory(device.name, uuid);
+        accessory.context.device = device;
+        
+        this.setupAccessoryHandlers(accessory);
+        this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+        this.accessories.set(uuid, accessory);
+      }
+    }
+
+    // Remove accessories that no longer exist
+    const deviceUUIDs = new Set(devices.map(d => this.api.hap.uuid.generate(d.id)));
+    for (const [uuid, accessory] of this.accessories) {
+      if (!deviceUUIDs.has(uuid)) {
+        this.log.info('Removing accessory:', accessory.displayName);
+        this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+        this.accessories.delete(uuid);
+      }
+    }
+  }
+
+  /**
+   * Setup accessory with hap-fluent
+   */
+  private setupAccessoryHandlers(accessory: PlatformAccessory) {
+    const device = accessory.context.device;
+
+    // Set up accessory information service
+    const info = accessory.getService(this.api.hap.Service.AccessoryInformation)!;
+    info
+      .setCharacteristic(this.api.hap.Characteristic.Manufacturer, device.manufacturer || 'Smart Lights')
+      .setCharacteristic(this.api.hap.Characteristic.Model, device.model || 'Smart Bulb')
+      .setCharacteristic(this.api.hap.Characteristic.SerialNumber, device.serialNumber || device.id)
+      .setCharacteristic(this.api.hap.Characteristic.FirmwareRevision, device.firmwareVersion || '1.0.0');
+
+    // Get or add lightbulb service using hap-fluent
+    const lightbulb: FluentService = getOrAddService(
+      accessory,
+      this.api.hap.Service.Lightbulb,
+      device.name
+    );
+
+    // Add validation for brightness values
+    lightbulb.characteristics.Brightness.addValidator(
+      new RangeValidator(0, 100, 'Brightness')
+    );
+
+    // Setup interceptors for logging and rate limiting
+    lightbulb.characteristics.On
+      .log()  // Log all operations
+      .limit(5, 1000)  // Rate limit to 5 calls per second
+      .onGet(async () => {
+        this.log.debug('Getting On state for', device.name);
+        try {
+          const state = await this.getDeviceState(device.id);
+          return state.on;
+        } catch (error) {
+          this.log.error('Failed to get On state:', error);
+          throw error;
+        }
+      })
+      .onSet(async (value: boolean) => {
+        this.log.debug('Setting On state to', value, 'for', device.name);
+        try {
+          await this.setDevicePower(device.id, value);
+        } catch (error) {
+          this.log.error('Failed to set On state:', error);
+          throw error;
+        }
+      });
+
+    // Setup brightness with validation and transformation
+    lightbulb.characteristics.Brightness
+      .transform((value) => Math.round(value as number))  // Round to integer
+      .clamp(0, 100)  // Ensure within range
+      .onGet(async () => {
+        this.log.debug('Getting Brightness for', device.name);
+        try {
+          const state = await this.getDeviceState(device.id);
+          return state.brightness;
+        } catch (error) {
+          this.log.error('Failed to get Brightness:', error);
+          throw error;
+        }
+      })
+      .onSet(async (value: number) => {
+        this.log.debug('Setting Brightness to', value, 'for', device.name);
+        try {
+          await this.setDeviceBrightness(device.id, value);
+        } catch (error) {
+          this.log.error('Failed to set Brightness:', error);
+          throw error;
+        }
+      });
+
+    // Optional: Setup hue and saturation for color lights
+    if (device.supportsColor) {
+      lightbulb.characteristics.Hue
+        .clamp(0, 360)
+        .onGet(async () => {
+          const state = await this.getDeviceState(device.id);
+          return state.hue;
+        })
+        .onSet(async (value: number) => {
+          await this.setDeviceHue(device.id, value);
+        });
+
+      lightbulb.characteristics.Saturation
+        .clamp(0, 100)
+        .onGet(async () => {
+          const state = await this.getDeviceState(device.id);
+          return state.saturation;
+        })
+        .onSet(async (value: number) => {
+          await this.setDeviceSaturation(device.id, value);
+        });
+    }
+
+    // Poll device state every 30 seconds and update HomeKit
+    this.startPolling(device.id, lightbulb);
+  }
+
+  /**
+   * Poll device state and update HomeKit
+   */
+  private startPolling(deviceId: string, lightbulb: FluentService) {
+    setInterval(async () => {
+      try {
+        const state = await this.getDeviceState(deviceId);
+        
+        // Update HomeKit without triggering SET handlers
+        lightbulb.characteristics.On.update(state.on);
+        lightbulb.characteristics.Brightness.update(state.brightness);
+        
+        if (state.hue !== undefined) {
+          lightbulb.characteristics.Hue?.update(state.hue);
+        }
+        if (state.saturation !== undefined) {
+          lightbulb.characteristics.Saturation?.update(state.saturation);
+        }
+      } catch (error) {
+        this.log.error('Failed to poll device state:', error);
+      }
+    }, 30000);
+  }
+
+  // Device API methods (implement based on your smart home platform)
+  private async fetchDevices() {
+    // Fetch devices from your API
+    return [
+      { id: '1', name: 'Living Room Light', manufacturer: 'ACME', model: 'LB-100', supportsColor: true },
+      { id: '2', name: 'Bedroom Light', manufacturer: 'ACME', model: 'LB-50', supportsColor: false },
+    ];
+  }
+
+  private async getDeviceState(deviceId: string) {
+    // Fetch current state from your API
+    return { on: true, brightness: 75, hue: 120, saturation: 50 };
+  }
+
+  private async setDevicePower(deviceId: string, on: boolean) {
+    // Send power command to your API
+  }
+
+  private async setDeviceBrightness(deviceId: string, brightness: number) {
+    // Send brightness command to your API
+  }
+
+  private async setDeviceHue(deviceId: string, hue: number) {
+    // Send hue command to your API
+  }
+
+  private async setDeviceSaturation(deviceId: string, saturation: number) {
+    // Send saturation command to your API
+  }
+}
+```
+
+### Key Benefits in Homebridge Plugins
+
+1. **Type Safety**: Full TypeScript autocomplete for all HomeKit services and characteristics
+2. **Less Boilerplate**: Fluent API reduces verbose HAP-NodeJS code
+3. **Built-in Validation**: Validate characteristic values before sending to devices
+4. **Interceptors**: Add logging, rate limiting, and transformations without cluttering handlers
+5. **Error Handling**: Consistent error handling with typed error classes
+6. **Maintainable**: Cleaner code structure makes plugins easier to maintain and test
+
+### Comparison: Standard vs hap-fluent
+
+**Standard HAP-NodeJS Approach:**
+```typescript
+const service = accessory.getService(hap.Service.Lightbulb) 
+  || accessory.addService(hap.Service.Lightbulb);
+
+service.getCharacteristic(hap.Characteristic.On)
+  .on('get', (callback) => {
+    this.getDeviceState(device.id)
+      .then(state => callback(null, state.on))
+      .catch(error => callback(error));
+  })
+  .on('set', (value, callback) => {
+    this.setDevicePower(device.id, value)
+      .then(() => callback(null))
+      .catch(error => callback(error));
+  });
+```
+
+**hap-fluent Approach:**
+```typescript
+const lightbulb = getOrAddService(accessory, hap.Service.Lightbulb);
+
+lightbulb.characteristics.On
+  .log()
+  .limit(5, 1000)
+  .onGet(async () => {
+    const state = await this.getDeviceState(device.id);
+    return state.on;
+  })
+  .onSet(async (value) => {
+    await this.setDevicePower(device.id, value);
+  });
+```
+
+The hap-fluent approach is more concise, type-safe, and includes built-in features like logging and rate limiting.
+
 ## Best Practices
 
 ### 1. Configure Logging Early
