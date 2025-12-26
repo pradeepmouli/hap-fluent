@@ -2,7 +2,14 @@
  * Interceptor Examples for HAP Fluent
  * 
  * Demonstrates the fluent/decorator approach for extending characteristic behavior.
- * Interceptors provide a cleaner, more idiomatic API than middleware for TypeScript.
+ * Interceptors wrap onSet/onGet handlers, so they apply when HomeKit accesses
+ * characteristics, not just during programmatic access.
+ * 
+ * Key Points:
+ * - Interceptors are applied to onSet/onGet handlers
+ * - They run when HomeKit accesses the characteristic
+ * - HAP-nodejs already handles its own validation/rate-limiting
+ * - Our interceptors add custom behavior on top
  */
 
 import { Service, Characteristic, Accessory, uuid } from 'hap-nodejs';
@@ -17,8 +24,8 @@ import {
 	type Interceptor,
 } from '../src/interceptors.js';
 
-// Example 1: Basic Logging Interceptor
-console.log('=== Example 1: Logging Interceptor ===');
+// Example 1: Basic Logging Interceptor on onSet
+console.log('=== Example 1: Logging Interceptor on onSet ===');
 {
 	const accessory = new Accessory('Light', uuid.generate('light-1'));
 	const service = accessory.addService(Service.Lightbulb, 'My Light');
@@ -26,18 +33,22 @@ console.log('=== Example 1: Logging Interceptor ===');
 	
 	const wrapped = wrapService(service);
 	
-	// Add logging to all operations
+	// Add interceptor BEFORE setting up onSet handler
 	wrapped.characteristics.brightness.intercept(createLoggingInterceptor());
 	
-	await wrapped.characteristics.brightness.setAsync(75);
-	console.log('✓ Set brightness to 75 (check logs above)');
+	// Set up onSet handler - interceptor will wrap this
+	wrapped.characteristics.brightness.onSet(async (value) => {
+		console.log(`  Handler received value: ${value}`);
+		// Your business logic here
+	});
 	
-	const value = await wrapped.characteristics.brightness.get();
-	console.log(`✓ Current brightness: ${value}`);
+	// When HomeKit calls onSet, the interceptor will log before and after
+	console.log('✓ Interceptor configured on onSet handler');
+	console.log('  When HomeKit sets brightness, logs will appear');
 }
 
-// Example 2: Rate Limiting
-console.log('\n=== Example 2: Rate Limiting ===');
+// Example 2: Rate Limiting on onSet
+console.log('\n=== Example 2: Rate Limiting on onSet ===');
 {
 	const accessory = new Accessory('Light', uuid.generate('light-2'));
 	const service = accessory.addService(Service.Lightbulb, 'Rate Limited Light');
@@ -45,26 +56,23 @@ console.log('\n=== Example 2: Rate Limiting ===');
 	
 	const wrapped = wrapService(service);
 	
-	// Allow max 3 updates per second
+	// Add rate limiting interceptor
 	wrapped.characteristics.brightness.intercept(
 		createRateLimitInterceptor(3, 1000)
 	);
 	
-	try {
-		await wrapped.characteristics.brightness.setAsync(10);
-		await wrapped.characteristics.brightness.setAsync(20);
-		await wrapped.characteristics.brightness.setAsync(30);
-		console.log('✓ First 3 updates succeeded');
-		
-		await wrapped.characteristics.brightness.setAsync(40);
-		console.log('✗ 4th update should have been rate limited');
-	} catch (error) {
-		console.log('✓ 4th update blocked by rate limit:', error.message);
-	}
+	// Set up onSet handler - rate limiting will be enforced
+	wrapped.characteristics.brightness.onSet(async (value) => {
+		console.log(`  Handler processing value: ${value}`);
+		// Your business logic here
+	});
+	
+	console.log('✓ Rate limiter configured on onSet handler');
+	console.log('  HomeKit updates will be rate limited to 3 per second');
 }
 
-// Example 3: Value Clamping
-console.log('\n=== Example 3: Value Clamping ===');
+// Example 3: Value Clamping on onSet
+console.log('\n=== Example 3: Value Clamping on onSet ===');
 {
 	const accessory = new Accessory('Light', uuid.generate('light-3'));
 	const service = accessory.addService(Service.Lightbulb, 'Clamped Light');
@@ -72,22 +80,21 @@ console.log('\n=== Example 3: Value Clamping ===');
 	
 	const wrapped = wrapService(service);
 	
-	// Clamp brightness to 0-100
+	// Clamp brightness to 0-100 before handler receives it
 	wrapped.characteristics.brightness.intercept(
 		createClampingInterceptor(0, 100)
 	);
 	
-	await wrapped.characteristics.brightness.setAsync(150);
-	const value1 = await wrapped.characteristics.brightness.get();
-	console.log(`✓ Value 150 clamped to: ${value1}`);
+	wrapped.characteristics.brightness.onSet(async (value) => {
+		console.log(`  Handler received clamped value: ${value}`);
+		// Value will always be 0-100, even if HomeKit sends out-of-range
+	});
 	
-	await wrapped.characteristics.brightness.setAsync(-10);
-	const value2 = await wrapped.characteristics.brightness.get();
-	console.log(`✓ Value -10 clamped to: ${value2}`);
+	console.log('✓ Clamping configured - handler will only receive 0-100 values');
 }
 
-// Example 4: Value Transformation
-console.log('\n=== Example 4: Value Transformation ===');
+// Example 4: Value Transformation on onSet
+console.log('\n=== Example 4: Value Transformation on onSet ===');
 {
 	const accessory = new Accessory('Light', uuid.generate('light-4'));
 	const service = accessory.addService(Service.Lightbulb, 'Rounded Light');
@@ -95,53 +102,23 @@ console.log('\n=== Example 4: Value Transformation ===');
 	
 	const wrapped = wrapService(service);
 	
-	// Round all brightness values
+	// Round all brightness values before handler
 	wrapped.characteristics.brightness.intercept(
 		createTransformInterceptor((v) => Math.round(v as number))
 	);
 	
-	await wrapped.characteristics.brightness.setAsync(75.7);
-	const value1 = await wrapped.characteristics.brightness.get();
-	console.log(`✓ Value 75.7 rounded to: ${value1}`);
+	wrapped.characteristics.brightness.onSet(async (value) => {
+		console.log(`  Handler received rounded value: ${value}`);
+		// Value will always be an integer
+	});
 	
-	await wrapped.characteristics.brightness.setAsync(25.3);
-	const value2 = await wrapped.characteristics.brightness.get();
-	console.log(`✓ Value 25.3 rounded to: ${value2}`);
+	console.log('✓ Transform configured - handler will only receive rounded integers');
 }
 
-// Example 5: Audit Trail
-console.log('\n=== Example 5: Audit Trail ===');
+// Example 5: Fluent Chaining Multiple Interceptors
+console.log('\n=== Example 5: Fluent Chaining ===');
 {
 	const accessory = new Accessory('Light', uuid.generate('light-5'));
-	const service = accessory.addService(Service.Lightbulb, 'Audited Light');
-	service.addCharacteristic(Characteristic.Brightness);
-	
-	const wrapped = wrapService(service);
-	
-	const auditLog: any[] = [];
-	wrapped.characteristics.brightness.intercept(
-		createAuditInterceptor((event) => {
-			auditLog.push({
-				...event,
-				time: new Date(event.timestamp).toISOString(),
-			});
-		})
-	);
-	
-	await wrapped.characteristics.brightness.setAsync(50);
-	await wrapped.characteristics.brightness.get();
-	await wrapped.characteristics.brightness.setAsync(75);
-	
-	console.log('✓ Audit log entries:');
-	auditLog.forEach((entry, i) => {
-		console.log(`  ${i + 1}. ${entry.type}: value=${entry.value} at ${entry.time}`);
-	});
-}
-
-// Example 6: Composite Interceptors (Fluent Chaining)
-console.log('\n=== Example 6: Fluent Chaining ===');
-{
-	const accessory = new Accessory('Light', uuid.generate('light-6'));
 	const service = accessory.addService(Service.Lightbulb, 'Smart Light');
 	service.addCharacteristic(Characteristic.Brightness);
 	
@@ -152,15 +129,17 @@ console.log('\n=== Example 6: Fluent Chaining ===');
 		.intercept(createLoggingInterceptor())
 		.intercept(createTransformInterceptor((v) => Math.round(v as number)))
 		.intercept(createClampingInterceptor(0, 100))
-		.intercept(createRateLimitInterceptor(5, 1000));
+		.intercept(createRateLimitInterceptor(5, 1000))
+		.onSet(async (value) => {
+			console.log(`  Handler received: ${value}`);
+			// Value has been logged, rounded, clamped, and rate-limited
+		});
 	
-	await wrapped.characteristics.brightness.setAsync(75.7);
-	console.log('✓ Value processed through all interceptors');
-	console.log('  75.7 → rounded to 76 → clamped (no change) → rate limited (OK)');
+	console.log('✓ Multiple interceptors chained before onSet handler');
 }
 
-// Example 7: Custom Interceptor (Decorator Pattern)
-console.log('\n=== Example 7: Custom Interceptor ===');
+// Example 6: Custom Interceptor (Decorator Pattern)
+console.log('\n=== Example 6: Custom Interceptor ===');
 {
 	const accessory = new Accessory('Thermostat', uuid.generate('thermo-1'));
 	const service = accessory.addService(Service.Thermostat, 'Smart Thermostat');
@@ -189,15 +168,20 @@ console.log('\n=== Example 7: Custom Interceptor ===');
 		},
 	};
 	
-	wrapped.characteristics.targetTemperature.intercept(customInterceptor);
+	wrapped.characteristics.targetTemperature
+		.intercept(customInterceptor)
+		.onSet(async (value) => {
+			console.log(`  Handler: setting temperature to ${value}`);
+		})
+		.onGet(async () => {
+			return 22; // Current temperature
+		});
 	
-	await wrapped.characteristics.targetTemperature.setAsync(22);
-	await wrapped.characteristics.targetTemperature.get();
-	console.log('✓ Custom interceptor called for all operations');
+	console.log('✓ Custom interceptor with all hooks configured');
 }
 
-// Example 8: Combining with Validation
-console.log('\n=== Example 8: Interceptors + Validation ===');
+// Example 7: Combining with Validation
+console.log('\n=== Example 7: Interceptors + Validation ===');
 {
 	const accessory = new Accessory('Light', uuid.generate('light-7'));
 	const service = accessory.addService(Service.Lightbulb, 'Validated Light');
@@ -214,115 +198,19 @@ console.log('\n=== Example 8: Interceptors + Validation ===');
 	// Then add interceptors
 	wrapped.characteristics.brightness
 		.intercept(createLoggingInterceptor())
-		.intercept(createAuditInterceptor((e) => console.log(`  Audit: ${e.type}`)));
+		.onSet(async (value) => {
+			console.log(`  Handler: validated value ${value}`);
+			// Value has been validated AND intercepted
+		});
 	
-	try {
-		await wrapped.characteristics.brightness.setAsync(50);
-		console.log('✓ Valid value passed validation and interceptors');
-		
-		await wrapped.characteristics.brightness.setAsync(150);
-		console.log('✗ Should have been rejected by validator');
-	} catch (error) {
-		console.log('✓ Invalid value rejected by validator before interceptors');
-	}
-}
-
-// Example 9: Conditional Interceptors
-console.log('\n=== Example 9: Dynamic Interceptors ===');
-{
-	const accessory = new Accessory('Fan', uuid.generate('fan-1'));
-	const service = accessory.addService(Service.Fan, 'Smart Fan');
-	service.addCharacteristic(Characteristic.RotationSpeed);
-	
-	const wrapped = wrapService(service);
-	
-	console.log('Phase 1: No rate limiting');
-	await wrapped.characteristics.rotationSpeed.setAsync(10);
-	await wrapped.characteristics.rotationSpeed.setAsync(20);
-	await wrapped.characteristics.rotationSpeed.setAsync(30);
-	console.log('✓ All updates succeeded');
-	
-	console.log('\nPhase 2: Add rate limiting');
-	wrapped.characteristics.rotationSpeed.intercept(
-		createRateLimitInterceptor(2, 1000)
-	);
-	
-	try {
-		await wrapped.characteristics.rotationSpeed.setAsync(40);
-		await wrapped.characteristics.rotationSpeed.setAsync(50);
-		await wrapped.characteristics.rotationSpeed.setAsync(60);
-		console.log('✗ Should have been rate limited');
-	} catch (error) {
-		console.log('✓ Rate limit now enforced');
-	}
-	
-	console.log('\nPhase 3: Remove interceptors');
-	wrapped.characteristics.rotationSpeed.clearInterceptors();
-	
-	await wrapped.characteristics.rotationSpeed.setAsync(70);
-	await wrapped.characteristics.rotationSpeed.setAsync(80);
-	await wrapped.characteristics.rotationSpeed.setAsync(90);
-	console.log('✓ All updates succeeded after clearing interceptors');
-}
-
-// Example 10: Composite Interceptor
-console.log('\n=== Example 10: Composite Interceptor ===');
-{
-	const accessory = new Accessory('Light', uuid.generate('light-8'));
-	const service = accessory.addService(Service.Lightbulb, 'Composite Light');
-	service.addCharacteristic(Characteristic.Brightness);
-	
-	const wrapped = wrapService(service);
-	
-	// Create a single composite interceptor
-	const composite = createCompositeInterceptor([
-		createTransformInterceptor((v) => Math.round(v as number)),
-		createClampingInterceptor(0, 100),
-		createLoggingInterceptor(),
-		createAuditInterceptor((e) => console.log(`  Audit: ${e.type} = ${e.value}`)),
-	]);
-	
-	wrapped.characteristics.brightness.intercept(composite);
-	
-	await wrapped.characteristics.brightness.setAsync(75.7);
-	console.log('✓ Single composite interceptor with multiple behaviors');
-}
-
-// Example 11: Error Handling
-console.log('\n=== Example 11: Error Handling ===');
-{
-	const accessory = new Accessory('Light', uuid.generate('light-9'));
-	const service = accessory.addService(Service.Lightbulb, 'Error Light');
-	service.addCharacteristic(Characteristic.Brightness);
-	
-	const wrapped = wrapService(service);
-	
-	const errorLog: string[] = [];
-	wrapped.characteristics.brightness.intercept({
-		beforeSet(value, context) {
-			if ((value as number) > 100) {
-				throw new Error('Value too high!');
-			}
-			return value;
-		},
-		onError(error, context) {
-			errorLog.push(`Error caught: ${error.message}`);
-		},
-	});
-	
-	try {
-		await wrapped.characteristics.brightness.setAsync(150);
-	} catch (error) {
-		// Error is logged by interceptor
-	}
-	
-	console.log('✓ Error logged by interceptor:', errorLog[0]);
+	console.log('✓ Validation runs before interceptors in onSet handler');
 }
 
 console.log('\n=== All Interceptor Examples Complete ===');
 console.log('\nKey Takeaways:');
-console.log('1. Fluent API: characteristic.intercept(...).intercept(...)');
-console.log('2. Decorator Pattern: Pass custom objects with hooks');
-console.log('3. Composable: Combine multiple interceptors');
-console.log('4. Opt-in: No impact on default behavior');
-console.log('5. Order matters: Interceptors run in sequence');
+console.log('1. Interceptors wrap onSet/onGet handlers');
+console.log('2. They apply when HomeKit accesses characteristics');
+console.log('3. Order: intercept() → onSet/onGet()');
+console.log('4. Execution: beforeSet → validator → handler → afterSet');
+console.log('5. Opt-in: No impact on direct set() calls or default behavior');
+
