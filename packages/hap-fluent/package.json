@@ -14,6 +14,10 @@
 			"types": "./dist/errors.d.ts",
 			"import": "./dist/errors.js"
 		},
+		"./interceptors": {
+			"types": "./dist/interceptors.d.ts",
+			"import": "./dist/interceptors.js"
+		},
 		"./type-guards": {
 			"types": "./dist/type-guards.d.ts",
 			"import": "./dist/type-guards.js"
@@ -35,15 +39,40 @@
 		"prepublishOnly": "npm run build",
 		"build": "tsgo --build",
 		"build:tsc": "tsc",
-		"lint": "eslint 'src/**/*.{ts,tsx}'",
+		"lint": "oxlint src/",
+		"lint:eslint": "eslint 'src/**/*.{ts,tsx}'",
+		"lint:fix": "oxlint --fix src/",
+		"format": "oxfmt src/",
+		"format:prettier": "prettier --write src/",
+		"format:check": "oxfmt --check src/",
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"test:ui": "vitest --ui",
 		"test:coverage": "vitest run --coverage",
 		"type-check": "tsgo --noEmit",
 		"type-check:tsc": "tsc --noEmit",
-		"clean": "rimraf dist"
+		"clean": "rimraf dist",
+		"size": "size-limit",
+		"size:why": "size-limit --why"
 	},
+	"size-limit": [
+		{
+			"name": "Main export (FluentService, FluentCharacteristic)",
+			"path": "dist/index.js",
+			"limit": "50 KB",
+			"import": "{ FluentService, FluentCharacteristic }"
+		},
+		{
+			"name": "Error classes",
+			"path": "dist/errors.js",
+			"limit": "5 KB"
+		},
+		{
+			"name": "Type guards",
+			"path": "dist/type-guards.js",
+			"limit": "5 KB"
+		}
+	],
 	"author": "Pradeep Mouli",
 	"license": "Apache-2.0",
 	"peerDependencies": {
@@ -52,6 +81,7 @@
 	},
 	"devDependencies": {
 		"@fast-check/vitest": "^0.2.4",
+		"@size-limit/preset-small-lib": "^12.0.0",
 		"@vitest/coverage-v8": "^4.0.16",
 		"@vitest/ui": "^4.0.0",
 		"eslint": "^9.38.0",
@@ -59,6 +89,7 @@
 		"hap-nodejs": "0.13.1",
 		"homebridge": "^1.11.0",
 		"prettier": "^3.6.2",
+		"size-limit": "^12.0.0",
 		"ts-node": "^10.9.2",
 		"type-fest": "^4.41.0",
 		"typescript": "^5.9.3",

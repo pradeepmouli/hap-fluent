@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { AccessoryHandler, createServicesObject } from '../src/AccessoryHandler.js';
-import { wrapService } from '../src/FluentService.js';
+import { AccessoryHandler, createServicesObject } from '../../src/AccessoryHandler.js';
+import { wrapService } from '../../src/FluentService.js';
 import {
 	MockService,
 	MockPlatformAccessory,
@@ -9,7 +9,7 @@ import {
 	createMockSwitchService,
 	createMockThermostatService,
 	Switch,
-} from './mocks/homebridge.mock.js';
+} from '../mocks/homebridge.mock.js';
 
 describe('Integration Tests', () => {
 	let mockAccessory: MockPlatformAccessory;

@@ -9,7 +9,9 @@
 		"strict": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,
-		"tsBuildInfoFile": "dist/.tsbuildinfo"
+		"tsBuildInfoFile": "dist/.tsbuildinfo",
+		"sourceMap": true,
+		"declarationMap": true
 	},
 	"include": [
 		"src"

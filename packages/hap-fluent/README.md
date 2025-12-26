@@ -5,6 +5,7 @@
 [![npm version](https://img.shields.io/npm/v/hap-fluent.svg)](https://www.npmjs.com/package/hap-fluent)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/hap-fluent)](https://bundlephobia.com/package/hap-fluent)
 
 HAP Fluent provides a type-safe, fluent API for working with HomeKit Accessory Protocol (HAP) services and characteristics in Homebridge plugins. It eliminates boilerplate code, provides compile-time type safety, and offers excellent developer experience with comprehensive error handling and structured logging.
 
@@ -15,9 +16,10 @@ HAP Fluent provides a type-safe, fluent API for working with HomeKit Accessory P
 - 🎯 **IntelliSense**: Autocomplete for services and characteristics
 - 🛡️ **Error Handling**: Typed error classes with contextual information
 - 📝 **Structured Logging**: Pino integration with configurable log levels
+- 🔄 **Interceptors**: Built-in logging, rate limiting, transformation, and codec support
 - 🧰 **Type Utilities**: Transformers, validators, and helper types
 - 📦 **Tree-Shakeable**: Modern ES modules with optimized exports
-- ✅ **Well-Tested**: 128 tests, 100% pass rate
+- ✅ **Well-Tested**: 172 tests, 100% pass rate
 - 📚 **Documented**: Comprehensive JSDoc on all public APIs
 
 ## Installation
@@ -329,6 +331,121 @@ const update: PartialServiceState = {
 };
 ```
 
+## Standard Interceptors
+
+hap-fluent provides built-in interceptors for common cross-cutting concerns. Interceptors wrap `onSet` and `onGet` handlers to add behavior transparently.
+
+### Available Interceptors
+
+#### `.log()` - Logging Interceptor
+
+Logs all characteristic operations (before/after set/get, errors).
+
+```typescript
+characteristic
+  .log()
+  .onSet(async (value) => {
+    // Your handler
+  });
+```
+
+#### `.limit(maxCalls, windowMs)` - Rate Limiting
+
+Prevents excessive updates by limiting calls per time window.
+
+```typescript
+characteristic
+  .limit(5, 1000)  // Max 5 calls per second
+  .onSet(async (value) => {
+    // Rate-limited handler
+  });
+```
+
+#### `.clamp(min, max)` - Value Clamping
+
+Ensures numeric values stay within specified bounds.
+
+```typescript
+characteristic
+  .clamp(0, 100)  // Clamp to 0-100 range
+  .onSet(async (value) => {
+    // Value is guaranteed to be 0-100
+  });
+```
+
+#### `.transform(fn)` - Value Transformation
+
+Applies a transformation function to values before setting.
+
+```typescript
+characteristic
+  .transform((v) => Math.round(v as number))  // Round to integer
+  .onSet(async (value) => {
+    // Value is now an integer
+  });
+```
+
+#### `.codec(encode, decode)` - Two-Way Transformation
+
+Transforms values when setting (encode) and retrieving (decode). Perfect for unit conversions or format transformations.
+
+> Note: Codecs apply to values that flow through `onSet` / `onGet` handlers. Direct `characteristic.set()` calls bypass codecs.
+
+```typescript
+// Convert between Celsius and Fahrenheit
+characteristic.codec(
+  (fahrenheit) => (fahrenheit - 32) * 5/9,  // encode: F to C
+  (celsius) => (celsius * 9/5) + 32         // decode: C to F
+).onSet(async (value) => {
+  console.log('Temperature in Fahrenheit (decoded):', value);
+});
+
+// String format conversion
+characteristic.codec(
+  (value) => String(value).toUpperCase(),  // encode
+  (value) => String(value).toLowerCase()   // decode
+).onSet(async (value) => {
+  console.log('Received lower-case string (decoded):', value);
+});
+
+// JSON serialization
+characteristic.codec(
+  (obj) => JSON.stringify(obj),           // encode
+  (str) => JSON.parse(String(str))        // decode
+).onSet(async (value) => {
+  console.log('Received object (decoded from JSON):', value);
+});
+```
+
+#### `.audit()` - Audit Trail
+
+Tracks all operations for debugging and compliance.
+
+```typescript
+characteristic
+  .audit()
+  .onSet(async (value) => {
+    // All operations logged to audit trail
+  });
+```
+
+### Chaining Interceptors
+
+All interceptors are chainable and execute in order:
+
+```typescript
+characteristic
+  .log()                              // 1. Log operation
+  .codec(encodeValue, decodeValue)    // 2. Transform value
+  .clamp(0, 100)                      // 3. Clamp to range
+  .transform((v) => Math.round(v))    // 4. Round value
+  .limit(5, 1000)                     // 5. Rate limit
+  .audit()                            // 6. Audit trail
+  .onSet(async (value) => {
+    // Final value after all interceptors
+  });
+```
+
 ## Advanced Examples
 
 ### Multi-Service Accessories
@@ -429,6 +546,326 @@ function processValue(obj: unknown) {
   }
 }
 ```
+
+## Using with Homebridge Plugins
+
+HAP Fluent is designed to work seamlessly with Homebridge dynamic platform plugins, providing a more maintainable and type-safe alternative to directly using HAP-NodeJS APIs.
+
+### Complete Homebridge Plugin Example
+
+Here's a complete example of a Homebridge dynamic platform plugin using hap-fluent to manage smart light accessories:
+
+```typescript
+import {
+  API,
+  DynamicPlatformPlugin,
+  PlatformAccessory,
+  PlatformConfig,
+  Service,
+  Characteristic,
+  Logger,
+} from 'homebridge';
+import { FluentService, getOrAddService } from 'hap-fluent';
+import { configureLogger } from 'hap-fluent/logger';
+
+const PLUGIN_NAME = 'homebridge-smart-lights';
+const PLATFORM_NAME = 'SmartLights';
+
+export = (api: API) => {
+  api.registerPlatform(PLATFORM_NAME, SmartLightsPlatform);
+};
+
+class SmartLightsPlatform implements DynamicPlatformPlugin {
+  private readonly accessories: Map<string, PlatformAccessory> = new Map();
+
+  constructor(
+    private readonly log: Logger,
+    private readonly config: PlatformConfig,
+    private readonly api: API
+  ) {
+    // Configure hap-fluent logging
+    configureLogger({
+      level: config.debug ? 'debug' : 'info',
+      pretty: true,
+    });
+
+    this.api.on('didFinishLaunching', () => {
+      this.discoverDevices();
+    });
+  }
+
+  /**
+   * Called when Homebridge restores cached accessories from disk at startup
+   */
+  configureAccessory(accessory: PlatformAccessory) {
+    this.log.info('Loading accessory from cache:', accessory.displayName);
+    
+    // Re-attach handlers to cached accessory
+    this.setupAccessoryHandlers(accessory);
+    this.accessories.set(accessory.UUID, accessory);
+  }
+
+  /**
+   * Discover and register devices
+   */
+  async discoverDevices() {
+    // Example: Fetch devices from your smart home API
+    const devices = await this.fetchDevices();
+
+    for (const device of devices) {
+      const uuid = this.api.hap.uuid.generate(device.id);
+      const existingAccessory = this.accessories.get(uuid);
+
+      if (existingAccessory) {
+        // Update existing accessory
+        this.log.info('Restoring existing accessory:', device.name);
+        existingAccessory.context.device = device;
+        this.setupAccessoryHandlers(existingAccessory);
+        this.api.updatePlatformAccessories([existingAccessory]);
+      } else {
+        // Create new accessory
+        this.log.info('Adding new accessory:', device.name);
+        const accessory = new this.api.platformAccessory(device.name, uuid);
+        accessory.context.device = device;
+        
+        this.setupAccessoryHandlers(accessory);
+        this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+        this.accessories.set(uuid, accessory);
+      }
+    }
+
+    // Remove accessories that no longer exist
+    const deviceUUIDs = new Set(devices.map(d => this.api.hap.uuid.generate(d.id)));
+    for (const [uuid, accessory] of this.accessories) {
+      if (!deviceUUIDs.has(uuid)) {
+        this.log.info('Removing accessory:', accessory.displayName);
+        this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+        this.accessories.delete(uuid);
+      }
+    }
+  }
+
+  /**
+   * Setup accessory with hap-fluent
+   */
+  private setupAccessoryHandlers(accessory: PlatformAccessory) {
+    const device = accessory.context.device;
+
+    // Set up accessory information service
+    const info = accessory.getService(this.api.hap.Service.AccessoryInformation)!;
+    info
+      .setCharacteristic(this.api.hap.Characteristic.Manufacturer, device.manufacturer || 'Smart Lights')
+      .setCharacteristic(this.api.hap.Characteristic.Model, device.model || 'Smart Bulb')
+      .setCharacteristic(this.api.hap.Characteristic.SerialNumber, device.serialNumber || device.id)
+      .setCharacteristic(this.api.hap.Characteristic.FirmwareRevision, device.firmwareVersion || '1.0.0');
+
+    // Get or add lightbulb service using hap-fluent
+    const lightbulb: FluentService = getOrAddService(
+      accessory,
+      this.api.hap.Service.Lightbulb,
+      device.name
+    );
+
+    // HAP validates brightness automatically based on characteristic props
+    lightbulb.characteristics.Brightness.setProps({ minValue: 0, maxValue: 100 });
+
+    // Setup interceptors for logging and rate limiting
+    lightbulb.characteristics.On
+      .log()  // Log all operations
+      .limit(5, 1000)  // Rate limit to 5 calls per second
+      .onGet(async () => {
+        this.log.debug('Getting On state for', device.name);
+        try {
+          const state = await this.getDeviceState(device.id);
+          return state.on;
+        } catch (error) {
+          this.log.error('Failed to get On state:', error);
+          throw error;
+        }
+      })
+      .onSet(async (value: boolean) => {
+        this.log.debug('Setting On state to', value, 'for', device.name);
+        try {
+          await this.setDevicePower(device.id, value);
+        } catch (error) {
+          this.log.error('Failed to set On state:', error);
+          throw error;
+        }
+      });
+
+    // Setup brightness with transformation and clamping
+    lightbulb.characteristics.Brightness
+      .transform((value) => Math.round(value as number))  // Round to integer
+      .clamp(0, 100)  // Ensure within range
+      .onGet(async () => {
+        this.log.debug('Getting Brightness for', device.name);
+        try {
+          const state = await this.getDeviceState(device.id);
+          return state.brightness;
+        } catch (error) {
+          this.log.error('Failed to get Brightness:', error);
+          throw error;
+        }
+      })
+      .onSet(async (value: number) => {
+        this.log.debug('Setting Brightness to', value, 'for', device.name);
+        try {
+          await this.setDeviceBrightness(device.id, value);
+        } catch (error) {
+          this.log.error('Failed to set Brightness:', error);
+          throw error;
+        }
+      });
+
+    // Example: Use codec for color temperature conversion (Kelvin <-> Mireds)
+    // Some devices use Kelvin, but HAP uses mireds (micro reciprocal degrees)
+    if (device.supportsColorTemperature) {
+      lightbulb.characteristics.ColorTemperature
+        .codec(
+          // encode (beforeSet): Convert Kelvin from HomeKit into mireds for the device/HAP
+          (kelvin) => Math.round(1000000 / (kelvin as number)),
+          // decode (afterGet): Convert mireds from the device/HAP into Kelvin for HomeKit
+          (mireds) => Math.round(1000000 / (mireds as number))
+        )
+        .onGet(async () => {
+          const state = await this.getDeviceState(device.id);
+          return state.colorTemperature;  // Returns mireds, codec converts to Kelvin for HomeKit
+        })
+        .onSet(async (kelvin: number) => {
+          // Receives mireds (converted from Kelvin by codec)
+          await this.setDeviceColorTemperature(device.id, kelvin);
+        });
+    }
+
+    // Optional: Setup hue and saturation for color lights
+    if (device.supportsColor) {
+      lightbulb.characteristics.Hue
+        .clamp(0, 360)
+        .onGet(async () => {
+          const state = await this.getDeviceState(device.id);
+          return state.hue;
+        })
+        .onSet(async (value: number) => {
+          await this.setDeviceHue(device.id, value);
+        });
+
+      lightbulb.characteristics.Saturation
+        .clamp(0, 100)
+        .onGet(async () => {
+          const state = await this.getDeviceState(device.id);
+          return state.saturation;
+        })
+        .onSet(async (value: number) => {
+          await this.setDeviceSaturation(device.id, value);
+        });
+    }
+
+    // Poll device state every 30 seconds and update HomeKit
+    this.startPolling(device.id, lightbulb);
+  }
+
+  /**
+   * Poll device state and update HomeKit
+   */
+  private startPolling(deviceId: string, lightbulb: FluentService) {
+    setInterval(async () => {
+      try {
+        const state = await this.getDeviceState(deviceId);
+        
+        // Update HomeKit without triggering SET handlers
+        lightbulb.characteristics.On.update(state.on);
+        lightbulb.characteristics.Brightness.update(state.brightness);
+        
+        if (state.hue !== undefined) {
+          lightbulb.characteristics.Hue?.update(state.hue);
+        }
+        if (state.saturation !== undefined) {
+          lightbulb.characteristics.Saturation?.update(state.saturation);
+        }
+      } catch (error) {
+        this.log.error('Failed to poll device state:', error);
+      }
+    }, 30000);
+  }
+
+  // Device API methods (implement based on your smart home platform)
+  private async fetchDevices() {
+    // Fetch devices from your API
+    return [
+      { id: '1', name: 'Living Room Light', manufacturer: 'ACME', model: 'LB-100', supportsColor: true },
+      { id: '2', name: 'Bedroom Light', manufacturer: 'ACME', model: 'LB-50', supportsColor: false },
+    ];
+  }
+
+  private async getDeviceState(deviceId: string) {
+    // Fetch current state from your API
+    return { on: true, brightness: 75, hue: 120, saturation: 50 };
+  }
+
+  private async setDevicePower(deviceId: string, on: boolean) {
+    // Send power command to your API
+  }
+
+  private async setDeviceBrightness(deviceId: string, brightness: number) {
+    // Send brightness command to your API
+  }
+
+  private async setDeviceHue(deviceId: string, hue: number) {
+    // Send hue command to your API
+  }
+
+  private async setDeviceSaturation(deviceId: string, saturation: number) {
+    // Send saturation command to your API
+  }
+}
+```
+
+### Key Benefits in Homebridge Plugins
+
+1. **Type Safety**: Full TypeScript autocomplete for all HomeKit services and characteristics
+2. **Less Boilerplate**: Fluent API reduces verbose HAP-NodeJS code
+3. **Built-in Validation**: Validate characteristic values before sending to devices
+4. **Interceptors**: Add logging, rate limiting, and transformations without cluttering handlers
+5. **Error Handling**: Consistent error handling with typed error classes
+6. **Maintainable**: Cleaner code structure makes plugins easier to maintain and test
+
+### Comparison: Standard vs hap-fluent
+
+**Standard HAP-NodeJS Approach:**
+```typescript
+const service = accessory.getService(hap.Service.Lightbulb) 
+  || accessory.addService(hap.Service.Lightbulb);
+
+service.getCharacteristic(hap.Characteristic.On)
+  .on('get', (callback) => {
+    this.getDeviceState(device.id)
+      .then(state => callback(null, state.on))
+      .catch(error => callback(error));
+  })
+  .on('set', (value, callback) => {
+    this.setDevicePower(device.id, value)
+      .then(() => callback(null))
+      .catch(error => callback(error));
+  });
+```
+
+**hap-fluent Approach:**
+```typescript
+const lightbulb = getOrAddService(accessory, hap.Service.Lightbulb);
+
+lightbulb.characteristics.On
+  .log()
+  .limit(5, 1000)
+  .onGet(async () => {
+    const state = await this.getDeviceState(device.id);
+    return state.on;
+  })
+  .onSet(async (value) => {
+    await this.setDevicePower(device.id, value);
+  });
+```
+
+The hap-fluent approach is more concise, type-safe, and includes built-in features like logging and rate limiting.
 
 ## Best Practices
 
@@ -622,6 +1059,113 @@ if (isCharacteristicValue(value)) {
   logger.error({ value }, 'Invalid characteristic value');
 }
 ```
+
+## Testing
+
+HAP Fluent has a comprehensive test suite with multiple testing strategies to ensure reliability and correctness.
+
+### Test Structure
+
+The test suite is organized into three categories:
+
+#### Unit Tests (`test/unit/`)
+Traditional unit tests covering individual functions and classes:
+- **FluentCharacteristic**: 31 tests for characteristic operations
+- **FluentService**: 24 tests for service wrapping and operations
+- **AccessoryHandler**: 28 tests for accessory initialization
+- **Type Guards**: 18 tests for runtime type validation
+- **Errors**: 10 tests for error class behavior
+
+#### Integration Tests (`test/integration/`)
+End-to-end tests verifying complete workflows:
+- **integration.test.ts**: 17 tests covering real-world accessory scenarios
+- Tests multi-service accessories, state management, and characteristic updates
+- Validates complete plugin lifecycle from initialization to operation
+
+#### Property-Based Tests (`test/property-based/`)
+Generative tests using [fast-check](https://fast-check.dev/) to verify properties across thousands of random inputs:
+- **characteristic-values.property.test.ts**: Tests characteristic value handling
+  - Boolean, numeric, string, and enum characteristic types
+  - Value ranges and constraints (brightness 0-100, hue 0-360, temperature -50-50)
+  - Rapid value updates and edge cases
+- **service-operations.property.test.ts**: Tests service-level operations
+  - Service wrapping for different service types
+  - Characteristic access patterns (camelCase)
+  - Handler registration and update methods
+  - Complex scenarios (thermostat state, rapid updates)
+
+### Running Tests
+
+```bash
+# Run all tests
+pnpm run test
+
+# Run with coverage
+pnpm run test:coverage
+
+# Run in watch mode
+pnpm run test:watch
+
+# Run with UI
+pnpm run test:ui
+```
+
+### Coverage
+
+The test suite maintains high code coverage:
+- **Lines**: 86.39% (target: >80%)
+- **Branches**: 76.69% (target: >70%)
+- **Functions**: 87.5% (target: >70%)
+- **Statements**: 86.3% (target: >80%)
+
+All coverage thresholds are enforced in CI/CD.
+
+### Test Strategy
+
+1. **Unit tests** validate individual components in isolation
+2. **Integration tests** verify complete workflows with mocked HAP-NodeJS components
+3. **Property-based tests** discover edge cases through random input generation
+4. **Coverage thresholds** ensure new code is adequately tested
+
+This multi-layered approach provides confidence in both individual components and the system as a whole.
+
+## Debugging with Source Maps
+
+HAP Fluent includes source maps for better debugging experience. You can set breakpoints in TypeScript source files and step through code at the TypeScript level.
+
+### Using Source Maps in VSCode
+
+1. **Set Breakpoints**: Open any `.ts` file in `node_modules/hap-fluent/dist/` and set breakpoints
+2. **Start Debugging**: Use VSCode's debugger with Node.js configuration
+3. **Step Through Code**: The debugger will map compiled JavaScript back to TypeScript source
+
+### Launch Configuration
+
+Add this to your `.vscode/launch.json`:
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Homebridge Plugin",
+      "program": "${workspaceFolder}/node_modules/.bin/homebridge",
+      "args": ["-D", "-P", "${workspaceFolder}"],
+      "sourceMaps": true,
+      "outFiles": ["${workspaceFolder}/**/*.js"],
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ]
+}
+```
+
+### Troubleshooting
+
+- Ensure `sourceMap: true` is set in your `tsconfig.json`
+- Verify `.js.map` files exist in `node_modules/hap-fluent/dist/`
+- Check that VSCode's "Debug: Enable Breakpoint Locations" is enabled
 
 ## Contributing
 
