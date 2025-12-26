@@ -623,6 +623,75 @@ if (isCharacteristicValue(value)) {
 }
 ```
 
+## Testing
+
+HAP Fluent has a comprehensive test suite with multiple testing strategies to ensure reliability and correctness.
+
+### Test Structure
+
+The test suite is organized into three categories:
+
+#### Unit Tests (`test/unit/`)
+Traditional unit tests covering individual functions and classes:
+- **FluentCharacteristic**: 31 tests for characteristic operations
+- **FluentService**: 24 tests for service wrapping and operations
+- **AccessoryHandler**: 28 tests for accessory initialization
+- **Type Guards**: 18 tests for runtime type validation
+- **Errors**: 10 tests for error class behavior
+
+#### Integration Tests (`test/integration/`)
+End-to-end tests verifying complete workflows:
+- **integration.test.ts**: 17 tests covering real-world accessory scenarios
+- Tests multi-service accessories, state management, and characteristic updates
+- Validates complete plugin lifecycle from initialization to operation
+
+#### Property-Based Tests (`test/property-based/`)
+Generative tests using [fast-check](https://fast-check.dev/) to verify properties across thousands of random inputs:
+- **characteristic-values.property.test.ts**: Tests characteristic value handling
+  - Boolean, numeric, string, and enum characteristic types
+  - Value ranges and constraints (brightness 0-100, hue 0-360, temperature -50-50)
+  - Rapid value updates and edge cases
+- **service-operations.property.test.ts**: Tests service-level operations
+  - Service wrapping for different service types
+  - Characteristic access patterns (camelCase)
+  - Handler registration and update methods
+  - Complex scenarios (thermostat state, rapid updates)
+
+### Running Tests
+
+```bash
+# Run all tests
+pnpm run test
+
+# Run with coverage
+pnpm run test:coverage
+
+# Run in watch mode
+pnpm run test:watch
+
+# Run with UI
+pnpm run test:ui
+```
+
+### Coverage
+
+The test suite maintains high code coverage:
+- **Lines**: 86.39% (target: >80%)
+- **Branches**: 76.69% (target: >70%)
+- **Functions**: 87.5% (target: >70%)
+- **Statements**: 86.3% (target: >80%)
+
+All coverage thresholds are enforced in CI/CD.
+
+### Test Strategy
+
+1. **Unit tests** validate individual components in isolation
+2. **Integration tests** verify complete workflows with mocked HAP-NodeJS components
+3. **Property-based tests** discover edge cases through random input generation
+4. **Coverage thresholds** ensure new code is adequately tested
+
+This multi-layered approach provides confidence in both individual components and the system as a whole.
+
 ## Contributing
 
 Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
