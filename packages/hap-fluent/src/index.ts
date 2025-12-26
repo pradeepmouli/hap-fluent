@@ -22,6 +22,18 @@ export * from './AccessoryHandler.js';
 
 export * from './types/index.js';
 
+// Export error classes for type-safe error handling
+export * from './errors.js';
+
+// Export type guards for runtime type validation
+export * from './type-guards.js';
+
+// Export type utilities for improved developer experience
+export * from './type-utils.js';
+
+// Export logger configuration
+export * from './logger.js';
+
 // Example usage (to be replaced with generated interfaces)
 // import { AccessoryInformationCharacteristics } from 'hap-codegen/hap-interfaces';
 // const infoService = new FluentService<AccessoryInformationCharacteristics>({ ... });

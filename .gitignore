@@ -10,3 +10,4 @@ coverage/
 .nyc_output/
 .pnpm-debug.log*\
 .tsconfig.tsbuildinfo
+*.tsbuildinfo

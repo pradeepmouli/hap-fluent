@@ -8,6 +8,18 @@ import type eslint from 'eslint';
 
 export const eslintConfig: eslint.Linter.Config[] = [
   {
+    ignores: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/coverage/**',
+      '**/.vscode/**',
+      '**/.idea/**',
+      '**/pnpm-lock.yaml',
+      '**/package-lock.json',
+      '**/yarn.lock',
+    ],
+  },
+  {
     files: ['**/*.{ts,tsx,js,jsx}'],
     languageOptions: {
       parser: typescriptParser,

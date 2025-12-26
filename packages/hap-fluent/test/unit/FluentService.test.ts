@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { getOrAddService, wrapService } from '../src/FluentService.js';
+import { getOrAddService, wrapService } from '../../src/FluentService.js';
 import {
 	MockCharacteristic,
 	MockService,
 	MockPlatformAccessory,
 	createMockLightbulbService,
 	createMockSwitchService,
-} from './mocks/homebridge.mock.js';
+} from '../mocks/homebridge.mock.js';
 
 describe('FluentService', () => {
 	let mockAccessory: MockPlatformAccessory;

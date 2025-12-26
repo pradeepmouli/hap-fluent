@@ -22,7 +22,6 @@ export function basicUsageExample() {
 
 	// Update characteristics with type safety
 	accessoryInfo.updateCharacteristic('name', 'Living Room Air Purifier');
-	createFluentServic())
 
 	return accessoryInfo;
 }
