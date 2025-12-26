@@ -4,7 +4,7 @@ import camelcase from 'camelcase';
 import type { InterfaceForService } from './types/index.js';
 import { PascalCase } from 'type-fest';
 import { FluentCharacteristic } from './FluentCharacteristic.js';
-import { FluentServiceError, ValidationError } from './errors.js';
+import { ValidationError } from './errors.js';
 import { isService } from './type-guards.js';
 import { getLogger } from './logger.js';
 
