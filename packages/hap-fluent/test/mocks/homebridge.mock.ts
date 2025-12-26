@@ -72,9 +72,10 @@ export class MockService {
 	public subtype: string | undefined;
 	public characteristics: MockCharacteristic[] = [];
 
-	constructor(displayName?: string, UUID?: string, subtype?: string) {
+	constructor(displayName?: string, subtype?: string) {
 		this.displayName = displayName || 'Mock Service';
-		this.UUID = UUID || MockService.UUID;
+		// Get UUID from static property like real HAP services
+		this.UUID = (this.constructor as typeof MockService).UUID;
 		this.subtype = subtype;
 	}
 
@@ -127,8 +128,9 @@ export class MockPlatformAccessory {
  * Mock Lightbulb Service class
  */
 export class Lightbulb extends MockService {
+	static UUID = 'lightbulb-uuid';
 	constructor() {
-		super('Lightbulb', 'lightbulb-uuid');
+		super('Lightbulb');
 		this.addCharacteristic(new MockCharacteristic('On', 'on-uuid'));
 		this.addCharacteristic(new MockCharacteristic('Brightness', 'brightness-uuid'));
 		this.addCharacteristic(new MockCharacteristic('Hue', 'hue-uuid'));
@@ -140,8 +142,9 @@ export class Lightbulb extends MockService {
  * Mock Thermostat Service class
  */
 export class Thermostat extends MockService {
+	static UUID = 'thermostat-uuid';
 	constructor() {
-		super('Thermostat', 'thermostat-uuid');
+		super('Thermostat');
 		this.addCharacteristic(new MockCharacteristic('Current Heating Cooling State', 'current-state-uuid'));
 		this.addCharacteristic(new MockCharacteristic('Target Heating Cooling State', 'target-state-uuid'));
 		this.addCharacteristic(new MockCharacteristic('Current Temperature', 'current-temp-uuid'));
@@ -154,8 +157,9 @@ export class Thermostat extends MockService {
  * Mock Switch Service class
  */
 export class Switch extends MockService {
+	static UUID = 'switch-uuid';
 	constructor() {
-		super('Switch', 'switch-uuid');
+		super('Switch');
 		this.addCharacteristic(new MockCharacteristic('On', 'on-uuid'));
 	}
 }

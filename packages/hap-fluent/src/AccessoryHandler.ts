@@ -51,7 +51,10 @@ function hasSubTypes<T extends ServiceMap[keyof ServiceMap]>(service: Record<str
  */
 export function createServicesObject<T extends Interfaces[]>(...services: InstanceType<ServiceForInterface<T[number]>>[]): ServicesObject<T> {
 	return services.reduce<ServicesObject<T>>((acc: ServicesObject<T>, service) : ServicesObject<T> => {
-		const serviceName = camelcase(service.constructor.name /* get service name */, { pascalCase: false }) as keyof ServicesObject<T>;
+		// Create both PascalCase (e.g., "Lightbulb") and camelCase (e.g., "lightbulb") names
+		const pascalName = camelcase(service.constructor.name /* get service name */, { pascalCase: true });
+		const camelName = pascalName.charAt(0).toLowerCase() + pascalName.slice(1);
+		const serviceName = camelName as keyof ServicesObject<T>;
 
 		const accRecord = acc as Record<string, unknown>;
 		let serviceObject = accRecord[serviceName as string];
@@ -74,12 +77,23 @@ export function createServicesObject<T extends Interfaces[]>(...services: Instan
 			serviceObject = wrapService(service);
 		}
 		if(!(serviceName in acc)) {
+			// Define camelCase property (primary, for type system)
 			Object.defineProperty(acc, serviceName, {
 				value: serviceObject,
 				writable: true,
 				enumerable: true,
 				configurable: true
 			});
+			// Also define PascalCase property for backward compatibility
+			const pascalName = camelcase(service.constructor.name, { pascalCase: true });
+			if (pascalName !== serviceName) {
+				Object.defineProperty(acc, pascalName, {
+					value: serviceObject,
+					writable: true,
+					enumerable: false, // Don't enumerate to avoid duplication
+					configurable: true
+				});
+			}
 		}
 		else
 		{

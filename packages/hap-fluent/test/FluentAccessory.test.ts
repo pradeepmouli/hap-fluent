@@ -12,6 +12,7 @@ import {
 	createMockSwitchService,
 	createMockThermostatService,
 	MockCharacteristic,
+	Switch,
 } from './mocks/homebridge.mock.js';
 
 describe('FluentAccessory', () => {
@@ -82,15 +83,20 @@ describe('FluentAccessory', () => {
 		});
 
 		it('should handle services with subtypes', () => {
-			const service1 = new MockService('Switch', 'switch-uuid', 'outlet1');
+			const service1 = new Switch();
+			service1.subtype = 'outlet1';
 			service1.addCharacteristic(new MockCharacteristic('On', 'on-uuid'));
 
-			const service2 = new MockService('Switch', 'switch-uuid', 'outlet2');
+			const service2 = new Switch();
+			service2.subtype = 'outlet2';
 			service2.addCharacteristic(new MockCharacteristic('On', 'on-uuid'));
 
 			const services = createServicesObject(service1 as any, service2 as any);
 
-			expect(services).toHaveProperty('MockService');
+			// Should have Switch property with subtypes
+			expect(services).toHaveProperty('Switch');
+			expect((services as any).Switch).toHaveProperty('primary');
+			expect((services as any).Switch).toHaveProperty('Outlet1');
 		});
 
 		it('should handle empty services array', () => {
@@ -196,8 +202,8 @@ describe('FluentAccessory', () => {
 
 				class TestService extends MockService {
 					static UUID = 'test-service-uuid';
-					constructor(displayName?: string, UUID?: string, subtype?: string) {
-						super(displayName, UUID, subtype);
+					constructor(displayName?: string, subtype?: string) {
+						super(displayName, subtype);
 						this.addCharacteristic(new MockCharacteristic('Power', 'power-uuid'));
 					}
 				}
