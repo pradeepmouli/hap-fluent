@@ -18,7 +18,7 @@ export function isCharacteristicValue(value: unknown): value is CharacteristicVa
 		type === 'string' ||
 		type === 'number' ||
 		type === 'boolean' ||
-		(type === 'object' && value !== null)
+		type === 'object'
 	);
 }
 
