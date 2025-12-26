@@ -79,7 +79,6 @@ function validatingValues() {
 	// Create validators
 	const isValidHue = createRangePredicate(0, 360);
 	const isValidBrightness = createRangePredicate(0, 100);
-	const isValidTemperature = createRangePredicate(-50, 50, false); // Exclusive
 
 	// Validate user input
 	const userHue = 180;
@@ -91,9 +90,6 @@ function validatingValues() {
 	if (!isValidBrightness(userBrightness)) {
 		console.error('Invalid brightness:', userBrightness);
 	}
-
-	// _isValidTemperature reserved for future use
-	const _isValidTemperature = createRangePredicate(-50, 50, false);
 }
 
 /**

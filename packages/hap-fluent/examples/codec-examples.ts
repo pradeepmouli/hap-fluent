@@ -5,19 +5,20 @@
  * This is useful for converting between different formats, units, or representations.
  */
 
-import { Service, Characteristic } from 'homebridge';
-import { FluentService } from '../src/FluentService.js';
+import { Service, Characteristic, Accessory, uuid } from 'hap-nodejs';
+import { wrapService } from '../src/FluentService.js';
 
 // Example 1: Temperature unit conversion (Celsius <-> Fahrenheit)
 function example1TemperatureConversion() {
 	console.log('\n=== Example 1: Temperature Unit Conversion ===');
 	
-	const service = new Service.TemperatureSensor('Temperature', '');
-	const fluentService = new FluentService(service);
+	const accessory = new Accessory('TempSensor', uuid.generate('temp-1'));
+	const service = accessory.addService(Service.TemperatureSensor, 'Temperature');
+	service.addCharacteristic(Characteristic.CurrentTemperature);
+	const wrapped = wrapService(service);
 	
 	// Convert between Celsius (HAP format) and Fahrenheit (user format)
-	const tempChar = fluentService
-		.getOrAddCharacteristic(Characteristic.CurrentTemperature)
+	const tempChar = wrapped.characteristics.currentTemperature
 		.codec(
 			// encode: Convert Fahrenheit to Celsius for HAP
 			(fahrenheit) => {
@@ -49,12 +50,13 @@ function example1TemperatureConversion() {
 function example2StringFormatting() {
 	console.log('\n=== Example 2: String Format Transformation ===');
 	
-	const service = new Service.Lightbulb('Light', '');
-	const fluentService = new FluentService(service);
+	const accessory = new Accessory('Light', uuid.generate('light-2'));
+	const service = accessory.addService(Service.Lightbulb, 'Light');
+	service.addCharacteristic(Characteristic.Name);
+	const wrapped = wrapService(service);
 	
 	// Convert strings to/from uppercase
-	const nameChar = fluentService
-		.getOrAddCharacteristic(Characteristic.Name)
+	const nameChar = wrapped.characteristics.name
 		.codec(
 			// encode: Convert to uppercase for storage
 			(value) => {
@@ -78,8 +80,10 @@ function example2StringFormatting() {
 function example3JsonCodec() {
 	console.log('\n=== Example 3: JSON Serialization ===');
 	
-	const service = new Service.Lightbulb('Light', '');
-	const fluentService = new FluentService(service);
+	const accessory = new Accessory('Light', uuid.generate('light-3'));
+	const service = accessory.addService(Service.Lightbulb, 'Light');
+	service.addCharacteristic(Characteristic.Name);
+	const wrapped = wrapService(service);
 	
 	interface LightConfig {
 		brightness: number;
@@ -88,8 +92,7 @@ function example3JsonCodec() {
 	}
 	
 	// Store complex objects as JSON strings
-	const configChar = fluentService
-		.getOrAddCharacteristic(Characteristic.Name) // Using Name as example storage
+	const configChar = wrapped.characteristics.name // Using Name as example storage
 		.codec(
 			// encode: Object to JSON string
 			(value) => {
@@ -120,12 +123,13 @@ function example3JsonCodec() {
 function example4PercentageConversion() {
 	console.log('\n=== Example 4: Percentage to Decimal Range ===');
 	
-	const service = new Service.Lightbulb('Light', '');
-	const fluentService = new FluentService(service);
+	const accessory = new Accessory('Light', uuid.generate('light-4'));
+	const service = accessory.addService(Service.Lightbulb, 'Light');
+	service.addCharacteristic(Characteristic.Brightness);
+	const wrapped = wrapService(service);
 	
 	// Convert between percentage (0-100) and decimal (0-1)
-	const brightnessChar = fluentService
-		.getOrAddCharacteristic(Characteristic.Brightness)
+	const brightnessChar = wrapped.characteristics.brightness
 		.codec(
 			// encode: Convert percentage to decimal
 			(percent) => {
@@ -152,11 +156,12 @@ function example4PercentageConversion() {
 function example5CombiningCodecWithInterceptors() {
 	console.log('\n=== Example 5: Combining Codec with Other Interceptors ===');
 	
-	const service = new Service.TemperatureSensor('Temperature', '');
-	const fluentService = new FluentService(service);
+	const accessory = new Accessory('TempSensor', uuid.generate('temp-5'));
+	const service = accessory.addService(Service.TemperatureSensor, 'Temperature');
+	service.addCharacteristic(Characteristic.CurrentTemperature);
+	const wrapped = wrapService(service);
 	
-	const tempChar = fluentService
-		.getOrAddCharacteristic(Characteristic.CurrentTemperature)
+	const tempChar = wrapped.characteristics.currentTemperature
 		.log() // Log before transformation
 		.codec(
 			// Fahrenheit to Celsius
@@ -177,8 +182,10 @@ function example5CombiningCodecWithInterceptors() {
 function example6ValueMapping() {
 	console.log('\n=== Example 6: Bidirectional Value Mapping ===');
 	
-	const service = new Service.Thermostat('Thermostat', '');
-	const fluentService = new FluentService(service);
+	const accessory = new Accessory('Thermostat', uuid.generate('thermo-6'));
+	const service = accessory.addService(Service.Thermostat, 'Thermostat');
+	service.addCharacteristic(Characteristic.TargetHeatingCoolingState);
+	const wrapped = wrapService(service);
 	
 	// Map between numeric HAP values and string representations
 	const modeMap: Record<number, string> = {
@@ -195,8 +202,7 @@ function example6ValueMapping() {
 		'AUTO': 3
 	};
 	
-	const modeChar = fluentService
-		.getOrAddCharacteristic(Characteristic.TargetHeatingCoolingState)
+	const modeChar = wrapped.characteristics.targetHeatingCoolingState
 		.codec(
 			// encode: String to number for HAP
 			(value) => {
