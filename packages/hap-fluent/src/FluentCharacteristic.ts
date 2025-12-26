@@ -323,25 +323,195 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 	}
 
 	/**
-	 * Add an interceptor to this characteristic.
+	 * Add logging interceptor that logs all operations (beforeSet, afterSet, beforeGet, afterGet, errors).
 	 * 
-	 * Interceptors provide hooks for pre/post processing of get/set operations.
-	 * They are executed in the order they are added.
-	 * 
-	 * @param interceptor - Interceptor to add
 	 * @returns This FluentCharacteristic instance for chaining
 	 * 
 	 * @example
 	 * ```typescript
-	 * import { createLoggingInterceptor, createRateLimitInterceptor } from 'hap-fluent/interceptors';
-	 * 
-	 * characteristic
-	 *   .intercept(createLoggingInterceptor())
-	 *   .intercept(createRateLimitInterceptor(5, 1000));
+	 * characteristic.log().onSet(async (value) => {
+	 *   console.log('Value from HomeKit:', value);
+	 * });
 	 * ```
 	 */
-	intercept(interceptor: Interceptor): this {
-		this.interceptors.push(interceptor);
+	log(): this {
+		const logger = getLogger();
+		
+		this.interceptors.push({
+			beforeSet(value, context) {
+				logger.debug(
+					{ characteristic: context.characteristicName, value },
+					'[Log] Before set'
+				);
+				return value;
+			},
+			afterSet(value, context) {
+				logger.debug(
+					{ characteristic: context.characteristicName, value },
+					'[Log] After set'
+				);
+			},
+			beforeGet(context) {
+				logger.debug(
+					{ characteristic: context.characteristicName },
+					'[Log] Before get'
+				);
+			},
+			afterGet(value, context) {
+				logger.debug(
+					{ characteristic: context.characteristicName, value },
+					'[Log] After get'
+				);
+				return value;
+			},
+			onError(error, context) {
+				logger.error(
+					{ characteristic: context.characteristicName, error },
+					'[Log] Error occurred'
+				);
+			},
+		});
+		return this;
+	}
+
+	/**
+	 * Add rate limiting interceptor to prevent excessive updates.
+	 * 
+	 * @param maxCalls - Maximum number of calls allowed
+	 * @param windowMs - Time window in milliseconds
+	 * @returns This FluentCharacteristic instance for chaining
+	 * 
+	 * @example
+	 * ```typescript
+	 * characteristic.limit(5, 1000).onSet(handler); // Max 5 calls per second
+	 * ```
+	 */
+	limit(maxCalls: number, windowMs: number): this {
+		const calls: number[] = [];
+		const logger = getLogger();
+
+		this.interceptors.push({
+			beforeSet(value, context) {
+				const now = Date.now();
+				
+				// Remove old calls outside the window
+				while (calls.length > 0 && calls[0] < now - windowMs) {
+					calls.shift();
+				}
+
+				// Check rate limit
+				if (calls.length >= maxCalls) {
+					const error = new Error(
+						`Rate limit exceeded: ${maxCalls} calls per ${windowMs}ms for ${context.characteristicName}`
+					);
+					logger.warn(
+						{ characteristic: context.characteristicName, maxCalls, windowMs },
+						'Rate limit exceeded'
+					);
+					throw error;
+				}
+
+				calls.push(now);
+				return value;
+			},
+		});
+		return this;
+	}
+
+	/**
+	 * Add value clamping interceptor to ensure numeric values stay within bounds.
+	 * 
+	 * @param min - Minimum value (inclusive)
+	 * @param max - Maximum value (inclusive)
+	 * @returns This FluentCharacteristic instance for chaining
+	 * 
+	 * @example
+	 * ```typescript
+	 * characteristic.clamp(0, 100).onSet(handler); // Ensures value is 0-100
+	 * ```
+	 */
+	clamp(min: number, max: number): this {
+		const logger = getLogger();
+
+		this.interceptors.push({
+			beforeSet(value, context) {
+				if (typeof value !== 'number') {
+					return value;
+				}
+
+				const clamped = Math.max(min, Math.min(max, value));
+				
+				if (clamped !== value) {
+					logger.debug(
+						{ characteristic: context.characteristicName, original: value, clamped },
+						'Value clamped to range'
+					);
+				}
+
+				return clamped;
+			},
+		});
+		return this;
+	}
+
+	/**
+	 * Add value transformation interceptor that applies a custom function.
+	 * 
+	 * @param transformFn - Function to transform the value
+	 * @returns This FluentCharacteristic instance for chaining
+	 * 
+	 * @example
+	 * ```typescript
+	 * characteristic.transform(v => Math.round(v as number)).onSet(handler);
+	 * ```
+	 */
+	transform(transformFn: (value: CharacteristicValue) => CharacteristicValue): this {
+		this.interceptors.push({
+			beforeSet(value, context) {
+				return transformFn(value);
+			},
+		});
+		return this;
+	}
+
+	/**
+	 * Add audit trail interceptor that tracks all operations.
+	 * 
+	 * @returns This FluentCharacteristic instance for chaining
+	 * 
+	 * @example
+	 * ```typescript
+	 * characteristic.audit().onSet(handler); // Logs audit trail
+	 * ```
+	 */
+	audit(): this {
+		const logger = getLogger();
+		const auditTrail: Array<{ operation: string; value?: CharacteristicValue; timestamp: number }> = [];
+
+		this.interceptors.push({
+			beforeSet(value, context) {
+				auditTrail.push({
+					operation: 'set',
+					value,
+					timestamp: context.timestamp,
+				});
+				logger.info(
+					{ characteristic: context.characteristicName, value, auditCount: auditTrail.length },
+					'[Audit] SET operation'
+				);
+				return value;
+			},
+			beforeGet(context) {
+				auditTrail.push({
+					operation: 'get',
+					timestamp: context.timestamp,
+				});
+				logger.info(
+					{ characteristic: context.characteristicName, auditCount: auditTrail.length },
+					'[Audit] GET operation'
+				);
+			},
+		});
 		return this;
 	}
 
