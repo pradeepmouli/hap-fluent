@@ -392,7 +392,7 @@ The minimum viable refactor is **Phase 1-2**:
 
 **Setup Phase**: T001-T006 mostly sequential (need baseline before proceeding)
 
-**Phase 1**: 
+**Phase 1**:
 - T007-T010 (error infrastructure) in parallel
 - T017-T020 (FluentService type casts) in parallel
 - T024-T026 (AccessoryHandler suppressions) in parallel
@@ -493,7 +493,7 @@ Each phase is independently deliverable:
 
 **Parallel Task Count**: 47 tasks marked [P] can run in parallel within their phases
 
-**Estimated Effort**: 
+**Estimated Effort**:
 - Phase 1: 3-5 days (critical path)
 - Phase 2: 2-3 days (documentation heavy)
 - Phase 3: 3-4 days (test infrastructure)
