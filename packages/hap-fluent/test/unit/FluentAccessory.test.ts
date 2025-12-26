@@ -4,7 +4,7 @@ import {
 	createServicesObject,
 	initializeAccessory,
 	isMultiService,
-} from '../src/AccessoryHandler.js';
+} from '../../src/AccessoryHandler.js';
 import {
 	MockService,
 	MockPlatformAccessory,
@@ -13,7 +13,7 @@ import {
 	createMockThermostatService,
 	MockCharacteristic,
 	Switch,
-} from './mocks/homebridge.mock.js';
+} from '../mocks/homebridge.mock.js';
 
 describe('FluentAccessory', () => {
 	let mockAccessory: MockPlatformAccessory;

@@ -22,7 +22,11 @@ export default defineConfig({
 				statements: 80,
 			},
 		},
-		include: ['test/**/*.test.ts'],
+		include: [
+			'test/unit/**/*.test.ts',
+			'test/integration/**/*.test.ts',
+			'test/property-based/**/*.test.ts',
+		],
 		exclude: ['node_modules', 'dist'],
 	},
 });

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { FluentCharacteristic } from '../src/FluentCharacteristic.js';
-import { MockCharacteristic } from './mocks/homebridge.mock.js';
+import { FluentCharacteristic } from '../../src/FluentCharacteristic.js';
+import { MockCharacteristic } from '../mocks/homebridge.mock.js';
 
 describe('FluentCharacteristic', () => {
 	let mockCharacteristic: MockCharacteristic;
