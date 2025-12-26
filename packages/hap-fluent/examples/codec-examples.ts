@@ -32,8 +32,9 @@ function example1TemperatureConversion() {
 				return fahrenheit;
 			}
 		)
+		// onSet receives the encoded HAP value, which is in Celsius
 		.onSet(async (value) => {
-			console.log(`Handler received: ${value}°F`);
+			console.log(`Handler received encoded HAP value: ${value}°C`);
 		});
 	
 	// When you set 72°F, HAP receives 22.2°C
