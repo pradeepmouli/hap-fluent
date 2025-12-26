@@ -1,5 +1,4 @@
 import { describe, it, expect, vi } from 'vitest';
-import { Characteristic } from 'hap-nodejs';
 import { FluentCharacteristic } from '../../src/FluentCharacteristic.js';
 
 // Mock Characteristic class for testing
