@@ -692,6 +692,44 @@ All coverage thresholds are enforced in CI/CD.
 
 This multi-layered approach provides confidence in both individual components and the system as a whole.
 
+## Debugging with Source Maps
+
+HAP Fluent includes source maps for better debugging experience. You can set breakpoints in TypeScript source files and step through code at the TypeScript level.
+
+### Using Source Maps in VSCode
+
+1. **Set Breakpoints**: Open any `.ts` file in `node_modules/hap-fluent/dist/` and set breakpoints
+2. **Start Debugging**: Use VSCode's debugger with Node.js configuration
+3. **Step Through Code**: The debugger will map compiled JavaScript back to TypeScript source
+
+### Launch Configuration
+
+Add this to your `.vscode/launch.json`:
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Homebridge Plugin",
+      "program": "${workspaceFolder}/node_modules/.bin/homebridge",
+      "args": ["-D", "-P", "${workspaceFolder}"],
+      "sourceMaps": true,
+      "outFiles": ["${workspaceFolder}/**/*.js"],
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ]
+}
+```
+
+### Troubleshooting
+
+- Ensure `sourceMap: true` is set in your `tsconfig.json`
+- Verify `.js.map` files exist in `node_modules/hap-fluent/dist/`
+- Check that VSCode's "Debug: Enable Breakpoint Locations" is enabled
+
 ## Contributing
 
 Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
