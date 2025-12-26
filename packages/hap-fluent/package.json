@@ -14,10 +14,6 @@
 			"types": "./dist/errors.d.ts",
 			"import": "./dist/errors.js"
 		},
-		"./validation": {
-			"types": "./dist/validation.d.ts",
-			"import": "./dist/validation.js"
-		},
 		"./interceptors": {
 			"types": "./dist/interceptors.d.ts",
 			"import": "./dist/interceptors.js"
@@ -65,11 +61,6 @@
 			"path": "dist/index.js",
 			"limit": "50 KB",
 			"import": "{ FluentService, FluentCharacteristic }"
-		},
-		{
-			"name": "Validation utilities",
-			"path": "dist/validation.js",
-			"limit": "10 KB"
 		},
 		{
 			"name": "Error classes",

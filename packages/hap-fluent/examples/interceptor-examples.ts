@@ -139,36 +139,10 @@ console.log(`  Handler received: ${value}`);
 console.log('✓ Multiple interceptors chained: log → transform → clamp → limit');
 }
 
-// Example 7: Combining with Validation
-console.log('\n=== Example 7: Interceptors + Validation ===');
-{
-const accessory = new Accessory('Light', uuid.generate('light-7'));
-const service = accessory.addService(Service.Lightbulb, 'Validated Light');
-service.addCharacteristic(Characteristic.Brightness);
-
-const wrapped = wrapService(service);
-
-// Add validation first
-const { RangeValidator } = await import('../src/validation.js');
-wrapped.characteristics.brightness.addValidator(
-new RangeValidator(0, 100, 'Brightness')
-);
-
-// Then add interceptors
-wrapped.characteristics.brightness
-.log()
-.onSet(async (value) => {
-console.log(`  Handler: validated value ${value}`);
-// Value has been validated AND intercepted
-});
-
-console.log('✓ Validation runs after interceptors transform, before user handler');
-}
-
 console.log('\n=== All Interceptor Examples Complete ===');
 console.log('\nKey Takeaways:');
-console.log('1. Standard interceptors: log(), limit(), clamp(), transform(), audit()');
+console.log('1. Standard interceptors: log(), limit(), clamp(), transform(), audit(), codec()');
 console.log('2. All methods are chainable for fluent composition');
 console.log('3. Interceptors wrap onSet/onGet handlers');
-console.log('4. Execution order: beforeSet → validation → handler → afterSet');
+console.log('4. Execution order: beforeSet → handler → afterSet');
 console.log('5. Opt-in: No impact on direct set() calls or default behavior');

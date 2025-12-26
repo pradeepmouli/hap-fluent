@@ -2,14 +2,12 @@ import { Characteristic, type CharacteristicValue, type CharacteristicSetHandler
 import { FluentCharacteristicError } from './errors.js';
 import { isCharacteristicValue } from './type-guards.js';
 import { getLogger } from './logger.js';
-import type { Validator, ValidationResult } from './validation.js';
 import type { Interceptor, InterceptorContext } from './interceptors.js';
 
 /**
  * FluentCharacteristic wraps a HAP characteristic with strong typing and fluent API
  */
 export class FluentCharacteristic<T extends CharacteristicValue> {
-	private validators: Validator[] = [];
 	private interceptors: Interceptor[] = [];
 
 	/**
@@ -51,7 +49,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 	 * @throws {FluentCharacteristicError} If value is invalid or setValue fails
 	 * 
 	 * @remarks
-	 * This method is for direct programmatic value setting. Interceptors and validators
+	 * This method is for direct programmatic value setting. Interceptors
 	 * are applied in onSet handlers, which are triggered when HomeKit accesses the characteristic.
 	 */
 	set(value: T): this {
@@ -192,7 +190,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 	 * @returns This FluentCharacteristic instance for chaining.
 	 */
 	onSet(handler: (value: T) => Promise<void>): this {
-		// Wrap the handler with validation and interceptors
+		// Wrap the handler with interceptors
 		const wrappedHandler = async (value: T): Promise<void> => {
 			const logger = getLogger();
 			
@@ -205,28 +203,6 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 				// Run beforeSet interceptors
 				if (this.interceptors.length > 0) {
 					value = (await this.runBeforeSetInterceptors(value)) as T;
-				}
-
-				// Run validators if any are registered
-				if (this.validators.length > 0) {
-					const validationResult = this.runValidators(value);
-					if (!validationResult.valid) {
-						logger.warn(
-							{ characteristic: this.characteristic.displayName, value, error: validationResult.error },
-							'Value failed validation in onSet',
-						);
-						throw new FluentCharacteristicError(
-							validationResult.error || 'Validation failed',
-							{
-								characteristic: this.characteristic.displayName,
-								value,
-							}
-						);
-					}
-					// Use the validated/transformed value
-					if (validationResult.value !== undefined) {
-						value = validationResult.value as T;
-					}
 				}
 
 				// Call the original handler
@@ -265,71 +241,6 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 
 		this.characteristic.onSet(wrappedHandler as unknown as CharacteristicSetHandler);
 		return this;
-	}
-
-	/**
-	 * Add a validator to this characteristic.
-	 * 
-	 * @deprecated Validation is now handled by HAP-nodejs and Homebridge based on characteristic metadata.
-	 * Use HAP's built-in validation by setting proper characteristic properties with `setProps()`.
-	 * This method will be removed in a future version.
-	 * 
-	 * Validators are run in the order they are added. If any validator fails,
-	 * the value is rejected and an error is thrown.
-	 * 
-	 * @param validator - Validator to add
-	 * @returns This FluentCharacteristic instance for chaining
-	 * 
-	 * @example
-	 * ```typescript
-	 * // Deprecated approach:
-	 * import { RangeValidator } from 'hap-fluent/validation';
-	 * characteristic.addValidator(new RangeValidator(0, 100, 'Brightness'));
-	 * 
-	 * // Recommended approach:
-	 * characteristic.setProps({ minValue: 0, maxValue: 100 });
-	 * ```
-	 */
-	addValidator(validator: Validator): this {
-		this.validators.push(validator);
-		return this;
-	}
-
-	/**
-	 * Remove all validators from this characteristic.
-	 * 
-	 * @deprecated Validation is now handled by HAP-nodejs and Homebridge.
-	 * This method will be removed in a future version.
-	 * 
-	 * @returns This FluentCharacteristic instance for chaining
-	 */
-	clearValidators(): this {
-		this.validators = [];
-		return this;
-	}
-
-	/**
-	 * Run all validators on a value
-	 * 
-	 * @param value - Value to validate
-	 * @returns Validation result
-	 * @private
-	 */
-	private runValidators(value: CharacteristicValue): ValidationResult {
-		let currentValue = value;
-		
-		for (const validator of this.validators) {
-			const result = validator.validate(currentValue);
-			if (!result.valid) {
-				return result;
-			}
-			// Use transformed value if validator provided one
-			if (result.value !== undefined) {
-				currentValue = result.value;
-			}
-		}
-		
-		return { valid: true, value: currentValue };
 	}
 
 	/**

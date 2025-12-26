@@ -19,7 +19,7 @@ HAP Fluent provides a type-safe, fluent API for working with HomeKit Accessory P
 - 🔄 **Interceptors**: Built-in logging, rate limiting, transformation, and codec support
 - 🧰 **Type Utilities**: Transformers, validators, and helper types
 - 📦 **Tree-Shakeable**: Modern ES modules with optimized exports
-- ✅ **Well-Tested**: 196 tests, 100% pass rate
+- ✅ **Well-Tested**: 172 tests, 100% pass rate
 - 📚 **Documented**: Comprehensive JSDoc on all public APIs
 
 ## Installation
@@ -439,32 +439,6 @@ characteristic
     // Final value after all interceptors
   });
 ```
-
-### Validation (Deprecated)
-
-**Note:** The validation framework (`addValidator`, `RangeValidator`, `EnumValidator`, etc.) is deprecated. HAP-nodejs and Homebridge automatically validate values based on characteristic metadata.
-
-**Instead of validators, use HAP's built-in validation:**
-
-```typescript
-// ❌ Deprecated: Custom validators
-import { RangeValidator } from 'hap-fluent/validation';
-characteristic.addValidator(new RangeValidator(0, 100, 'Brightness'));
-
-// ✅ Recommended: HAP built-in validation
-characteristic.setProps({ minValue: 0, maxValue: 100 });
-
-// ✅ For enum values
-characteristic.setProps({ validValues: [0, 1, 2, 3] });
-```
-
-HAP-nodejs validates based on:
-- `minValue` / `maxValue` - Numeric range validation
-- `validValues` - Enum value validation
-- `format` - Format validation (e.g., uint8, uint16, float)
-- `unit` - Unit validation (e.g., celsius, percentage, arcdegrees)
-
-For custom transformations or formatting, use the `.codec()` or `.transform()` interceptors instead.
 
 ## Advanced Examples
 
