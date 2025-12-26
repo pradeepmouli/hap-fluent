@@ -9,7 +9,6 @@
 		"sourceMap": true,
 		"strict": true,
 		"noEmit": false,
-		"baseUrl": ".",
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,

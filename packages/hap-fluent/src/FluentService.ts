@@ -78,7 +78,7 @@ export function wrapService<T extends typeof Service>(service: InstanceType<T>):
 			actual: typeof service,
 		});
 	}
-	
+
 	const e = {
 		characteristics: Object.fromEntries(
 			service.characteristics.map((p) => [camelcase(p.displayName, { pascalCase: true }), new FluentCharacteristic(p)])
