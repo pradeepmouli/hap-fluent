@@ -151,10 +151,12 @@
 
 ### Configure Test Coverage
 
-- [ ] T066 [Phase3] Update packages/hap-fluent/vitest.config.ts with coverage thresholds (80% line, 70% branch)
-- [ ] T067 [Phase3] Add coverage script to packages/hap-fluent/package.json: `"test:coverage": "vitest run --coverage"`
-- [ ] T068 [Phase3] Run baseline coverage report and document current coverage percentage
-- [ ] T069 [Phase3] Create .gitignore entry for coverage/ directory
+- [X] T066 [Phase3] Update packages/hap-fluent/vitest.config.ts with coverage thresholds (80% line, 70% branch)
+- [X] T067 [Phase3] Add coverage script to packages/hap-fluent/package.json: `"test:coverage": "vitest run --coverage"`
+- [X] T068 [Phase3] Run baseline coverage report and document current coverage percentage
+- [X] T069 [Phase3] Create .gitignore entry for coverage/ directory
+
+Baseline coverage (2025-12-25): lines 86.39%, branches 76.69%, functions 87.50%, statements 86.30% (current unit + existing integration tests)
 
 ### Add Integration Tests
 

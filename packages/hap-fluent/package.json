@@ -39,6 +39,7 @@
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"test:ui": "vitest --ui",
+		"test:coverage": "vitest run --coverage",
 		"type-check": "tsgo --noEmit",
 		"type-check:tsc": "tsc --noEmit",
 		"clean": "rimraf dist"
@@ -51,6 +52,8 @@
 	},
 	"devDependencies": {
 		"@fast-check/vitest": "^0.2.4",
+		"@vitest/coverage-v8": "^4.0.16",
+		"@vitest/ui": "^4.0.0",
 		"eslint": "^9.38.0",
 		"glob": "^11.0.3",
 		"hap-nodejs": "0.13.1",
@@ -59,7 +62,7 @@
 		"ts-node": "^10.9.2",
 		"type-fest": "^4.41.0",
 		"typescript": "^5.9.3",
-		"vitest": "^3.0.0"
+		"vitest": "^4.0.16"
 	},
 	"dependencies": {
 		"camelcase": "^8.0.0",
