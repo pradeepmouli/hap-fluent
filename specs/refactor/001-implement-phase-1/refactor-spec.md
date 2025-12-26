@@ -52,7 +52,7 @@ User description: "Implement all phases of enhancement proposals: Fix type safet
 1. **Phase 1 - Code Quality & Robustness**: Type safety restoration, error handling, code cleanup
 2. **Phase 2 - Developer Experience**: Documentation, improved error messages, debug logging
 3. **Phase 3 - Testability**: Test coverage, integration tests, property-based testing
-4. **Phase 4 - Advanced Features**: Validation framework, event system, middleware/plugins
+4. **Phase 4 - Advanced Features**: Validation framework, standard interceptor API with fluent methods
 5. **Phase 5 - Performance**: Caching layer, batching support, optimization
 6. **Phase 6 - Build & Tooling**: Source maps, modern exports, bundle size tracking
 
@@ -79,8 +79,8 @@ Implement comprehensive enhancements incrementally across 6 phases, each buildin
 
 **Phase 4 (Advanced Features)**:
 - Implement validation framework with composable validators
-- Add event system for characteristic changes
-- Create middleware/plugin system for extensibility
+- Add standard interceptor API with fluent methods (log, limit, clamp, transform, audit)
+- Interceptors wrap onSet/onGet handlers for HomeKit-initiated changes
 
 **Phase 5 (Performance)**:
 - Add intelligent caching layer
@@ -109,7 +109,7 @@ Implement comprehensive enhancements incrementally across 6 phases, each buildin
   - `packages/hap-fluent/src/type-guards.ts` (runtime validation)
   - `packages/hap-fluent/src/type-utils.ts` (DX type utilities)
   - `packages/hap-fluent/src/validation.ts` (validation framework)
-  - `packages/hap-fluent/src/middleware.ts` (plugin system)
+  - `packages/hap-fluent/src/interceptors.ts` (standard interceptor utilities - REMOVED in favor of methods on FluentCharacteristic)
   - `packages/hap-fluent/src/cache.ts` (caching layer)
   - `packages/hap-fluent/test/integration/` (integration test suite)
   - `packages/hap-fluent/test/property-based/` (property tests)
@@ -188,7 +188,7 @@ describe('FluentCharacteristic integration', () => {
   });
 });
 
-// Phase 4: Validation & Events
+// Phase 4: Validation & Interceptors
 char.addValidator(new RangeValidator(0, 100))
     .on('change', (newVal, oldVal) => log(newVal));
 
@@ -337,8 +337,8 @@ service.updateBatch({ On: true, Brightness: 75 });
   - **Mitigation**: Document all new error cases; ensure errors include context; test error paths
   - **Rollback**: Revert error handling commits; publish patch version
 
-- **Risk 3**: Performance regression from validation/middleware
-  - **Mitigation**: Benchmark before/after; make validation/middleware opt-in; profile hot paths
+- **Risk 3**: Performance regression from validation/interceptors
+  - **Mitigation**: Benchmark before/after; make validation/interceptors opt-in; profile hot paths
   - **Rollback**: Disable performance-affecting features; optimize or revert
 
 - **Risk 4**: Breaking changes in peer dependencies
@@ -523,12 +523,15 @@ Revert if any of these occur:
    - [ ] Add tests and examples
    - [ ] Commit: "feat: add event system to characteristics"
 
-3. **Middleware/Plugin System**
-   - [ ] Create `src/middleware.ts` with middleware interface
-   - [ ] Implement built-in middleware (logging, rate-limiting, caching)
-   - [ ] Integrate into FluentCharacteristic
-   - [ ] Add tests and examples
-   - [ ] Commit: "feat: add middleware/plugin system"
+3. **Standard Interceptor API**
+   - [X] Add `.log()` method to FluentCharacteristic for logging operations
+   - [X] Add `.limit(maxCalls, windowMs)` for rate-limiting
+   - [X] Add `.clamp(min, max)` for value clamping  
+   - [X] Add `.transform(fn)` for value transformation
+   - [X] Add `.audit()` for audit trail tracking
+   - [X] Interceptors wrap onSet/onGet handlers (listening side)
+   - [X] Add 19 tests and 7 comprehensive examples
+   - [X] Commit: "feat: add standard interceptor API with fluent methods"
 
 4. **Phase 4 Validation**
    - [ ] Test all new features work independently

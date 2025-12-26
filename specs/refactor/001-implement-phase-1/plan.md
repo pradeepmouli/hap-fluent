@@ -7,7 +7,7 @@
 
 ## Summary
 
-Transform hap-fluent from a prototype with 40% test failures and 17 type safety violations into a production-ready 1.0.0 library through 6 incremental phases: (1) Fix type safety and error handling, (2) Add comprehensive documentation and DX improvements, (3) Establish robust testing infrastructure, (4) Implement advanced features (validation, events, middleware), (5) Optimize performance with caching and batching, (6) Modernize build tooling. Each phase is independently deliverable and builds on the previous, allowing for early stops at any phase boundary while maintaining a working library.
+Transform hap-fluent from a prototype with 40% test failures and 17 type safety violations into a production-ready 1.0.0 library through 6 incremental phases: (1) Fix type safety and error handling, (2) Add comprehensive documentation and DX improvements, (3) Establish robust testing infrastructure, (4) Implement advanced features (validation, standard interceptor API with fluent methods), (5) Optimize performance with caching and batching, (6) Modernize build tooling. Each phase is independently deliverable and builds on the previous, allowing for early stops at any phase boundary while maintaining a working library.
 
 ## Technical Context
 
@@ -144,7 +144,7 @@ packages/hap-fluent/
 │   ├── type-guards.ts            # NEW: Runtime type validation
 │   ├── type-utils.ts             # NEW: DX helper types
 │   ├── validation.ts             # NEW: Validation framework (Phase 4)
-│   ├── middleware.ts             # NEW: Plugin system (Phase 4)
+│   ├── interceptors.ts           # REMOVED: Interceptor utilities (moved to FluentCharacteristic methods)
 │   ├── cache.ts                  # NEW: Caching layer (Phase 5)
 │   └── types/ (unchanged)
 ├── examples/                     # MODIFIED: all fixed + new patterns
