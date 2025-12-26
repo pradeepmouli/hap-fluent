@@ -722,17 +722,17 @@ class SmartLightsPlatform implements DynamicPlatformPlugin {
     if (device.supportsColorTemperature) {
       lightbulb.characteristics.ColorTemperature
         .codec(
-          // encode: Convert Kelvin to mireds for HAP
+          // encode (beforeSet): Convert Kelvin from HomeKit into mireds for the device/HAP
           (kelvin) => Math.round(1000000 / (kelvin as number)),
-          // decode: Convert mireds to Kelvin for device API
+          // decode (afterGet): Convert mireds from the device/HAP into Kelvin for HomeKit
           (mireds) => Math.round(1000000 / (mireds as number))
         )
         .onGet(async () => {
           const state = await this.getDeviceState(device.id);
-          return state.colorTemperature;  // Returns Kelvin, codec converts to mireds
+          return state.colorTemperature;  // Returns mireds, codec converts to Kelvin for HomeKit
         })
         .onSet(async (kelvin: number) => {
-          // Receives Kelvin (converted from mireds by codec)
+          // Receives mireds (converted from Kelvin by codec)
           await this.setDeviceColorTemperature(device.id, kelvin);
         });
     }
