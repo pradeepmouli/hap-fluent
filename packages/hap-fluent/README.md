@@ -16,9 +16,10 @@ HAP Fluent provides a type-safe, fluent API for working with HomeKit Accessory P
 - 🎯 **IntelliSense**: Autocomplete for services and characteristics
 - 🛡️ **Error Handling**: Typed error classes with contextual information
 - 📝 **Structured Logging**: Pino integration with configurable log levels
+- 🔄 **Interceptors**: Built-in logging, rate limiting, transformation, and codec support
 - 🧰 **Type Utilities**: Transformers, validators, and helper types
 - 📦 **Tree-Shakeable**: Modern ES modules with optimized exports
-- ✅ **Well-Tested**: 128 tests, 100% pass rate
+- ✅ **Well-Tested**: 196 tests, 100% pass rate
 - 📚 **Documented**: Comprehensive JSDoc on all public APIs
 
 ## Installation
@@ -330,6 +331,141 @@ const update: PartialServiceState = {
 };
 ```
 
+## Standard Interceptors
+
+hap-fluent provides built-in interceptors for common cross-cutting concerns. Interceptors wrap `onSet` and `onGet` handlers to add behavior transparently.
+
+### Available Interceptors
+
+#### `.log()` - Logging Interceptor
+
+Logs all characteristic operations (before/after set/get, errors).
+
+```typescript
+characteristic
+  .log()
+  .onSet(async (value) => {
+    // Your handler
+  });
+```
+
+#### `.limit(maxCalls, windowMs)` - Rate Limiting
+
+Prevents excessive updates by limiting calls per time window.
+
+```typescript
+characteristic
+  .limit(5, 1000)  // Max 5 calls per second
+  .onSet(async (value) => {
+    // Rate-limited handler
+  });
+```
+
+#### `.clamp(min, max)` - Value Clamping
+
+Ensures numeric values stay within specified bounds.
+
+```typescript
+characteristic
+  .clamp(0, 100)  // Clamp to 0-100 range
+  .onSet(async (value) => {
+    // Value is guaranteed to be 0-100
+  });
+```
+
+#### `.transform(fn)` - Value Transformation
+
+Applies a transformation function to values before setting.
+
+```typescript
+characteristic
+  .transform((v) => Math.round(v as number))  // Round to integer
+  .onSet(async (value) => {
+    // Value is now an integer
+  });
+```
+
+#### `.codec(encode, decode)` - Two-Way Transformation
+
+Transforms values when setting (encode) and retrieving (decode). Perfect for unit conversions or format transformations.
+
+```typescript
+// Convert between Celsius and Fahrenheit
+characteristic.codec(
+  (fahrenheit) => (fahrenheit - 32) * 5/9,  // encode: F to C
+  (celsius) => (celsius * 9/5) + 32         // decode: C to F
+).onSet(async (value) => {
+  console.log('Temperature in Fahrenheit:', value);
+});
+
+// String format conversion
+characteristic.codec(
+  (value) => String(value).toUpperCase(),  // encode
+  (value) => String(value).toLowerCase()   // decode
+);
+
+// JSON serialization
+characteristic.codec(
+  (obj) => JSON.stringify(obj),           // encode
+  (str) => JSON.parse(String(str))        // decode
+);
+```
+
+#### `.audit()` - Audit Trail
+
+Tracks all operations for debugging and compliance.
+
+```typescript
+characteristic
+  .audit()
+  .onSet(async (value) => {
+    // All operations logged to audit trail
+  });
+```
+
+### Chaining Interceptors
+
+All interceptors are chainable and execute in order:
+
+```typescript
+characteristic
+  .log()                              // 1. Log operation
+  .codec(encodeValue, decodeValue)    // 2. Transform value
+  .clamp(0, 100)                      // 3. Clamp to range
+  .transform((v) => Math.round(v))    // 4. Round value
+  .limit(5, 1000)                     // 5. Rate limit
+  .audit()                            // 6. Audit trail
+  .onSet(async (value) => {
+    // Final value after all interceptors
+  });
+```
+
+### Validation (Deprecated)
+
+**Note:** The validation framework (`addValidator`, `RangeValidator`, `EnumValidator`, etc.) is deprecated. HAP-nodejs and Homebridge automatically validate values based on characteristic metadata.
+
+**Instead of validators, use HAP's built-in validation:**
+
+```typescript
+// ❌ Deprecated: Custom validators
+import { RangeValidator } from 'hap-fluent/validation';
+characteristic.addValidator(new RangeValidator(0, 100, 'Brightness'));
+
+// ✅ Recommended: HAP built-in validation
+characteristic.setProps({ minValue: 0, maxValue: 100 });
+
+// ✅ For enum values
+characteristic.setProps({ validValues: [0, 1, 2, 3] });
+```
+
+HAP-nodejs validates based on:
+- `minValue` / `maxValue` - Numeric range validation
+- `validValues` - Enum value validation
+- `format` - Format validation (e.g., uint8, uint16, float)
+- `unit` - Unit validation (e.g., celsius, percentage, arcdegrees)
+
+For custom transformations or formatting, use the `.codec()` or `.transform()` interceptors instead.
+
 ## Advanced Examples
 
 ### Multi-Service Accessories
@@ -450,7 +586,6 @@ import {
   Logger,
 } from 'homebridge';
 import { FluentService, getOrAddService } from 'hap-fluent';
-import { RangeValidator } from 'hap-fluent/validation';
 import { configureLogger } from 'hap-fluent/logger';
 
 const PLUGIN_NAME = 'homebridge-smart-lights';
@@ -551,10 +686,8 @@ class SmartLightsPlatform implements DynamicPlatformPlugin {
       device.name
     );
 
-    // Add validation for brightness values
-    lightbulb.characteristics.Brightness.addValidator(
-      new RangeValidator(0, 100, 'Brightness')
-    );
+    // HAP validates brightness automatically based on characteristic props
+    lightbulb.characteristics.Brightness.setProps({ minValue: 0, maxValue: 100 });
 
     // Setup interceptors for logging and rate limiting
     lightbulb.characteristics.On
@@ -580,7 +713,7 @@ class SmartLightsPlatform implements DynamicPlatformPlugin {
         }
       });
 
-    // Setup brightness with validation and transformation
+    // Setup brightness with transformation and clamping
     lightbulb.characteristics.Brightness
       .transform((value) => Math.round(value as number))  // Round to integer
       .clamp(0, 100)  // Ensure within range
@@ -603,6 +736,26 @@ class SmartLightsPlatform implements DynamicPlatformPlugin {
           throw error;
         }
       });
+
+    // Example: Use codec for color temperature conversion (Kelvin <-> Mireds)
+    // Some devices use Kelvin, but HAP uses mireds (micro reciprocal degrees)
+    if (device.supportsColorTemperature) {
+      lightbulb.characteristics.ColorTemperature
+        .codec(
+          // encode: Convert Kelvin to mireds for HAP
+          (kelvin) => Math.round(1000000 / (kelvin as number)),
+          // decode: Convert mireds to Kelvin for device API
+          (mireds) => Math.round(1000000 / (mireds as number))
+        )
+        .onGet(async () => {
+          const state = await this.getDeviceState(device.id);
+          return state.colorTemperature;  // Returns Kelvin, codec converts to mireds
+        })
+        .onSet(async (kelvin: number) => {
+          // Receives Kelvin (converted from mireds by codec)
+          await this.setDeviceColorTemperature(device.id, kelvin);
+        });
+    }
 
     // Optional: Setup hue and saturation for color lights
     if (device.supportsColor) {

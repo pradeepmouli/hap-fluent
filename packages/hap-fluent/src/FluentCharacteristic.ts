@@ -270,6 +270,10 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 	/**
 	 * Add a validator to this characteristic.
 	 * 
+	 * @deprecated Validation is now handled by HAP-nodejs and Homebridge based on characteristic metadata.
+	 * Use HAP's built-in validation by setting proper characteristic properties with `setProps()`.
+	 * This method will be removed in a future version.
+	 * 
 	 * Validators are run in the order they are added. If any validator fails,
 	 * the value is rejected and an error is thrown.
 	 * 
@@ -278,9 +282,12 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 	 * 
 	 * @example
 	 * ```typescript
+	 * // Deprecated approach:
 	 * import { RangeValidator } from 'hap-fluent/validation';
-	 * 
 	 * characteristic.addValidator(new RangeValidator(0, 100, 'Brightness'));
+	 * 
+	 * // Recommended approach:
+	 * characteristic.setProps({ minValue: 0, maxValue: 100 });
 	 * ```
 	 */
 	addValidator(validator: Validator): this {
@@ -290,6 +297,9 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 
 	/**
 	 * Remove all validators from this characteristic.
+	 * 
+	 * @deprecated Validation is now handled by HAP-nodejs and Homebridge.
+	 * This method will be removed in a future version.
 	 * 
 	 * @returns This FluentCharacteristic instance for chaining
 	 */
@@ -510,6 +520,69 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 					{ characteristic: context.characteristicName, auditCount: auditTrail.length },
 					'[Audit] GET operation'
 				);
+			},
+		});
+		return this;
+	}
+
+	/**
+	 * Add a codec interceptor for two-way value transformation.
+	 * 
+	 * Codecs allow you to transform values when setting (encode) and retrieving (decode).
+	 * This is useful for converting between different formats or units.
+	 * 
+	 * @param encode - Function to transform values when setting (to HAP format)
+	 * @param decode - Function to transform values when getting (from HAP format)
+	 * @returns This FluentCharacteristic instance for chaining
+	 * 
+	 * @example
+	 * ```typescript
+	 * // Convert between Celsius and Fahrenheit
+	 * characteristic.codec(
+	 *   (celsius) => (celsius * 9/5) + 32,  // encode: C to F
+	 *   (fahrenheit) => (fahrenheit - 32) * 5/9  // decode: F to C
+	 * ).onSet(async (fahrenheit) => {
+	 *   console.log('Temperature in F:', fahrenheit);
+	 * });
+	 * 
+	 * // Convert between different string formats
+	 * characteristic.codec(
+	 *   (value) => String(value).toUpperCase(),  // encode
+	 *   (value) => String(value).toLowerCase()   // decode
+	 * );
+	 * 
+	 * // Convert complex objects to/from JSON
+	 * characteristic.codec(
+	 *   (obj) => JSON.stringify(obj),  // encode
+	 *   (str) => JSON.parse(String(str))  // decode
+	 * );
+	 * ```
+	 */
+	codec(
+		encode: (value: CharacteristicValue) => CharacteristicValue,
+		decode: (value: CharacteristicValue) => CharacteristicValue
+	): this {
+		this.interceptors.push({
+			beforeSet(value, context) {
+				const encoded = encode(value);
+				const logger = getLogger();
+				logger.debug(
+					{ characteristic: context.characteristicName, original: value, encoded },
+					'[Codec] Encoded value for SET'
+				);
+				return encoded;
+			},
+			afterGet(value, context) {
+				if (value === undefined) {
+					return value;
+				}
+				const decoded = decode(value);
+				const logger = getLogger();
+				logger.debug(
+					{ characteristic: context.characteristicName, original: value, decoded },
+					'[Codec] Decoded value for GET'
+				);
+				return decoded;
 			},
 		});
 		return this;

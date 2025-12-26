@@ -370,3 +370,69 @@ export function createCompositeInterceptor(interceptors: Interceptor[]): Interce
 		},
 	};
 }
+
+/**
+ * Codec interceptor for two-way value transformation
+ * 
+ * Codecs transform values when setting (encode) and retrieving (decode).
+ * This is useful for converting between different formats or units.
+ * 
+ * @param encode - Function to transform values when setting (to HAP format)
+ * @param decode - Function to transform values when getting (from HAP format)
+ * 
+ * @example
+ * ```typescript
+ * // Convert between Celsius and Fahrenheit
+ * characteristic.intercept(
+ *   createCodecInterceptor(
+ *     (celsius) => (celsius * 9/5) + 32,  // encode: C to F
+ *     (fahrenheit) => (fahrenheit - 32) * 5/9  // decode: F to C
+ *   )
+ * );
+ * 
+ * // Convert between different string formats
+ * characteristic.intercept(
+ *   createCodecInterceptor(
+ *     (value) => String(value).toUpperCase(),  // encode
+ *     (value) => String(value).toLowerCase()   // decode
+ *   )
+ * );
+ * 
+ * // Convert complex objects to/from JSON
+ * characteristic.intercept(
+ *   createCodecInterceptor(
+ *     (obj) => JSON.stringify(obj),  // encode
+ *     (str) => JSON.parse(String(str))  // decode
+ *   )
+ * );
+ * ```
+ */
+export function createCodecInterceptor(
+	encode: (value: CharacteristicValue) => CharacteristicValue,
+	decode: (value: CharacteristicValue) => CharacteristicValue
+): Interceptor {
+	const logger = getLogger();
+
+	return {
+		beforeSet(value, context) {
+			const encoded = encode(value);
+			logger.debug(
+				{ characteristic: context.characteristicName, original: value, encoded },
+				'[Codec] Encoded value for SET'
+			);
+			return encoded;
+		},
+
+		afterGet(value, context) {
+			if (value === undefined) {
+				return value;
+			}
+			const decoded = decode(value);
+			logger.debug(
+				{ characteristic: context.characteristicName, original: value, decoded },
+				'[Codec] Decoded value for GET'
+			);
+			return decoded;
+		},
+	};
+}

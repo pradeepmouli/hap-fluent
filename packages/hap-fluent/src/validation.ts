@@ -1,8 +1,23 @@
 /**
  * Validation framework for HAP characteristic values
  * 
- * Provides opt-in validation for characteristic values with various validator types.
- * Validators can be composed and chained for complex validation logic.
+ * @deprecated This validation framework is deprecated. HAP-nodejs and Homebridge handle validation
+ * automatically based on characteristic metadata (minValue, maxValue, validValues, etc.).
+ * 
+ * It is recommended to use HAP's built-in validation by setting proper characteristic properties
+ * with `FluentCharacteristic.setProps()` instead of custom validators.
+ * 
+ * This module will be removed in a future major version.
+ * 
+ * @example
+ * ```typescript
+ * // Deprecated approach:
+ * import { RangeValidator } from 'hap-fluent/validation';
+ * characteristic.addValidator(new RangeValidator(0, 100, 'Brightness'));
+ * 
+ * // Recommended approach:
+ * characteristic.setProps({ minValue: 0, maxValue: 100 });
+ * ```
  * 
  * @module validation
  */
