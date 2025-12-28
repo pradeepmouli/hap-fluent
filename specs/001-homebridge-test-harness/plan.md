@@ -15,7 +15,7 @@ Create a comprehensive, developer-friendly test harness (`hap-test`) that enable
 
 **Language/Version**: TypeScript 5.x, Node.js 18+
 
-**Primary Dependencies**: 
+**Primary Dependencies**:
 - `homebridge` (peer dependency for plugin API types)
 - `hap-nodejs` (peer dependency for HAP protocol types)
 - `hap-fluent` (peer dependency, optional for fluent API testing)
@@ -27,7 +27,7 @@ Create a comprehensive, developer-friendly test harness (`hap-test`) that enable
 
 **Project Type**: NPM package (monorepo package) with TypeScript source
 
-**Performance Goals**: 
+**Performance Goals**:
 - Test harness initialization: < 50ms
 - Accessory registration: < 10ms per accessory
 - Characteristic get/set: < 5ms
@@ -39,7 +39,7 @@ Create a comprehensive, developer-friendly test harness (`hap-test`) that enable
 - No production dependencies (test-only package)
 - 90%+ test coverage for core components
 
-**Scale/Scope**: 
+**Scale/Scope**:
 - Supports platforms with 1-1000+ accessories
 - Event-based architecture for scalable notifications
 - ~7-week phased implementation

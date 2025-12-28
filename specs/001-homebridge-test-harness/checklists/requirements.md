@@ -25,7 +25,7 @@
 - [x] Scope is clearly bounded
 - [x] Dependencies and assumptions identified
 
-**Notes**: 
+**Notes**:
 - Feature scope clearly bounded with explicit Goals & Non-Goals section
 - 5 concrete user flows with acceptance criteria
 - Success metrics include both quantitative (performance targets, adoption metrics) and qualitative measures
@@ -39,7 +39,7 @@
 - [x] Feature meets measurable outcomes defined in Success Criteria
 - [x] No implementation details leak into specification
 
-**Notes**: 
+**Notes**:
 - Primary user flows: Basic accessory testing, multi-device platforms, error scenarios, time-based features, HAP protocol validation
 - Success criteria align with user flows and business objectives
 - Technical design describes components without specifying implementation language/frameworks
