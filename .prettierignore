@@ -8,6 +8,9 @@ coverage/
 .env.local
 .env.*.local
 
+# Markdown files (exclude from formatting)
+*.md
+
 # Lock files (avoid formatting)
 package-lock.json
 yarn.lock
