@@ -1,7 +1,7 @@
 # Specification: Integrating hap-fluent & hap-test into homebridge-rabbitair
 
-**Repository:** https://github.com/pradeepmouli/homebridge-rabbitair  
-**Date:** December 30, 2025  
+**Repository:** https://github.com/pradeepmouli/homebridge-rabbitair
+**Date:** December 30, 2025
 **Status:** Draft
 
 ## Executive Summary
