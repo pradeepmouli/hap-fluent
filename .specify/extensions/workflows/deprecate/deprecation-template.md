@@ -359,9 +359,9 @@ Link: <[migration guide URL]>; rel="deprecation"
 
 ## Approval & Sign-off
 
-**Product Owner**: [ ] Approved | Name: ****\_\_**** | Date: ****\_\_****
-**Engineering Lead**: [ ] Approved | Name: ****\_\_**** | Date: ****\_\_****
-**Support Lead**: [ ] Approved | Name: ****\_\_**** | Date: ****\_\_****
+**Product Owner**: [ ] Approved | Name: \***\*\_\_\*\*** | Date: \***\*\_\_\*\***
+**Engineering Lead**: [ ] Approved | Name: \***\*\_\_\*\*** | Date: \***\*\_\_\*\***
+**Support Lead**: [ ] Approved | Name: \***\*\_\_\*\*** | Date: \***\*\_\_\*\***
 
 ---
 
