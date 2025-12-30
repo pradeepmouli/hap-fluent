@@ -52,7 +52,7 @@ export function isCharacteristic(obj: unknown): obj is Characteristic {
 		typeof characteristic.UUID === 'string' &&
 		typeof characteristic.displayName === 'string' &&
 		typeof characteristic.updateValue === 'function' &&
-		typeof characteristic.getValue === 'function'
+		'value' in characteristic
 	);
 }
 

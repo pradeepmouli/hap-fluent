@@ -1,0 +1,11 @@
+# Ignore generated and external directories
+node_modules/
+dist/
+build/
+coverage/
+
+# Minified bundles and lock files
+**/*.min.js
+pnpm-lock.yaml
+yarn.lock
+package-lock.json

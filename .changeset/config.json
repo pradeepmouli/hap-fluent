@@ -1,0 +1,19 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.2/schema.json",
+  "changelog": [
+    "@changesets/changelog-github",
+    {
+      "repo": "pradeepmouli/hap-fluent"
+    }
+  ],
+  "commit": false,
+  "fixed": [],
+  "linked": [
+    ["hap-fluent", "hap-test"]
+  ],
+  "access": "public",
+  "baseBranch": "master",
+  "updateInternalDependencies": "patch",
+  "ignore": ["hap-codegen"]
+}
+

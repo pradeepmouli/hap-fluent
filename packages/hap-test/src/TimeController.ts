@@ -1,6 +1,6 @@
 /**
  * TimeController - Manages test time and timer integration
- * 
+ *
  * Provides deterministic time control for testing time-dependent
  * platform behavior using Vitest's fake timer infrastructure.
  */
@@ -22,7 +22,7 @@ export class TimeController {
 	/**
 	 * Advance time by the specified number of milliseconds
 	 * Executes all timers that should fire during this period
-	 * 
+	 *
 	 * @param ms - Milliseconds to advance
 	 */
 	async advance(ms: number): Promise<void> {
@@ -35,7 +35,7 @@ export class TimeController {
 		}
 
 		this._currentTime += ms;
-		
+
 		if (this._useFakeTimers) {
 			await vi.advanceTimersByTimeAsync(ms);
 		}
@@ -47,7 +47,7 @@ export class TimeController {
 	 */
 	freeze(): void {
 		this._isFrozen = true;
-		
+
 		if (!this._useFakeTimers) {
 			vi.useFakeTimers();
 			this._useFakeTimers = true;
@@ -56,7 +56,7 @@ export class TimeController {
 
 	/**
 	 * Get current time in milliseconds since epoch
-	 * 
+	 *
 	 * @returns Current test time
 	 */
 	now(): number {
@@ -68,17 +68,17 @@ export class TimeController {
 
 	/**
 	 * Set time to a specific date
-	 * 
+	 *
 	 * @param date - Target date/time
 	 */
 	setTime(date: Date): void {
 		this._currentTime = date.getTime();
-		
+
 		if (!this._useFakeTimers) {
 			vi.useFakeTimers();
 			this._useFakeTimers = true;
 		}
-		
+
 		vi.setSystemTime(date);
 	}
 
@@ -88,7 +88,7 @@ export class TimeController {
 	reset(): void {
 		this._isFrozen = false;
 		this._currentTime = Date.now();
-		
+
 		if (this._useFakeTimers) {
 			vi.useRealTimers();
 			this._useFakeTimers = false;

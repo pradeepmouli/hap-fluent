@@ -1,0 +1,12 @@
+{
+  "entryPoints": ["src/index.ts"],
+  "out": "docs/api",
+  "tsconfig": "tsconfig.json",
+  "includeVersion": true,
+  "readme": "README.md",
+  "exclude": ["**/test/**", "**/examples/**", "**/*.test.ts"],
+  "plugin": [],
+  "categorizeByGroup": true,
+  "sort": ["source-order"],
+  "githubPages": false
+}

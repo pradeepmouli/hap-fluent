@@ -20,6 +20,10 @@ export interface HarnessOptions {
 		debug?: boolean;
 		/** Custom log prefix */
 		prefix?: string;
+		/** Log level (DEBUG, INFO, WARN, ERROR) */
+		level?: 'DEBUG' | 'INFO' | 'WARN' | 'ERROR';
+		/** Specific categories to log */
+		categories?: string[];
 	};
 	
 	/** Time control options */
@@ -35,6 +39,9 @@ export interface HarnessOptions {
 		/** Base path for persistent storage (defaults to temp directory) */
 		persistPath?: string;
 	};
+	
+	/** Cached accessories to restore at startup */
+	cachedAccessories?: import('./mocks.js').MockAccessory[];
 }
 
 /**

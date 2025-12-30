@@ -1,6 +1,6 @@
 // Auto-generated HAP Service Interfaces
 
-import { Service } from 'homebridge';
+import type { Service } from 'homebridge';
 
 import { Enums } from './hap-enums.js';
 

@@ -11,3 +11,10 @@ coverage/
 .pnpm-debug.log*\
 .tsconfig.tsbuildinfo
 *.tsbuildinfo
+
+# Editor and OS-specific files
+.vscode/
+.idea/
+Thumbs.db
+*.tmp
+*.swp

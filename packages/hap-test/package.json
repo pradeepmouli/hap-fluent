@@ -36,7 +36,8 @@
 		"test:watch": "vitest",
 		"test:ui": "vitest --ui",
 		"test:coverage": "vitest run --coverage",
-		"type-check": "tsc --noEmit"
+		"type-check": "tsc --noEmit",
+		"docs:api": "typedoc"
 	},
 	"keywords": [
 		"homebridge",
@@ -55,9 +56,9 @@
 		"directory": "packages/hap-test"
 	},
 	"peerDependencies": {
-		"homebridge": "^1.6.0 || ^2.0.0",
 		"hap-nodejs": "^0.11.0 || ^0.12.0",
-		"vitest": "^1.0.0 || ^2.0.0"
+		"homebridge": "^1.6.0 || ^2.0.0",
+		"vitest": "^1.0.0 || ^2.0.0 || ^4.0.0"
 	},
 	"peerDependenciesMeta": {
 		"hap-fluent": {
@@ -65,8 +66,16 @@
 		}
 	},
 	"devDependencies": {
-		"@types/node": "^18.0.0",
-		"typescript": "^5.0.0"
+		"@changesets/cli": "^2.29.8",
+		"@types/node": "^25.0.3",
+		"@vitest/coverage-istanbul": "4.0.16",
+		"@vitest/coverage-v8": "^4.0.16",
+		"@vitest/ui": "^4.0.16",
+		"changeset": "^0.2.6",
+		"changesets": "^1.0.2",
+		"typedoc": "^0.28.15",
+		"typescript": "^5.9.3",
+		"vitest": "^4.0.16"
 	},
 	"files": [
 		"dist",

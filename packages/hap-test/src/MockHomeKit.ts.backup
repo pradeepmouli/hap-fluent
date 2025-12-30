@@ -1,0 +1,307 @@
+/**
+ * MockHomeKit - Simulated HomeKit controller for testing
+ *
+ * Provides accessory/service/characteristic operations with validation,
+ * event emission, and time-aware event history for deterministic tests.
+ */
+
+import { EventEmitter } from 'events';
+import type { CharacteristicValue } from 'hap-nodejs';
+import type { CharacteristicEvent } from './types/events.js';
+import type { MockAccessory as IMockAccessory, MockService as IMockService, MockCharacteristic as IMockCharacteristic, EventSubscription as IEventSubscription, CharacteristicProps } from './types/mocks.js';
+import { buildChangeEvent, ensureReadable, ensureSubscribable, ensureWritable, type TimeProvider } from './utils/characteristic-utils.js';
+import { validateCharacteristicValue } from './utils/validation.js';
+import type { NetworkSimulator } from './NetworkSimulator.js';
+
+const defaultTime: TimeProvider = { now: () => Date.now() };
+
+export class MockHomeKit {
+  private _accessories: Map<string, MockAccessory> = new Map();
+  private readonly _eventEmitter: EventEmitter = new EventEmitter();
+  private readonly _time: TimeProvider;
+	private _networkSimulator?: NetworkSimulator;
+
+  accessories(): MockAccessory[] {
+    return Array.from(this._accessories.values());
+  }
+
+  accessory(uuid: string): MockAccessory | undefined {
+    return this._accessories.get(uuid);
+  }
+
+  service(accessoryUuid: string, serviceNameOrType: string): MockService | undefined {
+    const acc = this._accessories.get(accessoryUuid);
+    if (!acc) return undefined;
+    return acc.getService(serviceNameOrType);
+  }
+
+  characteristic(accessoryUuid: string, serviceNameOrType: string, charNameOrType: string): MockCharacteristic | undefined {
+    const svc = this.service(accessoryUuid, serviceNameOrType);
+    if (!svc) return undefined;
+    return svc.getCharacteristic(charNameOrType);
+  }
+
+  /**
+   * Add an accessory to the simulated controller (testing helper)
+   */
+  addAccessory(accessory: MockAccessory): void {
+    if (this._accessories.has(accessory.UUID)) {
+      return;
+    }
+
+    accessory.bindEvents(this._eventEmitter, this._time);
+    this._accessories.set(accessory.UUID, accessory);
+  }
+
+	/**
+	 * Set network simulator for testing network conditions
+	 */
+	setNetworkSimulator(simulator: NetworkSimulator | undefined): void {
+		this._networkSimulator = simulator;
+	}
+
+	/**
+	 * Get current network simulator
+	 */
+	getNetworkSimulator(): NetworkSimulator | undefined {
+		return this._networkSimulator;
+	}
+   */
+  emitCharacteristicEvent(event: CharacteristicEvent): void {
+    this._eventEmitter.emit('characteristic', event);
+  }
+}
+
+export class MockAccessory implements IMockAccessory {
+  UUID: string;
+  displayName: string;
+  category?: number;
+  services: MockService[] = [];
+  context: Record<string, any> = {};
+
+  private _eventEmitter?: EventEmitter;
+  private _time: TimeProvider = defaultTime;
+
+  constructor(uuid: string, displayName: string, category?: number) {
+    this.UUID = uuid;
+    this.displayName = displayName;
+    this.category = category;
+  }
+
+  bindEvents(emitter: EventEmitter, time: TimeProvider): void {
+    this._eventEmitter = emitter;
+    this._time = time;
+    this.services.forEach(service => service.bindContext(this, emitter, time));
+  }
+
+  getService(nameOrType: string): MockService | undefined {
+    return this.services.find(s => s.displayName === nameOrType || s.type === nameOrType);
+  }
+
+  getServices(): MockService[] {
+    return this.services.slice();
+  }
+
+  addService(service: MockService): void {
+    service.bindContext(this, this._eventEmitter, this._time);
+    this.services.push(service);
+  }
+}
+
+export class MockService implements IMockService {
+  type: string;
+  subtype?: string;
+  displayName: string;
+  characteristics: MockCharacteristic[] = [];
+  accessory?: MockAccessory;
+
+  private _eventEmitter?: EventEmitter;
+  private _time: TimeProvider = defaultTime;
+
+  constructor(type: string, displayName: string, subtype?: string) {
+    this.type = type;
+    this.displayName = displayName;
+    this.subtype = subtype;
+  }
+
+  bindContext(accessory: MockAccessory, emitter?: EventEmitter, time: TimeProvider = defaultTime): void {
+    this.accessory = accessory;
+    this._eventEmitter = emitter;
+    this._time = time;
+    this.characteristics.forEach(char => char.bindContext(this, accessory, emitter, time));
+  }
+
+  getCharacteristic(nameOrType: string): MockCharacteristic | undefined {
+    return this.characteristics.find(c => c.displayName === nameOrType || c.type === nameOrType);
+  }
+
+  hasCharacteristic(nameOrType: string): boolean {
+    return !!this.getCharacteristic(nameOrType);
+  }
+
+  addCharacteristic(characteristic: MockCharacteristic): void {
+    characteristic.bindContext(this, this.accessory, this._eventEmitter, this._time);
+    this.characteristics.push(characteristic);
+  }
+}
+
+export class MockCharacteristic implements IMockCharacteristic {
+  type: string;
+  displayName: string;
+  value: CharacteristicValue;
+  props: CharacteristicProps;
+
+  private _subscribed: boolean = false;
+  private _history: CharacteristicEvent[] = [];
+  private _subscriptions: Set<EventSubscription> = new Set();
+  private _service?: MockService;
+  private _accessory?: MockAccessory;
+  private _eventEmitter?: EventEmitter;
+  private _time: TimeProvider = defaultTime;
+
+  constructor(type: string, displayName: string, initial: CharacteristicValue, props: CharacteristicProps) {
+    this.type = type;
+    this.displayName = displayName;
+    this.value = initial;
+    this.props = props;
+  }
+
+  bindContext(service?: MockService, accessory?: MockAccessory, emitter?: EventEmitter, time: TimeProvider = defaultTime): void {
+    this._service = service;
+    this._accessory = accessory;
+    this._eventEmitter = emitter;
+    this._time = time;
+  }
+
+  async getValue(): Promise<CharacteristicValue> {
+    ensureReadable(this.type, this.props);
+    validateCharacteristicValue(this.type, this.value, this.props, 'read');
+    return this.value;
+  }
+
+  async setValue(value: CharacteristicValue): Promise<void> {
+    ensureWritable(this.type, this.props);
+    validateCharacteristicValue(this.type, value, this.props, 'write');
+
+    const oldValue = this.value;
+    this.value = value;
+
+    const event = buildChangeEvent({
+      accessoryUUID: this._accessory?.UUID,
+      serviceType: this._service?.type ?? this._service?.displayName,
+      characteristicType: this.type,
+      event: { oldValue, newValue: value },
+      time: this._time,
+    });
+
+    this._history.push(event);
+    this.notifySubscribers(event);
+  }
+
+  subscribe(): IEventSubscription {
+    ensureSubscribable(this.type, this.props);
+
+    this._subscribed = true;
+    const subscription = new EventSubscription(this);
+    this._subscriptions.add(subscription);
+    return subscription;
+  }
+
+  isSubscribed(): boolean {
+    return this._subscribed;
+  }
+
+  getHistory(): CharacteristicEvent[] {
+    return this._history.slice();
+  }
+
+  private notifySubscribers(event: CharacteristicEvent): void {
+    this._subscriptions.forEach(sub => sub.receive(event));
+    this._eventEmitter?.emit('characteristic', event);
+  }
+
+  removeSubscription(subscription: EventSubscription): void {
+    this._subscriptions.delete(subscription);
+    if (this._subscriptions.size === 0) {
+      this._subscribed = false;
+    }
+  }
+}
+
+class EventSubscription implements IEventSubscription {
+  private _active: boolean = true;
+  private _queue: CharacteristicEvent[] = [];
+  private _pendingResolver?: (event: CharacteristicEvent) => void;
+  private _pendingReject?: (error: Error) => void;
+  private _timeoutId?: ReturnType<typeof setTimeout>;
+
+  constructor(private readonly source: MockCharacteristic) {}
+
+  receive(event: CharacteristicEvent): void {
+    if (!this._active) return;
+
+    if (this._pendingResolver) {
+      if (this._timeoutId) {
+        clearTimeout(this._timeoutId);
+        this._timeoutId = undefined;
+      }
+      const resolver = this._pendingResolver;
+      this._pendingResolver = undefined;
+      this._pendingReject = undefined;
+      resolver(event);
+      return;
+    }
+
+    this._queue.push(event);
+  }
+
+  waitForNext(timeout?: number): Promise<CharacteristicEvent> {
+    if (!this._active) {
+      return Promise.reject(new Error('Subscription is inactive'));
+    }
+
+    if (this._queue.length > 0) {
+      return Promise.resolve(this._queue.shift() as CharacteristicEvent);
+    }
+
+    return new Promise<CharacteristicEvent>((resolve, reject) => {
+      this._pendingResolver = resolve;
+      this._pendingReject = reject;
+
+      if (timeout && timeout > 0) {
+        this._timeoutId = setTimeout(() => {
+          this._pendingResolver = undefined;
+          this._pendingReject = undefined;
+          reject(new Error('Timeout waiting for next event'));
+        }, timeout);
+      }
+    });
+  }
+
+  getHistory(): CharacteristicEvent[] {
+    return this.source.getHistory().slice();
+  }
+
+  unsubscribe(): void {
+    if (!this._active) return;
+    this._active = false;
+    if (this._timeoutId) {
+      clearTimeout(this._timeoutId);
+      this._timeoutId = undefined;
+    }
+    this._pendingResolver = undefined;
+    if (this._pendingReject) {
+      this._pendingReject(new Error('Subscription cancelled'));
+      this._pendingReject = undefined;
+    }
+    this.source.removeSubscription(this);
+  }
+
+  latest(): CharacteristicEvent | undefined {
+    return this.source.getHistory().at(-1);
+  }
+
+  count(): number {
+    return this.source.getHistory().length;
+  }
+}

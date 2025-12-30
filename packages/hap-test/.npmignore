@@ -1,0 +1,25 @@
+node_modules/
+coverage/
+.DS_Store
+.vscode/
+.idea/
+.specify/
+pnpm-lock.yaml
+pnpm-workspace.yaml
+package-lock.json
+yarn.lock
+*.log
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Tests and tooling
+coverage/
+test/
+**/*.test.ts
+**/*.spec.ts
+
+# Examples and docs
+examples/
+README.md
+
+# Keep dist for publish

@@ -1,7 +1,5 @@
 // Auto-generated HAP Enums
 
-import { Characteristic } from 'hap-nodejs';
-
 export namespace Enums {
 	export const enum AccessoryFlags {
 		RequiresAdditionalSetupBitMask = 1

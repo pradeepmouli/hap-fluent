@@ -15,6 +15,7 @@ export class MockHomebridgeAPI extends EventEmitter {
 	private _accessories: Map<string, PlatformAccessory> = new Map();
 	private _didFinishLaunching: boolean = false;
 	private _storagePath: string;
+	private _cachedAccessories: any[] = [];
 
 	public readonly hap: any = HAP;
 	public readonly platformAccessory: any = HAP.Accessory;
@@ -135,5 +136,22 @@ export class MockHomebridgeAPI extends EventEmitter {
 	publishExternalAccessories(_pluginIdentifier: string, _accessories: PlatformAccessory[]): void {
 		// Not implemented in Phase 2
 		throw new Error('publishExternalAccessories not yet implemented');
+	}
+
+	/**
+	 * Provide cached accessories to the platform and emit configure callbacks
+	 */
+	provideCachedAccessories(accessories: any[]): void {
+		this._cachedAccessories = accessories.slice();
+		for (const accessory of accessories) {
+			this.emit('configureAccessory', accessory);
+		}
+	}
+
+	/**
+	 * Get cached accessories previously provided
+	 */
+	getCachedAccessories(): any[] {
+		return this._cachedAccessories.slice();
 	}
 }

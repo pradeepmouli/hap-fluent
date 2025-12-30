@@ -26,19 +26,17 @@
  * ```
  */
 
-import { type DynamicPlatformPlugin, PlatformAccessory, type UnknownContext, type WithUUID } from 'homebridge';
-import { Service } from 'hap-nodejs';
+import { type DynamicPlatformPlugin, PlatformAccessory, type UnknownContext } from 'homebridge';
 
 import { TupleToUnion } from 'type-fest';
 
-import { _definitions } from 'hap-nodejs';
-
-import { getOrAddService, wrapService, FluentService } from './FluentService.js';
+import { wrapService, FluentService } from './FluentService.js';
 import type { AccessoryInformation } from './types/hap-interfaces.js';
 import type { CamelCase, SimplifyDeep } from 'type-fest';
 import camelcase from 'camelcase';
 import type { ServiceForInterface, Interfaces, InterfaceMap, ServiceMap } from './types/index.js';
 import { getLogger } from './logger.js';
+import type { API } from 'homebridge';
 
 
 
@@ -150,20 +148,29 @@ export type  FluentAccessory<TContext extends UnknownContext, Services extends I
  * Initialize an accessory and apply the provided initial state to its services.
  *
  * @param accessory - The Homebridge platform accessory instance.
+ * @param api - Homebridge API for accessing hap.Service constructor.
  * @param initialState - Initial characteristic values for each service.
  * @returns The accessory augmented with fluent service wrappers.
  *
+ * @remarks
+ * This function wraps existing services on the accessory with fluent interfaces.
+ * It can create new services using the api.hap.Service constructors if they don't already exist.
+ *
  * @example
  * ```typescript
- * const accessory = initializeAccessory(platformAccessory, {
- *   lightbulb: { on: true, brightness: 100 },
- *   accessoryInformation: { manufacturer: 'ACME', model: 'Light-1' }
+ * // Initialize with fluent interface, creating services if needed
+ * const fluentAccessory = initializeAccessory(accessory, api, {
+ *   lightbulb: { on: true, brightness: 100 }
  * });
+ *
+ * // Use fluent API
+ * fluentAccessory.lightbulb.on.set(false);
  * ```
  */
 export function initializeAccessory<TContext extends UnknownContext, Services extends Interfaces[]>(
 	accessory: PlatformAccessory<TContext>,
-	initialState: InternalServicesStateObject<Services>,
+	api: API,
+	initialState?: InternalServicesStateObject<Services>,
 ): FluentAccessory<TContext, Services> {
 	const logger = getLogger();
 	logger.info(
@@ -171,115 +178,152 @@ export function initializeAccessory<TContext extends UnknownContext, Services ex
 			accessoryUUID: accessory.UUID,
 			accessoryName: accessory.displayName,
 			serviceCount: accessory.services.length,
-			stateKeys: Object.keys(initialState)
+			stateKeys: initialState ? Object.keys(initialState) : []
 		},
 		'Initializing accessory with state',
 	);
 
-	const services = createServicesObject(...accessory.services as unknown as InstanceType<ServiceForInterface<Services[number]>>[]);
-	for (const key in initialState) {
-	  if(typeof initialState[key] === 'object') {
-		const serviceClass = Service[camelcase(key, {pascalCase: true}) as keyof InterfaceMap] as WithUUID<typeof Service.AccessoryInformation>;
-		if(serviceClass) {
+	// Apply initial state to services, creating them if needed
+	if (initialState) {
+		for (const key in initialState) {
+			const serviceName = camelcase(key, { pascalCase: true });
 			const stateValue = initialState[key];
-			// Type assertion needed: runtime check handles type safety
-			if(typeof stateValue === 'object' && isMultiService(stateValue as any)) {
-				// Multi-service handling not yet implemented
-			}
-			else
-			{
-				const service = accessory.getService(serviceClass)
-				|| accessory.addService(new serviceClass()) as InstanceType<typeof serviceClass>;
 
-				const wrappedService = wrapService(service as InstanceType<typeof serviceClass>);
-				// Type assertion needed: dynamic service name lookup and characteristic access
-				// TypeScript cannot prove that initialState[key][charKey] matches the characteristic's value type
-				(services as Record<string, unknown>)[camelcase(key, {pascalCase: true})] = wrappedService;
-					for(const charKey in initialState[key]) {
-						const characteristics = (wrappedService as any).characteristics;
-						const wrappedChar = characteristics?.[charKey];
-						if (wrappedChar && typeof wrappedChar.set === 'function') {
-							wrappedChar.set(initialState[key][charKey]);
+			if (typeof stateValue === 'object' && !isMultiService(stateValue as any)) {
+				// Look up service class from api.hap.Service
+				const serviceClass = (api.hap.Service as Record<string, any>)[serviceName];
+
+				if (serviceClass) {
+					// Get existing service or create new one
+					let service = accessory.getService(serviceClass);
+					if (!service) {
+						service = accessory.addService(new serviceClass());
+					}
+
+					// Apply initial characteristic values
+					for (const charKey in stateValue) {
+						const characteristic = service.getCharacteristic((api.hap.Characteristic as Record<string, any>)[camelcase(charKey, { pascalCase: true })]);
+						if (characteristic) {
+							characteristic.setValue((stateValue as Record<string, any>)[charKey]);
 						}
 					}
+				}
 			}
 		}
-	  }
-
 	}
-	return Object.assign(accessory, services as ServicesObject<Services>);
 
+	// Wrap all services on the accessory
+	const services = createServicesObject(...accessory.services as unknown as InstanceType<ServiceForInterface<Services[number]>>[]);
+	return Object.assign(accessory, services as ServicesObject<Services>);
 }
 
 /**
  * Wrapper around a Homebridge platform accessory that exposes fluent service helpers.
+ *
+ * @remarks
+ * This class wraps an existing Homebridge accessory with fluent service helpers.
+ * Services must be created through Homebridge's hap.Service API before passing
+ * to this class.
  */
 export class AccessoryHandler<TContext extends UnknownContext, Services extends Interfaces[]> {
 
-  public context: TContext;
-  public services: ServicesObject<Services> = {} as ServicesObject<Services>;
+	public context: TContext;
+	public services: ServicesObject<Services> = {} as ServicesObject<Services>;
 
 	/**
 	 * @param plugin - Homebridge platform plugin instance.
-	 * @param accessory - Platform accessory to manage.
+	 * @param accessory - Platform accessory to manage (must have services already created).
 	 */
 	constructor(protected plugin: DynamicPlatformPlugin, public readonly accessory: PlatformAccessory<TContext>) {
 		this.context = accessory.context as TContext;
 		this.services = createServicesObject(...accessory.services as unknown as InstanceType<ServiceForInterface<Services[number]>>[]) as ServicesObject<Services>;
-
 	}
 
 	/**
-	 * Add or retrieve a service and wrap it with fluent helpers.
+	 * Initialize the accessory with state, applying values to characteristics and creating services if needed.
+	 * This method requires the Homebridge API to access hap.Service constructors for dynamic service creation.
 	 *
-	 * @param serviceClass - HAP service class constructor.
-	 * @param displayName - Optional display name for the service.
-	 * @param subType - Optional subtype identifier.
-	 */
-	addService<S extends typeof Service>(
-		serviceClass: WithUUID<S>,
-		displayName?: string,
-		subType?: string
-	): FluentService<S> {
-		return getOrAddService(this.accessory, serviceClass, displayName, subType);
-	}
-
-
-	/**
-	 * Ensure services exist on the accessory and apply initial values.
+	 * @param apiOrState - Homebridge API instance (required for creating new services) or initial state if API was injected.
+	 * @param maybeState - Initial characteristic values for services (if first param is API).
 	 *
-	 * @param initialState - Optional initial characteristic values.
+	 * @example
+	 * ```typescript
+	 * const handler = new AccessoryHandler(plugin, accessory);
+	 * // With API for creating services
+	 * await handler.initialize(api, { lightbulb: { on: true } });
+	 * // Or just with existing services (no service creation)
+	 * await handler.initialize({ lightbulb: { on: true } });
+	 * ```
 	 */
-	async initialize(initialState?: InternalServicesStateObject<Services>): Promise<void> {
-		if (initialState) {
+	public async initialize(apiOrState?: API | InternalServicesStateObject<Services>, maybeState?: InternalServicesStateObject<Services>): Promise<void> {
+		let api: API | undefined;
+		let initialState: InternalServicesStateObject<Services> | undefined;
+
+		// Determine if first arg is API or state
+		if (apiOrState && 'hap' in (apiOrState as any)) {
+			// First arg is API
+			api = apiOrState as API;
+			initialState = maybeState;
+		} else {
+			// First arg is state (or undefined)
+			initialState = apiOrState as InternalServicesStateObject<Services>;
+		}
+
+		// Only initialize with state if we have both api and state
+		if (api && initialState) {
+			initializeAccessory(this.accessory, api, initialState);
+		} else if (initialState && !api) {
+			// If state is provided without API, just apply to existing services
+			// This happens in tests where services already exist
 			for (const key in initialState) {
-				if (typeof initialState[key] === 'object') {
-					const serviceClass = Service[camelcase(key, { pascalCase: true }) as keyof InterfaceMap];
-					if (serviceClass) {
-					const stateValue = initialState[key];
-					// Type assertion needed: runtime check handles type safety
-					if (typeof stateValue === 'object' && isMultiService(stateValue as any)) {
-						// Multi-service handling not yet implemented
-						} else {
-							const service = this.accessory.getService(serviceClass as WithUUID<typeof Service>)
-								|| this.accessory.addService(new serviceClass()) as InstanceType<typeof serviceClass>;
+				const serviceName = camelcase(key, { pascalCase: true });
+				const stateValue = initialState[key];
 
-						const wrappedService = wrapService(service as InstanceType<typeof serviceClass>);
-						// Type assertion needed: dynamic service name lookup and characteristic access
-						// TypeScript cannot prove that initialState[key][charKey] matches the characteristic's value type
-						(this.services as Record<string, unknown>)[camelcase(key, { pascalCase: true })] = wrappedService;
-							for (const charKey in initialState[key]) {
-								const characteristics = (wrappedService as any).characteristics;
-								const wrappedChar = characteristics?.[charKey];
-								if (wrappedChar && typeof wrappedChar.set === 'function') {
-									wrappedChar.set(initialState[key][charKey]);
-								}
+				if (typeof stateValue === 'object' && !isMultiService(stateValue as any)) {
+					// Find service by name
+					const service = this.accessory.services.find(s =>
+						s.constructor.name === serviceName ||
+						camelcase(s.constructor.name, { pascalCase: true }) === serviceName
+					);
+
+					if (service) {
+						for (const charKey in stateValue) {
+							const characteristic = service.getCharacteristic(
+								(stateValue as any)[charKey]?.constructor || charKey as any
+							);
+							if (characteristic) {
+								characteristic.setValue((stateValue as Record<string, any>)[charKey]);
 							}
 						}
 					}
 				}
 			}
-
 		}
+
+		// Always refresh the services object after initialization
+		this.services = createServicesObject(...this.accessory.services as unknown as InstanceType<ServiceForInterface<Services[number]>>[]) as ServicesObject<Services>;
+	}
+
+	/**
+	 * Add a new service to the accessory and return it wrapped with the fluent interface.
+	 *
+	 * @param serviceClass - Service class constructor.
+	 * @param displayName - Display name for the service.
+	 * @param subtype - Optional subtype for the service.
+	 * @returns The wrapped fluent service.
+	 *
+	 * @example
+	 * ```typescript
+	 * const lightbulb = handler.addService(api.hap.Service.Lightbulb, 'Main Light');
+	 * lightbulb.on.set(true);
+	 * ```
+	 */
+	public addService(
+		serviceClass: any,
+		displayName: string,
+		subtype?: string,
+	): FluentService<any> {
+		const service = this.accessory.addService(new serviceClass(displayName, subtype) as unknown as any);
+		return wrapService(service as any);
 	}
 }

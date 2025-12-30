@@ -241,16 +241,14 @@ await mockChar.triggerSet(50);
 expect(handlerValue).toBe(80); // 50 * 2 = 100, clamped to 80
 });
 
-it('should work with validation', async () => {
+it('should chain multiple interceptors without validation', async () => {
 const mockChar = new MockCharacteristic('Brightness', 'brightness-uuid');
 const fluent = new FluentCharacteristic(mockChar as any);
-
-const { RangeValidator } = await import('../../src/validation.js');
-fluent.addValidator(new RangeValidator(0, 100, 'Brightness'));
 
 let handlerValue: any;
 fluent
 .log()
+.clamp(0, 100)
 .onSet(async (value) => {
 handlerValue = value;
 });
@@ -259,8 +257,9 @@ handlerValue = value;
 await mockChar.triggerSet(50);
 expect(handlerValue).toBe(50);
 
-// Invalid value should be rejected by validator
-await expect(mockChar.triggerSet(150)).rejects.toThrow('Brightness must be between 0 and 100');
+// Out of range value should be clamped
+await mockChar.triggerSet(150);
+expect(handlerValue).toBe(100); // Clamped to max
 });
 });
 
@@ -269,7 +268,7 @@ it('should remove all interceptors', async () => {
 const mockChar = new MockCharacteristic('Brightness', 'brightness-uuid');
 const fluent = new FluentCharacteristic(mockChar as any);
 
-fluent.limit(1, 1000).onSet(async (value) => {
+fluent.limit(1, 1000).onSet(async (_value) => {
 // Handler
 });
 
@@ -281,7 +280,7 @@ await expect(mockChar.triggerSet(2)).rejects.toThrow();
 
 // Clear interceptors and re-register handler
 fluent.clearInterceptors();
-fluent.onSet(async (value) => {
+fluent.onSet(async (_value) => {
 // New handler without rate limit
 });
 

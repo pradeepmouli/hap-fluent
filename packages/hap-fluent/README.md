@@ -19,8 +19,9 @@ HAP Fluent provides a type-safe, fluent API for working with HomeKit Accessory P
 - 🔄 **Interceptors**: Built-in logging, rate limiting, transformation, and codec support
 - 🧰 **Type Utilities**: Transformers, validators, and helper types
 - 📦 **Tree-Shakeable**: Modern ES modules with optimized exports
-- ✅ **Well-Tested**: 172 tests, 100% pass rate
+- ✅ **Well-Tested**: 169 tests, 100% pass rate
 - 📚 **Documented**: Comprehensive JSDoc on all public APIs
+- 🏠 **Homebridge Compliant**: Respects Homebridge's dependency requirements
 
 ## Installation
 
@@ -51,7 +52,11 @@ export default (api: API) => {
 };
 
 class MyAccessory {
-  constructor(private readonly log: any, private readonly config: any, private readonly api: API) {
+  constructor(
+    private readonly log: any,
+    private readonly config: any,
+    private readonly api: API
+  ) {
     // Create accessory
     const uuid = api.hap.uuid.generate('my-unique-id');
     const accessory = new api.platformAccessory('My Light', uuid);
@@ -154,31 +159,71 @@ lightbulb.characteristics.On.onSet(async (value) => {
 });
 ```
 
-### AccessoryHandler
+### AccessoryHandler & initializeAccessory
 
-Initialize accessories with state and type-safe service access.
+Initialize accessories with state and type-safe service access. HAP Fluent provides two approaches: the `initializeAccessory` function for direct initialization, and the `AccessoryHandler` class for managed accessory lifecycle.
+
+#### Using initializeAccessory
+
+For direct initialization with the Homebridge API:
 
 ```typescript
 import { initializeAccessory } from 'hap-fluent';
 
-const accessory = initializeAccessory(platformAccessory, {
-  lightbulb: {
-    on: true,
-    brightness: 75,
-    hue: 120,
-    saturation: 50,
-  },
-  accessoryInformation: {
-    manufacturer: 'ACME',
-    model: 'Light-1000',
-    serialNumber: 'SN12345',
-    firmwareRevision: '1.0.0',
-  },
-});
+// Initialize with API for dynamic service creation
+const accessory = initializeAccessory(
+  platformAccessory,
+  api, // Homebridge API instance
+  {
+    lightbulb: {
+      on: true,
+      brightness: 75,
+      hue: 120,
+      saturation: 50,
+    },
+    accessoryInformation: {
+      manufacturer: 'ACME',
+      model: 'Light-1000',
+      serialNumber: 'SN12345',
+      firmwareRevision: '1.0.0',
+    },
+  }
+);
 
 // Access services with full type safety
 accessory.lightbulb.characteristics.On.get(); // boolean
 accessory.lightbulb.characteristics.Brightness.get(); // number
+```
+
+#### Using AccessoryHandler Class
+
+For managed accessory lifecycle with initialization and dynamic service addition:
+
+```typescript
+import { AccessoryHandler } from 'hap-fluent';
+
+const handler = new AccessoryHandler(plugin, platformAccessory);
+
+// Initialize with API and state (creates services if needed)
+await handler.initialize(api, {
+  lightbulb: { on: true, brightness: 75 },
+});
+
+// Or initialize with just state (for existing services)
+await handler.initialize({
+  lightbulb: { on: true, brightness: 75 },
+});
+
+// Add services dynamically at runtime
+const newService = handler.addService(
+  api.hap.Service.TemperatureSensor,
+  'Temperature Sensor'
+);
+
+// Access services through handler
+handler.services.lightbulb.onSet('On', async (value) => {
+  await setDevicePower(value);
+});
 ```
 
 ## Error Handling
@@ -451,7 +496,8 @@ characteristic
 ### Multi-Service Accessories
 
 ```typescript
-const accessory = initializeAccessory(platformAccessory, {
+// Initialize with API to support dynamic service creation
+const accessory = initializeAccessory(platformAccessory, api, {
   lightbulb: {
     on: true,
     brightness: 75,
@@ -867,6 +913,24 @@ lightbulb.characteristics.On
 
 The hap-fluent approach is more concise, type-safe, and includes built-in features like logging and rate limiting.
 
+## Homebridge Compliance
+
+HAP Fluent follows Homebridge's strict dependency requirements:
+
+- **No Runtime HAP-NodeJS Imports**: Uses type-only imports from `hap-nodejs` for TypeScript types
+- **Homebridge API First**: All service and characteristic access via `api.hap` provided by Homebridge
+- **Dynamic Service Creation**: Services are created using Homebridge's `api.hap.Service` constructors
+- **Type Safety**: Full TypeScript support without violating Homebridge plugin rules
+
+### Why This Matters
+
+Homebridge plugins must not import `hap-nodejs` at runtime because Homebridge provides its own instance via `api.hap`. This ensures:
+- Version consistency across all plugins
+- Proper HomeKit protocol handling
+- Compatibility with Homebridge's plugin architecture
+
+HAP Fluent respects these constraints while providing a superior developer experience.
+
 ## Best Practices
 
 ### 1. Configure Logging Early
@@ -951,8 +1015,12 @@ const initialState = {
   },
 };
 
-// Initialize with state
-const accessory = initializeAccessory(platformAccessory, initialState);
+// Initialize with API for dynamic service creation
+const accessory = initializeAccessory(platformAccessory, api, initialState);
+
+// Or use AccessoryHandler for managed lifecycle
+const handler = new AccessoryHandler(plugin, platformAccessory);
+await handler.initialize(api, initialState);
 ```
 
 ## TypeScript Configuration
@@ -979,7 +1047,7 @@ HAP Fluent requires TypeScript 5.0+ with strict mode enabled:
 // Main API
 export { getOrAddService, wrapService } from 'hap-fluent';
 export { FluentCharacteristic, FluentService } from 'hap-fluent';
-export { initializeAccessory, createServicesObject } from 'hap-fluent';
+export { initializeAccessory, createServicesObject, AccessoryHandler } from 'hap-fluent';
 
 // Error handling
 export * from 'hap-fluent/errors';

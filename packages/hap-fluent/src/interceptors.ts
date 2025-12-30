@@ -1,9 +1,9 @@
 /**
  * Interceptor system for HAP characteristic operations
- * 
+ *
  * Provides a fluent/decorator approach for extending characteristic behavior
  * with pre/post processing, logging, rate limiting, and other cross-cutting concerns.
- * 
+ *
  * @module interceptors
  */
 
@@ -26,14 +26,14 @@ export interface InterceptorContext {
 
 /**
  * Interceptor for characteristic operations
- * 
+ *
  * Interceptors can modify values, log operations, enforce rate limits,
  * or perform any other cross-cutting concern.
  */
 export interface Interceptor {
 	/**
 	 * Called before a value is set
-	 * 
+	 *
 	 * @param value - Value about to be set
 	 * @param context - Operation context
 	 * @returns Modified value or original value
@@ -42,7 +42,7 @@ export interface Interceptor {
 
 	/**
 	 * Called after a value is set successfully
-	 * 
+	 *
 	 * @param value - Value that was set
 	 * @param context - Operation context
 	 */
@@ -50,14 +50,14 @@ export interface Interceptor {
 
 	/**
 	 * Called before a value is retrieved
-	 * 
+	 *
 	 * @param context - Operation context
 	 */
 	beforeGet?(context: InterceptorContext): void | Promise<void>;
 
 	/**
 	 * Called after a value is retrieved
-	 * 
+	 *
 	 * @param value - Value that was retrieved
 	 * @param context - Operation context
 	 * @returns Modified value or original value
@@ -66,7 +66,7 @@ export interface Interceptor {
 
 	/**
 	 * Called when an error occurs during set/get
-	 * 
+	 *
 	 * @param error - The error that occurred
 	 * @param context - Operation context
 	 */
@@ -75,7 +75,7 @@ export interface Interceptor {
 
 /**
  * Logging interceptor that logs all characteristic operations
- * 
+ *
  * @example
  * ```typescript
  * characteristic.intercept(createLoggingInterceptor());
@@ -126,10 +126,10 @@ export function createLoggingInterceptor(): Interceptor {
 
 /**
  * Rate limiting interceptor to prevent excessive updates
- * 
+ *
  * @param maxCalls - Maximum number of calls allowed
  * @param windowMs - Time window in milliseconds
- * 
+ *
  * @example
  * ```typescript
  * characteristic.intercept(createRateLimitInterceptor(5, 1000));
@@ -142,7 +142,7 @@ export function createRateLimitInterceptor(maxCalls: number, windowMs: number): 
 	return {
 		beforeSet(value, context) {
 			const now = Date.now();
-			
+
 			// Remove old calls outside the window
 			while (calls.length > 0 && calls[0] < now - windowMs) {
 				calls.shift();
@@ -168,10 +168,10 @@ export function createRateLimitInterceptor(maxCalls: number, windowMs: number): 
 
 /**
  * Value clamping interceptor to ensure values stay within bounds
- * 
+ *
  * @param min - Minimum value (inclusive)
  * @param max - Maximum value (inclusive)
- * 
+ *
  * @example
  * ```typescript
  * characteristic.intercept(createClampingInterceptor(0, 100));
@@ -185,7 +185,7 @@ export function createClampingInterceptor(min: number, max: number): Interceptor
 			}
 
 			const clamped = Math.max(min, Math.min(max, value));
-			
+
 			if (clamped !== value) {
 				const logger = getLogger();
 				logger.debug(
@@ -201,9 +201,9 @@ export function createClampingInterceptor(min: number, max: number): Interceptor
 
 /**
  * Debouncing interceptor to delay rapid updates
- * 
+ *
  * @param delayMs - Delay in milliseconds
- * 
+ *
  * @example
  * ```typescript
  * characteristic.intercept(createDebouncingInterceptor(500));
@@ -214,7 +214,7 @@ export function createDebouncingInterceptor(delayMs: number): Interceptor {
 	let pendingValue: CharacteristicValue | null = null;
 
 	return {
-		beforeSet(value, context) {
+		beforeSet(value, _context) {
 			if (timeoutId) {
 				clearTimeout(timeoutId);
 			}
@@ -234,9 +234,9 @@ export function createDebouncingInterceptor(delayMs: number): Interceptor {
 
 /**
  * Transformation interceptor that applies a custom function to values
- * 
+ *
  * @param transform - Function to transform the value
- * 
+ *
  * @example
  * ```typescript
  * characteristic.intercept(
@@ -248,7 +248,7 @@ export function createTransformInterceptor(
 	transform: (value: CharacteristicValue) => CharacteristicValue
 ): Interceptor {
 	return {
-		beforeSet(value, context) {
+		beforeSet(value, _context) {
 			return transform(value);
 		},
 	};
@@ -256,9 +256,9 @@ export function createTransformInterceptor(
 
 /**
  * Audit interceptor that tracks all changes to a characteristic
- * 
+ *
  * @param onAudit - Callback function to receive audit events
- * 
+ *
  * @example
  * ```typescript
  * characteristic.intercept(
@@ -310,9 +310,9 @@ export function createAuditInterceptor(
 
 /**
  * Composite interceptor that combines multiple interceptors
- * 
+ *
  * @param interceptors - Array of interceptors to combine
- * 
+ *
  * @example
  * ```typescript
  * characteristic.intercept(
@@ -373,13 +373,13 @@ export function createCompositeInterceptor(interceptors: Interceptor[]): Interce
 
 /**
  * Codec interceptor for two-way value transformation
- * 
+ *
  * Codecs transform values when setting (encode) and retrieving (decode).
  * This is useful for converting between different formats or units.
- * 
+ *
  * @param encode - Function to transform values when setting (to HAP format)
  * @param decode - Function to transform values when getting (from HAP format)
- * 
+ *
  * @example
  * ```typescript
  * // Convert between Celsius and Fahrenheit
@@ -389,7 +389,7 @@ export function createCompositeInterceptor(interceptors: Interceptor[]): Interce
  *     (fahrenheit) => (fahrenheit - 32) * 5/9  // decode: F to C
  *   )
  * );
- * 
+ *
  * // Convert between different string formats
  * characteristic.intercept(
  *   createCodecInterceptor(
@@ -397,7 +397,7 @@ export function createCompositeInterceptor(interceptors: Interceptor[]): Interce
  *     (value) => String(value).toLowerCase()   // decode
  *   )
  * );
- * 
+ *
  * // Convert complex objects to/from JSON
  * characteristic.intercept(
  *   createCodecInterceptor(

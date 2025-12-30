@@ -1,4 +1,3 @@
-import { vi } from 'vitest';
 import type { CharacteristicValue, CharacteristicSetHandler, CharacteristicProps, PartialAllowingNull } from 'homebridge';
 
 /**

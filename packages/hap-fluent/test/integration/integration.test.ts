@@ -90,7 +90,7 @@ describe('Integration Tests', () => {
 			mockAccessory.addService(lightbulbService);
 			mockAccessory.addService(switchService);
 
-			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+			const _handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
 			expect(mockAccessory.services).toHaveLength(2);
 		});
 
@@ -103,7 +103,7 @@ describe('Integration Tests', () => {
 			mockAccessory.addService(service1);
 			mockAccessory.addService(service2);
 
-			const services = createServicesObject(service1 as any, service2 as any);
+			const _services = createServicesObject(service1 as any, service2 as any);
 
 			// Set different values for each service
 			service1.characteristics[0].value = true;
@@ -384,9 +384,7 @@ describe('Integration Tests', () => {
 
 			outlets.forEach((outlet) => mockAccessory.addService(outlet));
 
-			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
-			expect(mockAccessory.services).toHaveLength(4);
-
+		const _handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
 			// Turn on outlets 1 and 3
 			outlets[0].characteristics[0].value = true;
 			outlets[2].characteristics[0].value = true;

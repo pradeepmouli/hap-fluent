@@ -1,0 +1,90 @@
+/**
+ * MockHomeKit - Simulated HomeKit controller for testing
+ *
+ * Provides accessory/service/characteristic operations with validation,
+ * event emission, and time-aware event history for deterministic tests.
+ */
+
+import { EventEmitter } from 'events';
+import type { CharacteristicValue } from 'hap-nodejs';
+import type { CharacteristicEvent } from './types/events.js';
+import type { MockAccessory as IMockAccessory, MockService as IMockService, MockCharacteristic as IMockCharacteristic, EventSubscription as IEventSubscription, CharacteristicProps } from './types/mocks.js';
+import { buildChangeEvent, ensureReadable, ensureSubscribable, ensureWritable, type TimeProvider } from './utils/characteristic-utils.js';
+import { validateCharacteristicValue } from './utils/validation.js';
+import type { NetworkSimulator } from './NetworkSimulator.js';
+
+type TimeProvider = { now(): number };
+
+const defaultTime: TimeProvider = { now: () => Date.now() };
+
+export class MockHomeKit {
+	private _accessories: Map<string, MockAccessory> = new Map();
+	private readonly _eventEmitter: EventEmitter = new EventEmitter();
+	private readonly _time: TimeProvider;
+	private _networkSimulator?: NetworkSimulator;
+
+	constructor(timeProvider: TimeProvider = defaultTime) {
+		this._time = timeProvider;
+	}
+
+	accessories(): MockAccessory[] {
+		return Array.from(this._accessories.values());
+	}
+
+	accessory(uuid: string): MockAccessory | undefined {
+		return this._accessories.get(uuid);
+	}
+
+	service(accessoryUuid: string, serviceNameOrType: string): MockService | undefined {
+		const acc = this._accessories.get(accessoryUuid);
+		if (!acc) return undefined;
+		return acc.getService(serviceNameOrType);
+	}
+
+	characteristic(accessoryUuid: string, serviceNameOrType: string, charNameOrType: string): MockCharacteristic | undefined {
+		const svc = this.service(accessoryUuid, serviceNameOrType);
+		if (!svc) return undefined;
+		return svc.getCharacteristic(charNameOrType);
+	}
+
+	/**
+	 * Add an accessory to the simulated controller (testing helper)
+	 */
+	addAccessory(accessory: MockAccessory): void {
+		if (this._accessories.has(accessory.UUID)) {
+			return;
+		}
+
+		accessory.bindEvents(this._eventEmitter, this._time);
+		this._accessories.set(accessory.UUID, accessory);
+	}
+
+	/**
+	 * Set network simulator for testing network conditions
+	 */
+	setNetworkSimulator(simulator: NetworkSimulator | undefined): void {
+		this._networkSimulator = simulator;
+	}
+
+	/**
+	 * Get current network simulator
+	 */
+	getNetworkSimulator(): NetworkSimulator | undefined {
+		return this._networkSimulator;
+	}
+
+	/**
+	 * Subscribe to all characteristic events.
+	 */
+	onCharacteristicEvent(handler: (event: CharacteristicEvent) => void): () => void {
+		this._eventEmitter.on('characteristic', handler);
+		return () => this._eventEmitter.off('characteristic', handler);
+	}
+
+	/**
+	 * Internal helper used by MockCharacteristic to bubble events.
+	 */
+	emitCharacteristicEvent(event: CharacteristicEvent): void {
+		this._eventEmitter.emit('characteristic', event);
+	}
+}

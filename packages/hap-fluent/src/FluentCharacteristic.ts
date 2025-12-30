@@ -1,4 +1,4 @@
-import { Characteristic, type CharacteristicValue, type CharacteristicSetHandler, type PrimitiveTypes, type CharacteristicProps, type PartialAllowingNull } from 'homebridge';
+import { type Characteristic, type CharacteristicValue, type CharacteristicSetHandler, type CharacteristicProps, type PartialAllowingNull } from 'homebridge';
 import { FluentCharacteristicError } from './errors.js';
 import { isCharacteristicValue } from './type-guards.js';
 import { getLogger } from './logger.js';
@@ -47,7 +47,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 	 * @param value - New value to set.
 	 * @returns This FluentCharacteristic instance for chaining.
 	 * @throws {FluentCharacteristicError} If value is invalid or setValue fails
-	 * 
+	 *
 	 * @remarks
 	 * This method is for direct programmatic value setting. Interceptors
 	 * are applied in onSet handlers, which are triggered when HomeKit accesses the characteristic.
@@ -149,7 +149,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 		// Wrap the handler with interceptors
 		const wrappedHandler = async (): Promise<T> => {
 			const logger = getLogger();
-			
+
 			try {
 				// Run beforeGet interceptors
 				if (this.interceptors.length > 0) {
@@ -193,7 +193,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 		// Wrap the handler with interceptors
 		const wrappedHandler = async (value: T): Promise<void> => {
 			const logger = getLogger();
-			
+
 			try {
 				logger.debug(
 					{ characteristic: this.characteristic.displayName, value },
@@ -245,9 +245,9 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 
 	/**
 	 * Add logging interceptor that logs all operations (beforeSet, afterSet, beforeGet, afterGet, errors).
-	 * 
+	 *
 	 * @returns This FluentCharacteristic instance for chaining
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * characteristic.log().onSet(async (value) => {
@@ -257,7 +257,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 	 */
 	log(): this {
 		const logger = getLogger();
-		
+
 		this.interceptors.push({
 			beforeSet(value, context) {
 				logger.debug(
@@ -297,11 +297,11 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 
 	/**
 	 * Add rate limiting interceptor to prevent excessive updates.
-	 * 
+	 *
 	 * @param maxCalls - Maximum number of calls allowed
 	 * @param windowMs - Time window in milliseconds
 	 * @returns This FluentCharacteristic instance for chaining
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * characteristic.limit(5, 1000).onSet(handler); // Max 5 calls per second
@@ -314,7 +314,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 		this.interceptors.push({
 			beforeSet(value, context) {
 				const now = Date.now();
-				
+
 				// Remove old calls outside the window
 				while (calls.length > 0 && calls[0] < now - windowMs) {
 					calls.shift();
@@ -341,11 +341,11 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 
 	/**
 	 * Add value clamping interceptor to ensure numeric values stay within bounds.
-	 * 
+	 *
 	 * @param min - Minimum value (inclusive)
 	 * @param max - Maximum value (inclusive)
 	 * @returns This FluentCharacteristic instance for chaining
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * characteristic.clamp(0, 100).onSet(handler); // Ensures value is 0-100
@@ -361,7 +361,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 				}
 
 				const clamped = Math.max(min, Math.min(max, value));
-				
+
 				if (clamped !== value) {
 					logger.debug(
 						{ characteristic: context.characteristicName, original: value, clamped },
@@ -377,10 +377,10 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 
 	/**
 	 * Add value transformation interceptor that applies a custom function.
-	 * 
+	 *
 	 * @param transformFn - Function to transform the value
 	 * @returns This FluentCharacteristic instance for chaining
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * characteristic.transform(v => Math.round(v as number)).onSet(handler);
@@ -388,7 +388,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 	 */
 	transform(transformFn: (value: CharacteristicValue) => CharacteristicValue): this {
 		this.interceptors.push({
-			beforeSet(value, context) {
+			beforeSet(value, _context) {
 				return transformFn(value);
 			},
 		});
@@ -397,9 +397,9 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 
 	/**
 	 * Add audit trail interceptor that tracks all operations.
-	 * 
+	 *
 	 * @returns This FluentCharacteristic instance for chaining
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * characteristic.audit().onSet(handler); // Logs audit trail
@@ -438,14 +438,14 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 
 	/**
 	 * Add a codec interceptor for two-way value transformation.
-	 * 
+	 *
 	 * Codecs allow you to transform values when setting (encode) and retrieving (decode).
 	 * This is useful for converting between different formats or units.
-	 * 
+	 *
 	 * @param encode - Function to transform values when setting (to HAP format)
 	 * @param decode - Function to transform values when getting (from HAP format)
 	 * @returns This FluentCharacteristic instance for chaining
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * // Convert between Celsius and Fahrenheit
@@ -455,13 +455,13 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 	 * ).onSet(async (fahrenheit) => {
 	 *   console.log('Temperature in F:', fahrenheit);
 	 * });
-	 * 
+	 *
 	 * // Convert between different string formats
 	 * characteristic.codec(
 	 *   (value) => String(value).toUpperCase(),  // encode
 	 *   (value) => String(value).toLowerCase()   // decode
 	 * );
-	 * 
+	 *
 	 * // Convert complex objects to/from JSON
 	 * characteristic.codec(
 	 *   (obj) => JSON.stringify(obj),  // encode
@@ -501,7 +501,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 
 	/**
 	 * Remove all interceptors from this characteristic.
-	 * 
+	 *
 	 * @returns This FluentCharacteristic instance for chaining
 	 */
 	clearInterceptors(): this {
@@ -511,7 +511,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 
 	/**
 	 * Create interceptor context for the current operation
-	 * 
+	 *
 	 * @param value - Optional value for the context
 	 * @returns Interceptor context
 	 * @private
@@ -526,7 +526,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 
 	/**
 	 * Run beforeSet interceptors
-	 * 
+	 *
 	 * @param value - Value to be set
 	 * @returns Modified value
 	 * @private
@@ -547,7 +547,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 
 	/**
 	 * Run afterSet interceptors
-	 * 
+	 *
 	 * @param value - Value that was set
 	 * @private
 	 */
@@ -563,7 +563,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 
 	/**
 	 * Run beforeGet interceptors
-	 * 
+	 *
 	 * @private
 	 */
 	private async runBeforeGetInterceptors(): Promise<void> {
@@ -578,7 +578,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 
 	/**
 	 * Run afterGet interceptors
-	 * 
+	 *
 	 * @param value - Value that was retrieved
 	 * @returns Modified value
 	 * @private
@@ -599,7 +599,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 
 	/**
 	 * Run error interceptors
-	 * 
+	 *
 	 * @param error - Error that occurred
 	 * @private
 	 */

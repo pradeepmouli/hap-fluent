@@ -60,19 +60,19 @@ This document breaks down the implementation of the Homebridge Test Harness into
 
 #### Type Definitions & Errors (Foundational)
 
-- [ ] T013 [P] Create `packages/hap-test/src/types/harness.ts` with TestHarness interfaces (HarnessOptions, PlatformState)
-- [ ] T014 [P] Create `packages/hap-test/src/types/mocks.ts` with mock interface types (MockAccessory, MockService, MockCharacteristic)
-- [ ] T015 [P] Create `packages/hap-test/src/types/events.ts` with event type definitions (AccessoryEvent, CharacteristicEvent)
-- [ ] T016 [P] Create `packages/hap-test/src/types/index.ts` to export all type definitions
-- [ ] T017 [P] Create `packages/hap-test/src/errors/CharacteristicValidationError.ts` with context-rich error class
-- [ ] T018 [P] Create `packages/hap-test/src/errors/HomeKitTimeoutError.ts` for timeout scenarios
-- [ ] T019 [P] Create `packages/hap-test/src/errors/NetworkError.ts` for network simulation
-- [ ] T020 Create `packages/hap-test/src/errors/index.ts` to export all error classes
+- [X] T013 [P] Create `packages/hap-test/src/types/harness.ts` with TestHarness interfaces (HarnessOptions, PlatformState)
+- [X] T014 [P] Create `packages/hap-test/src/types/mocks.ts` with mock interface types (MockAccessory, MockService, MockCharacteristic)
+- [X] T015 [P] Create `packages/hap-test/src/types/events.ts` with event type definitions (AccessoryEvent, CharacteristicEvent)
+- [X] T016 [P] Create `packages/hap-test/src/types/index.ts` to export all type definitions
+- [X] T017 [P] Create `packages/hap-test/src/errors/CharacteristicValidationError.ts` with context-rich error class
+- [X] T018 [P] Create `packages/hap-test/src/errors/HomeKitTimeoutError.ts` for timeout scenarios
+- [X] T019 [P] Create `packages/hap-test/src/errors/NetworkError.ts` for network simulation
+- [X] T020 Create `packages/hap-test/src/errors/index.ts` to export all error classes
 
 #### TimeController (Test-Time Manipulation)
 
-- [ ] T021 Write unit test `packages/hap-test/test/unit/TimeController.test.ts` for time advancement, freezing, and timer integration
-- [ ] T022 Implement `packages/hap-test/src/TimeController.ts` with Vitest fake timers integration
+- [X] T021 Write unit test `packages/hap-test/test/unit/TimeController.test.ts` for time advancement, freezing, and timer integration
+- [X] T022 Implement `packages/hap-test/src/TimeController.ts` with Vitest fake timers integration
   - advance(ms: number): Promise<void>
   - freeze(): void
   - reset(): void
@@ -81,8 +81,8 @@ This document breaks down the implementation of the Homebridge Test Harness into
 
 #### MockHomebridgeAPI (Homebridge Platform API Mock)
 
-- [ ] T023 Write unit test `packages/hap-test/test/unit/MockHomebridgeAPI.test.ts` for accessory registration, lifecycle events, and storage
-- [ ] T024 Implement `packages/hap-test/src/MockHomebridgeAPI.ts` with complete Homebridge API surface
+- [X] T023 Write unit test `packages/hap-test/test/unit/MockHomebridgeAPI.test.ts` for accessory registration, lifecycle events, and storage
+- [X] T024 Implement `packages/hap-test/src/MockHomebridgeAPI.ts` with complete Homebridge API surface
   - registerPlatformAccessories()
   - unregisterPlatformAccessories()
   - updatePlatformAccessories()
@@ -92,8 +92,8 @@ This document breaks down the implementation of the Homebridge Test Harness into
 
 #### MockHomeKit (HomeKit Controller Simulation)
 
-- [ ] T025 Write unit test `packages/hap-test/test/unit/MockHomeKit.test.ts` for accessory discovery, characteristic get/set, and basic validation
-- [ ] T026 Implement `packages/hap-test/src/MockHomeKit.ts` with controller simulation
+- [X] T025 Write unit test `packages/hap-test/test/unit/MockHomeKit.test.ts` for accessory discovery, characteristic get/set, and basic validation
+- [X] T026 Implement `packages/hap-test/src/MockHomeKit.ts` with controller simulation
   - accessories(): MockAccessory[]
   - accessory(uuid: string): MockAccessory | undefined
   - service(accessoryUuid: string, serviceName: string): MockService | undefined
@@ -102,21 +102,21 @@ This document breaks down the implementation of the Homebridge Test Harness into
 
 #### MockAccessory, MockService, MockCharacteristic
 
-- [ ] T027 [P] Implement MockAccessory class in `packages/hap-test/src/MockHomeKit.ts` (or separate file)
+- [X] T027 [P] Implement MockAccessory class in `packages/hap-test/src/MockHomeKit.ts` (or separate file)
   - UUID, display name, services access
   - Context storage
-- [ ] T028 [P] Implement MockService class with characteristic enumeration
+- [X] T028 [P] Implement MockService class with characteristic enumeration
   - Type, subtype, characteristics
   - Helper methods (hasCharacteristic, getCharacteristic)
-- [ ] T029 [P] Implement MockCharacteristic class with state management
+- [X] T029 [P] Implement MockCharacteristic class with state management
   - Type, value, permissions, properties
   - getValue(), setValue() with event emission
   - subscribe(), unsubscribe()
 
 #### TestHarness (Main Orchestrator)
 
-- [ ] T030 Write unit test `packages/hap-test/test/unit/TestHarness.test.ts` for lifecycle management, platform initialization, and cleanup
-- [ ] T031 Implement `packages/hap-test/src/TestHarness.ts` with orchestration logic
+- [X] T030 Write unit test `packages/hap-test/test/unit/TestHarness.test.ts` for lifecycle management, platform initialization, and cleanup
+- [X] T031 Implement `packages/hap-test/src/TestHarness.ts` with orchestration logic
   - static create(options: HarnessOptions): Promise<TestHarness>
   - Platform initialization and configuration
   - Accessory registration tracking
@@ -127,25 +127,25 @@ This document breaks down the implementation of the Homebridge Test Harness into
 
 #### Async Utilities
 
-- [ ] T032 [P] Implement `packages/hap-test/src/utils/async-utils.ts` for operation tracking
+- [X] T032 [P] Implement `packages/hap-test/src/utils/async-utils.ts` for operation tracking
   - pendingOperations tracking
   - waitFor helpers with timeout
   - Promise utilities
 
 #### Integration & Package Exports
 
-- [ ] T033 Update `packages/hap-test/src/index.ts` to export all public APIs
+- [X] T033 Update `packages/hap-test/src/index.ts` to export all public APIs
   - TestHarness
   - MockHomeKit, MockAccessory, MockService, MockCharacteristic
   - TimeController
   - All error classes
   - Type definitions
-- [ ] T034 Write integration test `packages/hap-test/test/integration/platform-lifecycle.test.ts` for complete platform initialization flow
-- [ ] T035 Write integration test `packages/hap-test/test/integration/accessory-registration.test.ts` for registration and retrieval
-- [ ] T036 Write integration test `packages/hap-test/test/integration/characteristic-operations.test.ts` for basic get/set operations
-- [ ] T037 Create example `packages/hap-test/examples/basic-accessory-test.ts` demonstrating simple lightbulb platform test
-- [ ] T038 Run all tests and verify 80%+ coverage for core components
-- [ ] T039 Update `packages/hap-test/README.md` with basic usage example
+- [X] T034 Write integration test `packages/hap-test/test/integration/platform-lifecycle.test.ts` for complete platform initialization flow
+- [X] T035 Write integration test `packages/hap-test/test/integration/accessory-registration.test.ts` for registration and retrieval
+- [X] T036 Write integration test `packages/hap-test/test/integration/characteristic-operations.test.ts` for basic get/set operations
+- [X] T037 Create example `packages/hap-test/examples/basic-accessory-test.ts` demonstrating simple lightbulb platform test
+- [X] T038 Run all tests and verify 80%+ coverage for core components
+- [X] T039 Update `packages/hap-test/README.md` with basic usage example
 
 **Phase Gate**: ✅ Can write and run basic integration tests for Homebridge plugins
 
@@ -166,8 +166,8 @@ This document breaks down the implementation of the Homebridge Test Harness into
 
 #### Validation Infrastructure
 
-- [ ] T040 Write unit test `packages/hap-test/test/unit/validators.test.ts` for constraint validation logic
-- [ ] T041 Implement `packages/hap-test/src/utils/validation.ts` with HAP validation functions
+- [X] T040 Write unit test `packages/hap-test/test/unit/validators.test.ts` for constraint validation logic
+- [X] T041 Implement `packages/hap-test/src/utils/validation.ts` with HAP validation functions
   - validateValue(characteristic, value): ValidationResult
   - validateConstraints(value, min, max, step, validValues)
   - validateFormat(value, format): boolean
@@ -175,25 +175,25 @@ This document breaks down the implementation of the Homebridge Test Harness into
 
 #### Enhanced MockCharacteristic with Validation
 
-- [ ] T042 Update MockCharacteristic in `packages/hap-test/src/MockHomeKit.ts` to enforce validation
+- [X] T042 Update MockCharacteristic in `packages/hap-test/src/MockHomeKit.ts` to enforce validation
   - Integrate validation.ts functions
   - Throw CharacteristicValidationError on violations
   - Validate on setValue() and getValue()
-- [ ] T043 Add characteristic properties support (min, max, step, validValues, format, perms)
-- [ ] T044 Update unit tests in `packages/hap-test/test/unit/MockHomeKit.test.ts` to cover validation scenarios
+- [X] T043 Add characteristic properties support (min, max, step, validValues, format, perms)
+- [X] T044 Update unit tests in `packages/hap-test/test/unit/MockHomeKit.test.ts` to cover validation scenarios
 
 #### HAP Format Support
 
-- [ ] T045 [P] Implement format validators for: bool, int, float, uint8, uint16, uint32, uint64, string, data, tlv8
-- [ ] T046 Add format validation tests for each supported type
-- [ ] T047 Add permission validation (read-only characteristics reject setValue, write-only reject getValue)
+- [X] T045 [P] Implement format validators for: bool, int, float, uint8, uint16, uint32, uint64, string, data, tlv8
+- [X] T046 Add format validation tests for each supported type
+- [X] T047 Add permission validation (read-only characteristics reject setValue, write-only reject getValue)
 
 #### Integration & Examples
 
-- [ ] T048 Write integration test `packages/hap-test/test/integration/hap-protocol-validation.test.ts` exercising all validation scenarios
-- [ ] T049 Create example `packages/hap-test/examples/hap-protocol-validation.ts` demonstrating constraint enforcement
-- [ ] T050 Update characteristic-utils if needed in `packages/hap-test/src/utils/characteristic-utils.ts`
-- [ ] T051 Run validation test suite and verify all HAP rules enforced
+- [X] T048 Write integration test `packages/hap-test/test/integration/hap-protocol-validation.test.ts` exercising all validation scenarios
+- [X] T049 Create example `packages/hap-test/examples/hap-protocol-validation.ts` demonstrating constraint enforcement
+- [X] T050 Update characteristic-utils if needed in `packages/hap-test/src/utils/characteristic-utils.ts`
+- [X] T051 Run validation test suite and verify all HAP rules enforced
 
 **Phase Gate**: ✅ Mock correctly rejects invalid operations per HAP spec
 
@@ -214,34 +214,34 @@ This document breaks down the implementation of the Homebridge Test Harness into
 
 #### Event Subscription Infrastructure
 
-- [ ] T052 Write unit test `packages/hap-test/test/unit/EventSubscription.test.ts` for subscription lifecycle and waiting
-- [ ] T053 Implement EventSubscription class in `packages/hap-test/src/MockHomeKit.ts` (or separate file)
+ - [X] T052 Write unit test `packages/hap-test/test/unit/EventSubscription.test.ts` for subscription lifecycle and waiting
+ - [X] T053 Implement EventSubscription class in `packages/hap-test/src/MockHomeKit.ts` (or separate file)
   - waitForNext(timeout?: number): Promise<CharacteristicEvent>
   - getHistory(): CharacteristicEvent[]
   - unsubscribe(): void
 
 #### MockCharacteristic Event Emission
 
-- [ ] T054 Update MockCharacteristic to emit events on value changes
+ - [X] T054 Update MockCharacteristic to emit events on value changes
   - Track subscriptions
   - Notify all subscribers on setValue()
   - Store event history
-- [ ] T055 Add subscribe() method returning EventSubscription
-- [ ] T056 Update unit tests to verify event emission
+ - [X] T055 Add subscribe() method returning EventSubscription
+ - [X] T056 Update unit tests to verify event emission
 
 #### TestHarness Event Helpers
 
-- [ ] T057 Add event waiting helpers to TestHarness
+ - [X] T057 Add event waiting helpers to TestHarness
   - waitForEvent(accessoryUuid, serviceName, charName, timeout)
   - waitForAnyEvent(timeout)
-- [ ] T058 Integrate with TimeController for deterministic event timing tests
+ - [X] T058 Integrate with TimeController for deterministic event timing tests
 
 #### Integration & Examples
 
-- [ ] T059 Write integration test `packages/hap-test/test/integration/event-subscriptions.test.ts` for complete event flows
-- [ ] T060 Create example `packages/hap-test/examples/time-based-features.ts` using events and time control
-- [ ] T061 Update type definitions in `packages/hap-test/src/types/events.ts` for EventSubscription
-- [ ] T062 Run event system tests and verify correct propagation
+- [X] T059 Write integration test `packages/hap-test/test/integration/event-subscriptions.test.ts` for complete event flows
+- [X] T060 Create example `packages/hap-test/examples/time-based-features.ts` using events and time control
+- [X] T061 Update type definitions in `packages/hap-test/src/types/events.ts` for EventSubscription
+- [X] T062 Run event system tests and verify correct propagation
 
 **Phase Gate**: ✅ Can test asynchronous platform behavior with events
 
@@ -263,43 +263,43 @@ This document breaks down the implementation of the Homebridge Test Harness into
 
 #### NetworkSimulator
 
-- [ ] T063 Write unit test `packages/hap-test/test/unit/NetworkSimulator.test.ts` for all network conditions
-- [ ] T064 Implement `packages/hap-test/src/NetworkSimulator.ts` with simulation capabilities
+- [X] T063 Write unit test `packages/hap-test/test/unit/NetworkSimulator.test.ts` for all network conditions
+- [X] T064 Implement `packages/hap-test/src/NetworkSimulator.ts` with simulation capabilities
   - setLatency(ms: number): void
   - setPacketLoss(rate: number): void
   - disconnect(): void
   - reconnect(): void
   - reset(): void
-- [ ] T065 Integrate NetworkSimulator with MockHomeKit characteristic operations
-- [ ] T066 Add delay and failure injection to get/set operations
+- [X] T065 Integrate NetworkSimulator with MockHomeKit characteristic operations
+- [X] T066 Add delay and failure injection to get/set operations
 
 #### Cached Accessory Support
 
-- [ ] T067 Update MockHomebridgeAPI to support cached accessory restoration
+- [X] T067 Update MockHomebridgeAPI to support cached accessory restoration
   - configureAccessory() callback support
   - Cached accessory storage between harness instances
-- [ ] T068 Add TestHarness option for cachedAccessories in HarnessOptions
-- [ ] T069 Write integration test for cached accessory restoration flow
+- [X] T068 Add TestHarness option for cachedAccessories in HarnessOptions
+- [X] T069 Write integration test for cached accessory restoration flow
 
 #### Multi-User & Pairing
 
-- [ ] T070 [P] Add pairing state management to MockHomeKit
+- [X] T070 [P] Add pairing state management to MockHomeKit
   - isPaired(): boolean
   - pair(), unpair()
-- [ ] T071 [P] Support multiple MockHomeKit controller instances
-- [ ] T072 Write integration test for multi-user scenarios
+- [X] T071 [P] Support multiple MockHomeKit controller instances
+- [X] T072 Write integration test for multi-user scenarios
 
 #### Batch Operations
 
-- [ ] T073 Add refreshAll() method to MockHomeKit for batch characteristic reads
-- [ ] T074 Add batch operation tests
+- [X] T073 Add refreshAll() method to MockHomeKit for batch characteristic reads
+- [X] T074 Add batch operation tests
 
 #### Integration & Examples
 
-- [ ] T075 Write integration test `packages/hap-test/test/integration/network-simulation.test.ts` for resilience scenarios
-- [ ] T076 Create example `packages/hap-test/examples/error-scenarios.ts` with network failures and recovery
-- [ ] T077 Create example `packages/hap-test/examples/multi-device-platform.ts` with multiple accessories
-- [ ] T078 Run advanced feature tests and verify all scenarios work
+- [X] T075 Write integration test `packages/hap-test/test/integration/network-simulation.test.ts` for resilience scenarios
+- [X] T076 Create example `packages/hap-test/examples/error-scenarios.ts` with network failures and recovery
+- [X] T077 Create example `packages/hap-test/examples/multi-device-platform.ts` with multiple accessories
+- [X] T078 Run advanced feature tests and verify all scenarios work
 
 **Phase Gate**: ✅ Can test realistic failure scenarios and complex platform behaviors
 
@@ -320,42 +320,42 @@ This document breaks down the implementation of the Homebridge Test Harness into
 
 #### Custom Vitest Matchers
 
-- [ ] T079 Implement `packages/hap-test/src/matchers/accessory-matchers.ts`
+- [X] T079 Implement `packages/hap-test/src/matchers/accessory-matchers.ts`
   - toHaveService(serviceName)
   - toHaveAccessory(uuid)
   - toBeRegistered()
-- [ ] T080 Implement `packages/hap-test/src/matchers/characteristic-matchers.ts`
+- [X] T080 Implement `packages/hap-test/src/matchers/characteristic-matchers.ts`
   - toHaveCharacteristic(charName)
   - toHaveValue(expected)
   - toBeInRange(min, max)
   - toHaveFormat(format)
-- [ ] T081 Create `packages/hap-test/src/matchers/index.ts` with matcher registration
-- [ ] T082 Update `packages/hap-test/src/index.ts` to export 'hap-test/matchers'
-- [ ] T083 Write matcher tests in `packages/hap-test/test/unit/matchers.test.ts`
+- [X] T081 Create `packages/hap-test/src/matchers/index.ts` with matcher registration
+- [X] T082 Update `packages/hap-test/src/index.ts` to export 'hap-test/matchers'
+- [X] T083 Write matcher tests in `packages/hap-test/test/unit/matchers.test.ts`
 
 #### Error Message Enhancement
 
-- [ ] T084 Review all error classes and add contextual information
+- [X] T084 Review all error classes and add contextual information
   - Include characteristic name, expected vs actual values
   - Add suggestions for resolution
-- [ ] T085 Add error context to CharacteristicValidationError (what was attempted, why it failed, how to fix)
-- [ ] T086 Add error context to HomeKitTimeoutError (what was being waited for, timeout value)
-- [ ] T087 Add error context to NetworkError (operation attempted, network state)
+- [X] T085 Add error context to CharacteristicValidationError (what was attempted, why it failed, how to fix)
+- [X] T086 Add error context to HomeKitTimeoutError (what was being waited for, timeout value)
+- [X] T087 Add error context to NetworkError (operation attempted, network state)
 
 #### Debug Mode
 
-- [ ] T088 Add debug logging option to HarnessOptions
-- [ ] T089 Implement debug logger in `packages/hap-test/src/utils/logger.ts`
-- [ ] T090 Add debug output for key operations (registration, get/set, events)
-- [ ] T091 Create example demonstrating debug mode usage
+- [X] T088 Add debug logging option to HarnessOptions
+- [X] T089 Implement debug logger in `packages/hap-test/src/utils/logger.ts`
+- [X] T090 Add debug output for key operations (registration, get/set, events)
+- [X] T091 Create example demonstrating debug mode usage
 
 #### Example Test Suites
 
-- [ ] T092 [P] Create `packages/hap-test/test/examples/lightbulb-plugin.test.ts` - complete lightbulb platform test
-- [ ] T093 [P] Create `packages/hap-test/test/examples/thermostat-plugin.test.ts` - thermostat with target/current temp
-- [ ] T094 [P] Create `packages/hap-test/test/examples/multi-accessory-platform.test.ts` - dynamic accessory discovery
-- [ ] T095 [P] Create `packages/hap-test/test/examples/error-handling.test.ts` - comprehensive error scenarios
-- [ ] T096 Create `packages/hap-test/test/examples/time-based-features.test.ts` - scheduled operations and polling
+- [X] T092 [P] Create `packages/hap-test/test/examples/lightbulb-plugin.test.ts` - complete lightbulb platform test
+- [X] T093 [P] Create `packages/hap-test/test/examples/thermostat-plugin.test.ts` - thermostat with target/current temp
+- [X] T094 [P] Create `packages/hap-test/test/examples/multi-accessory-platform.test.ts` - dynamic accessory discovery
+- [X] T095 [P] Create `packages/hap-test/test/examples/error-handling.test.ts` - comprehensive error scenarios
+- [X] T096 Create `packages/hap-test/test/examples/time-based-features.test.ts` - scheduled operations and polling
 
 **Phase Gate**: ✅ Developers write tests comfortably with excellent error messages and helpers
 
@@ -376,40 +376,40 @@ This document breaks down the implementation of the Homebridge Test Harness into
 
 #### API Reference
 
-- [ ] T097 Add comprehensive JSDoc to all public APIs in src/
-- [ ] T098 Configure JSDoc or TypeDoc for API reference generation
-- [ ] T099 Generate API reference documentation
-- [ ] T100 Review and enhance API documentation
+- [X] T097 Add comprehensive JSDoc to all public APIs in src/
+- [X] T098 Configure JSDoc or TypeDoc for API reference generation
+- [X] T099 Generate API reference documentation
+- [X] T100 Review and enhance API documentation
 
 #### Guides
 
-- [ ] T101 Write Getting Started guide in `packages/hap-test/docs/getting-started.md`
+- [X] T101 Write Getting Started guide in `packages/hap-test/docs/getting-started.md`
   - Installation
   - First test in <10 minutes
   - Basic assertions
   - Running tests
-- [ ] T102 Write Advanced Testing guide in `packages/hap-test/docs/advanced-testing.md`
+- [X] T102 Write Advanced Testing guide in `packages/hap-test/docs/advanced-testing.md`
   - Time control
   - Network simulation
   - Event subscriptions
   - Custom matchers
   - Error scenarios
-- [ ] T103 Write Migration Guide in `packages/hap-test/docs/migration-guide.md`
+- [X] T103 Write Migration Guide in `packages/hap-test/docs/migration-guide.md`
   - From manual testing to automated
   - Converting existing test setups
   - Best practices
-- [ ] T104 Write Troubleshooting guide in `packages/hap-test/docs/troubleshooting.md`
+- [X] T104 Write Troubleshooting guide in `packages/hap-test/docs/troubleshooting.md`
 
 #### Examples & README
 
-- [ ] T105 Update `packages/hap-test/README.md` with comprehensive overview
+- [X] T105 Update `packages/hap-test/README.md` with comprehensive overview
   - Feature highlights
   - Installation
   - Quick example
   - Links to guides
   - Contributing section
-- [ ] T106 Ensure all 5 example files in `examples/` are documented and working
-- [ ] T107 Create `packages/hap-test/examples/README.md` with example index
+- [X] T106 Ensure all 5 example files in `examples/` are documented and working
+- [X] T107 Create `packages/hap-test/examples/README.md` with example index
 
 **Phase Gate**: ✅ New developer can learn harness in <30 minutes
 

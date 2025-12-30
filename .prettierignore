@@ -7,3 +7,8 @@ coverage/
 .env
 .env.local
 .env.*.local
+
+# Lock files (avoid formatting)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
