@@ -56,8 +56,9 @@ npm install --save-dev homebridge hap-nodejs hap-fluent vitest
 ```
 
 **Required Versions**:
+
 - `homebridge` >= 1.11.0
-- `hap-nodejs` >= 0.13.0  
+- `hap-nodejs` >= 0.13.0
 - `hap-fluent` >= 0.3.0
 - `vitest` >= 2.0.0
 
@@ -123,20 +124,20 @@ The central orchestrator that manages the complete test environment:
 const harness = await TestHarness.create({
   // Your platform class
   platformConstructor: MyPlatform,
-  
+
   // Platform configuration
   platformConfig: {
     platform: 'MyPlatform',
     name: 'Test Platform',
     // ... your config
   },
-  
+
   // Optional: cached accessories from previous session
   cachedAccessories: [],
-  
+
   // Optional: enable debug logging
   debug: true,
-  
+
   // Optional: custom timeouts
   timeouts: {
     startup: 5000,
@@ -319,19 +320,19 @@ test('polls device every 30 seconds', async () => {
   });
 
   const char = harness.homekit.characteristic(uuid, 'Lightbulb', 'On');
-  
+
   // Initial state
   expect(char.value).toBe(false);
-  
+
   // Advance 30 seconds
   await harness.time.advance(30000);
-  
+
   // Platform should have polled
   expect(char.value).toBe(true);
-  
+
   // Advance another 30 seconds
   await harness.time.advance(30000);
-  
+
   // Another poll occurred
   expect(char.value).toBe(false);
 });
@@ -350,18 +351,18 @@ test('handles device errors gracefully', async () => {
   });
 
   const service = harness.homekit.service(uuid, 'Lightbulb');
-  
+
   // Simulate network failure
   harness.network.disconnect();
-  
+
   // Operation should fail
   await expect(
     service.setCharacteristic('On', true)
   ).rejects.toThrow('Network disconnected');
-  
+
   // Reconnect
   harness.network.reconnect();
-  
+
   // Should work now
   await service.setCharacteristic('On', true);
   expect(service.getCharacteristic('On')?.value).toBe(true);
@@ -380,15 +381,15 @@ test('using custom matchers', async () => {
   const accessory = harness.homekit.accessory(uuid);
   const service = harness.homekit.service(uuid, 'Lightbulb');
   const char = harness.homekit.characteristic(uuid, 'Lightbulb', 'Brightness');
-  
+
   // Accessory matchers
   expect(accessory).toBeRegistered();
   expect(accessory).toHaveService('Lightbulb');
-  
+
   // Service matchers
   expect(service).toHaveCharacteristic('On');
   expect(service).toHaveCharacteristic('Brightness');
-  
+
   // Characteristic matchers
   expect(char).toHaveValue(75);
   expect(char).toBeInRange(0, 100);
@@ -568,8 +569,10 @@ MIT © Pradeep Mouli
 
     subscription.unsubscribe();
     harness.shutdown();
-  });
+
 });
+});
+
 ```
 
 See [examples/basic-accessory-test.ts](./examples/basic-accessory-test.ts) for more detailed usage.
@@ -606,3 +609,4 @@ API may change before 1.0.0 release.
 ## License
 
 MIT © HAP Fluent Monorepo Contributors
+```

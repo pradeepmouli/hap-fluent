@@ -2,13 +2,19 @@
  * Example: Lightbulb plugin test (core device)
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { TestHarness } from '../../src/TestHarness.js';
-import { MockAccessory, MockService, MockCharacteristic } from '../../src/MockHomeKit.js';
-import { CharacteristicValidationError } from '../../src/errors/CharacteristicValidationError.js';
-import { toHaveAccessory, toHaveService, toHaveCharacteristic, toHaveValue, toBeInRange } from '../../src/matchers/index.js';
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { TestHarness } from "../../src/TestHarness.js";
+import { MockAccessory, MockService, MockCharacteristic } from "../../src/MockHomeKit.js";
+import { CharacteristicValidationError } from "../../src/errors/CharacteristicValidationError.js";
+import {
+  toHaveAccessory,
+  toHaveService,
+  toHaveCharacteristic,
+  toHaveValue,
+  toBeInRange,
+} from "../../src/matchers/index.js";
 
-describe('Lightbulb platform', () => {
+describe("Lightbulb platform", () => {
   let harness: TestHarness;
   let light: MockAccessory;
   let service: MockService;
@@ -19,29 +25,29 @@ describe('Lightbulb platform', () => {
   beforeEach(async () => {
     harness = await TestHarness.create({
       platformConstructor: undefined as any,
-      platformConfig: { platform: 'LightbulbPlatform', name: 'Demo Lights' },
+      platformConfig: { platform: "LightbulbPlatform", name: "Demo Lights" },
     });
 
-    light = new MockAccessory('light-uuid', 'Living Room Light');
-    service = new MockService('Lightbulb', 'Lightbulb');
+    light = new MockAccessory("light-uuid", "Living Room Light");
+    service = new MockService("Lightbulb", "Lightbulb");
 
-    onChar = new MockCharacteristic('On', 'On', false, {
-      format: 'bool',
-      perms: ['pr', 'pw', 'ev'],
+    onChar = new MockCharacteristic("On", "On", false, {
+      format: "bool",
+      perms: ["pr", "pw", "ev"],
     });
 
-    brightness = new MockCharacteristic('Brightness', 'Brightness', 50, {
-      format: 'int',
-      perms: ['pr', 'pw', 'ev'],
+    brightness = new MockCharacteristic("Brightness", "Brightness", 50, {
+      format: "int",
+      perms: ["pr", "pw", "ev"],
       minValue: 0,
       maxValue: 100,
       minStep: 1,
-      unit: 'percentage',
+      unit: "percentage",
     });
 
-    colorTemp = new MockCharacteristic('ColorTemperature', 'ColorTemperature', 350, {
-      format: 'int',
-      perms: ['pr', 'pw', 'ev'],
+    colorTemp = new MockCharacteristic("ColorTemperature", "ColorTemperature", 350, {
+      format: "int",
+      perms: ["pr", "pw", "ev"],
       minValue: 140,
       maxValue: 500,
       minStep: 10,
@@ -60,17 +66,17 @@ describe('Lightbulb platform', () => {
     vi.restoreAllMocks();
   });
 
-  it('registers the lightbulb service and characteristics', () => {
-    expect(toHaveAccessory(harness.homeKit, 'light-uuid').pass).toBe(true);
-    expect(toHaveService(harness.homeKit, 'Lightbulb').pass).toBe(true);
+  it("registers the lightbulb service and characteristics", () => {
+    expect(toHaveAccessory(harness.homeKit, "light-uuid").pass).toBe(true);
+    expect(toHaveService(harness.homeKit, "Lightbulb").pass).toBe(true);
 
-    const svc = harness.homeKit.service('light-uuid', 'Lightbulb');
-    expect(toHaveCharacteristic(svc!, 'On').pass).toBe(true);
-    expect(toHaveCharacteristic(svc!, 'Brightness').pass).toBe(true);
-    expect(toHaveCharacteristic(svc!, 'ColorTemperature').pass).toBe(true);
+    const svc = harness.homeKit.service("light-uuid", "Lightbulb");
+    expect(toHaveCharacteristic(svc!, "On").pass).toBe(true);
+    expect(toHaveCharacteristic(svc!, "Brightness").pass).toBe(true);
+    expect(toHaveCharacteristic(svc!, "ColorTemperature").pass).toBe(true);
   });
 
-  it('toggles power and emits notifications', async () => {
+  it("toggles power and emits notifications", async () => {
     const subscription = onChar.subscribe();
 
     await onChar.setValue(true);
@@ -87,7 +93,7 @@ describe('Lightbulb platform', () => {
     expect(onChar.isSubscribed()).toBe(false);
   });
 
-  it('enforces brightness and color temperature constraints', async () => {
+  it("enforces brightness and color temperature constraints", async () => {
     await brightness.setValue(80);
     expect(toBeInRange(brightness, 0, 100).pass).toBe(true);
 

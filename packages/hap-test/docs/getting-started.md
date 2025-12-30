@@ -9,6 +9,7 @@ pnpm add -D hap-test vitest
 ```
 
 Peer deps expected at runtime:
+
 - `homebridge` (types only for your plugin)
 - `hap-nodejs` (HAP types)
 
@@ -65,6 +66,7 @@ expect.extend(matchers);
 ```
 
 Useful matchers:
+
 - `toHaveAccessory(uuid)`
 - `toHaveService(name)`
 - `toHaveCharacteristic(name)`

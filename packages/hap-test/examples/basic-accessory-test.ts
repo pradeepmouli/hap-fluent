@@ -8,36 +8,36 @@
  * - Basic assertions
  */
 
-import { TestHarness, MockAccessory, MockService, MockCharacteristic } from '../src/index.js';
+import { TestHarness, MockAccessory, MockService, MockCharacteristic } from "../src/index.js";
 
 async function runExample() {
   // Create test harness
   const harness = await TestHarness.create({
     platformConstructor: undefined as any, // In real tests, provide your platform class
     platformConfig: {
-      platform: 'ExampleLightbulb',
-      name: 'Example Light',
+      platform: "ExampleLightbulb",
+      name: "Example Light",
     },
   });
 
-  console.log('✓ Test harness created');
+  console.log("✓ Test harness created");
 
   // Create a mock lightbulb accessory
-  const accessory = new MockAccessory('example-light-uuid', 'Living Room Light');
+  const accessory = new MockAccessory("example-light-uuid", "Living Room Light");
 
   // Add Lightbulb service
-  const service = new MockService('Lightbulb', 'Lightbulb');
+  const service = new MockService("Lightbulb", "Lightbulb");
 
   // Add On characteristic
-  const onChar = new MockCharacteristic('On', 'On', false, {
-    format: 'bool',
-    perms: ['pr', 'pw', 'ev'],
+  const onChar = new MockCharacteristic("On", "On", false, {
+    format: "bool",
+    perms: ["pr", "pw", "ev"],
   });
 
   // Add Brightness characteristic
-  const brightnessChar = new MockCharacteristic('Brightness', 'Brightness', 0, {
-    format: 'int',
-    perms: ['pr', 'pw', 'ev'],
+  const brightnessChar = new MockCharacteristic("Brightness", "Brightness", 0, {
+    format: "int",
+    perms: ["pr", "pw", "ev"],
     minValue: 0,
     maxValue: 100,
     minStep: 1,
@@ -50,7 +50,7 @@ async function runExample() {
   // Register with HomeKit controller
   harness.homeKit.addAccessory(accessory);
 
-  console.log('✓ Accessory registered');
+  console.log("✓ Accessory registered");
 
   // Test: Turn light on
   await onChar.setValue(true);
@@ -76,7 +76,7 @@ async function runExample() {
 
   // Cleanup
   harness.shutdown();
-  console.log('✓ Test harness shutdown');
+  console.log("✓ Test harness shutdown");
 }
 
 export { runExample };

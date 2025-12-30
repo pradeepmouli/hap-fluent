@@ -15,6 +15,7 @@ Use `/speckit.hotfix` when:
 - Every minute of downtime costs money/reputation
 
 **Do NOT use `/speckit.hotfix` for**:
+
 - Non-urgent bugs → use `/speckit.bugfix` instead
 - Planned changes → use `/speckit.modify` or `/speckit.specify` instead
 - Known issues that can wait → use normal workflow
@@ -40,29 +41,34 @@ Use `/speckit.hotfix` when:
 ## Process
 
 ### Phase 1: Immediate Response (URGENT)
+
 1. **Assess** - How bad is it? How many users affected?
 2. **Notify** - Alert incident commander, stakeholders
 3. **Reproduce** - Confirm the issue exists
 4. **Investigate** - Find root cause quickly
 
 ### Phase 2: Fix Implementation (FAST BUT SAFE)
+
 1. **Strategy** - Quick fix? Rollback? Feature flag disable?
 2. **Implement** - Minimal code changes to stop the bleeding
 3. **Test locally** - Verify fix works, check for side effects
 4. **Quick review** - 5-minute sanity check (skip if P0)
 
 ### Phase 3: Deployment (URGENT)
+
 1. **Rollback plan** - Know how to undo if it makes things worse
 2. **Deploy** - Get the fix live
 3. **Verify** - Confirm issue resolved in production
 4. **Monitor** - Watch error rates, be ready to rollback
 
 ### Phase 4: Monitoring (24-48 Hours)
+
 1. **Active monitoring** - First 2 hours, watch closely
 2. **Extended monitoring** - 24 hours, check regularly
 3. **Stability confirmation** - Verify no related issues
 
 ### Phase 5: Post-Incident (Within 48 Hours)
+
 1. **Regression test** - Write test NOW (was deferred during emergency)
 2. **Full test suite** - Ensure no regressions
 3. **Post-mortem** - Required within 48 hours
@@ -97,6 +103,7 @@ specs/
 ```
 
 This will:
+
 1. Create branch `hotfix/001-database-connection-pool`
 2. Generate `hotfix.md` with incident timestamp
 3. Generate `post-mortem.md` template
@@ -105,6 +112,7 @@ This will:
 6. Show "Next Steps" for expedited emergency workflow
 
 **Next steps after running the command (URGENT):**
+
 1. Quick assessment - severity (P0/P1/P2), impact, affected users
 2. Notify stakeholders - incident commander, on-call team
 3. Run `/speckit.plan` to create fast-track fix plan (skip extensive analysis)
@@ -118,26 +126,31 @@ This will:
 The hotfix workflow uses an **expedited checkpoint approach** for emergencies while still providing critical review points:
 
 ### Phase 1: Incident Response
+
 - **Command**: `/speckit.hotfix "incident description"`
 - **Creates**: `hotfix.md` with incident timestamp and `post-mortem.md` template
 - **Checkpoint**: Quick assessment - P0/P1/P2 severity? How many users affected? Notify stakeholders immediately.
 
 ### Phase 2: Emergency Planning (FAST)
+
 - **Command**: `/speckit.plan`
 - **Creates**: `plan.md` with fast-track fix approach
 - **Checkpoint**: Quick review (2-5 minutes) - Is the fix safe? Do we have a rollback plan? For P0, this may be skipped.
 
 ### Phase 3: Task Creation (URGENT)
+
 - **Command**: `/speckit.tasks`
 - **Creates**: `tasks.md` with immediate action tasks
 - **Checkpoint**: Quick sanity check - Are tasks in the right order? Critical steps covered?
 
 ### Phase 4: Emergency Deployment
+
 - **Command**: `/speckit.implement`
 - **Executes**: Fix deployment with monitoring
 - **Result**: Issue resolved, service restored
 
 ### Phase 5: Post-Incident (Required within 48 hours)
+
 - Write regression test (deferred from emergency)
 - Complete post-mortem document
 - Create prevention tasks
@@ -278,6 +291,7 @@ Production database ran out of available connections during high traffic, causin
 Hotfix is the **only workflow** that bypasses normal TDD process:
 
 **Normal Process Skipped**:
+
 - ✅ Tests before implementation (tests written AFTER fix deployed)
 - ✅ Full planning phase (expedited due to emergency)
 - ✅ Extended code review (5-minute sanity check only)
@@ -286,6 +300,7 @@ Hotfix is the **only workflow** that bypasses normal TDD process:
 **Justification**: When the service is down, every minute matters. Writing comprehensive tests before fixing would cost too much time and money. The post-mortem and regression test ensure the issue is properly documented and won't recur.
 
 **Post-Fix Compliance**:
+
 - Regression test added within 24 hours
 - Post-mortem completed within 48 hours
 - Documentation updated
@@ -315,12 +330,14 @@ Is issue caused by recent deployment?
 ### Rollback vs. Forward Fix
 
 **Rollback when**:
+
 - Recent deployment is the cause
 - Previous version was stable
 - Rollback is faster than fixing
 - Risk of fix is high
 
 **Forward fix when**:
+
 - Issue existed before recent deployment
 - No stable version to return to
 - Fix is simple and obvious
@@ -329,11 +346,13 @@ Is issue caused by recent deployment?
 ### Communication During Incident
 
 **Status Updates (every 15 minutes)**:
+
 - What's happening right now
 - What we're trying next
 - ETA for resolution (if known)
 
 **Final Update**:
+
 - Issue resolved
 - Root cause summary
 - What we're doing to prevent recurrence
@@ -341,6 +360,7 @@ Is issue caused by recent deployment?
 ## Integration with Constitution
 
 This workflow is **explicitly exempted** from:
+
 - Section III: Test-Driven Development (tests after fix, not before)
 - Quality Gates: Testing requirements relaxed during emergency
 
@@ -360,4 +380,4 @@ This is the ONLY workflow with this exception.
 
 ---
 
-*Hotfix Workflow Documentation - Part of Specify Extension System*
+_Hotfix Workflow Documentation - Part of Specify Extension System_

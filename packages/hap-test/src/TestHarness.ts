@@ -5,13 +5,13 @@
  * register accessories, and observe characteristic events with minimal setup.
  */
 
-import { EventEmitter } from 'events';
-import { MockHomebridgeAPI } from './MockHomebridgeAPI.js';
-import { MockHomeKit } from './MockHomeKit.js';
-import { TimeController } from './TimeController.js';
-import type { HarnessOptions, PlatformState } from './types/harness.js';
-import type { CharacteristicEvent } from './types/events.js';
-import { logger, LogLevel, LogCategory } from './utils/logger.js';
+import { EventEmitter } from "events";
+import { MockHomebridgeAPI } from "./MockHomebridgeAPI.js";
+import { MockHomeKit } from "./MockHomeKit.js";
+import { TimeController } from "./TimeController.js";
+import type { HarnessOptions, PlatformState } from "./types/harness.js";
+import type { CharacteristicEvent } from "./types/events.js";
+import { logger, LogLevel, LogCategory } from "./utils/logger.js";
 
 export class TestHarness extends EventEmitter {
   readonly api: MockHomebridgeAPI;
@@ -26,13 +26,13 @@ export class TestHarness extends EventEmitter {
 
     // Configure debug logging if requested
     if (options.logging?.debug) {
-      logger.enable(LogLevel[options.logging.level || 'DEBUG']);
+      logger.enable(LogLevel[options.logging.level || "DEBUG"]);
       if (options.logging.categories) {
         logger.enableCategories(...options.logging.categories);
       }
-      logger.info(LogCategory.HARNESS, 'TestHarness: Debug logging enabled', {
-        level: options.logging.level || 'DEBUG',
-        categories: options.logging.categories || 'all',
+      logger.info(LogCategory.HARNESS, "TestHarness: Debug logging enabled", {
+        level: options.logging.level || "DEBUG",
+        categories: options.logging.categories || "all",
       });
     }
 
@@ -46,32 +46,35 @@ export class TestHarness extends EventEmitter {
       lastError: undefined,
     };
 
-    logger.debug(LogCategory.HARNESS, 'TestHarness: Initialized', {
+    logger.debug(LogCategory.HARNESS, "TestHarness: Initialized", {
       useFakeTimers: options.time?.useFakeTimers,
       persistPath: options.storage?.persistPath,
     });
 
-    this.api.on('didFinishLaunching', () => {
-      logger.info(LogCategory.HARNESS, 'TestHarness: didFinishLaunching event');
+    this.api.on("didFinishLaunching", () => {
+      logger.info(LogCategory.HARNESS, "TestHarness: didFinishLaunching event");
       this.state.didFinishLaunching = true;
-      this.emit('didFinishLaunching');
+      this.emit("didFinishLaunching");
     });
-    this.api.on('registerPlatformAccessories', (accessories: any[]) => {
+    this.api.on("registerPlatformAccessories", (accessories: any[]) => {
       this.state.accessoryCount = accessories.length; // basic tracking
       logger.info(LogCategory.HARNESS, `TestHarness: Registered ${accessories.length} accessories`);
-      this.emit('registerPlatformAccessories', accessories);
+      this.emit("registerPlatformAccessories", accessories);
     });
-    this.api.on('shutdown', () => {
-      logger.info(LogCategory.HARNESS, 'TestHarness: Shutdown event');
-      this.emit('shutdown');
+    this.api.on("shutdown", () => {
+      logger.info(LogCategory.HARNESS, "TestHarness: Shutdown event");
+      this.emit("shutdown");
     });
 
     // Emit configureAccessory for cached accessories and restore in HomeKit
-    this.api.on('configureAccessory', (accessory: any) => {
-      if (accessory && typeof accessory.UUID === 'string') {
-        logger.debug(LogCategory.HARNESS, `TestHarness: Configuring cached accessory ${accessory.UUID}`);
+    this.api.on("configureAccessory", (accessory: any) => {
+      if (accessory && typeof accessory.UUID === "string") {
+        logger.debug(
+          LogCategory.HARNESS,
+          `TestHarness: Configuring cached accessory ${accessory.UUID}`,
+        );
         // If provided as MockAccessory, add to HomeKit immediately
-        if (typeof accessory.getServices === 'function') {
+        if (typeof accessory.getServices === "function") {
           this.homeKit.addAccessory(accessory);
         }
       }
@@ -107,12 +110,12 @@ export class TestHarness extends EventEmitter {
    */
   async waitForRegistration(_timeoutMs = 1000): Promise<void> {
     if (this.state.didFinishLaunching) return;
-    await new Promise<void>(resolve => {
+    await new Promise<void>((resolve) => {
       const handler = () => {
-        this.off('didFinishLaunching', handler);
+        this.off("didFinishLaunching", handler);
         resolve();
       };
-      this.on('didFinishLaunching', handler);
+      this.on("didFinishLaunching", handler);
     });
   }
 
@@ -124,14 +127,14 @@ export class TestHarness extends EventEmitter {
    */
   async waitForAccessories(count: number, _timeoutMs = 1000): Promise<void> {
     if (this.homeKit.accessories().length >= count) return;
-    await new Promise<void>(resolve => {
+    await new Promise<void>((resolve) => {
       const handler = () => {
         if (this.homeKit.accessories().length >= count) {
-          this.off('registerPlatformAccessories', handler);
+          this.off("registerPlatformAccessories", handler);
           resolve();
         }
       };
-      this.on('registerPlatformAccessories', handler);
+      this.on("registerPlatformAccessories", handler);
     });
   }
 
@@ -143,8 +146,17 @@ export class TestHarness extends EventEmitter {
    * @param characteristicName Characteristic name or type.
    * @param timeoutMs Timeout in milliseconds before rejecting.
    */
-  async waitForEvent(accessoryUuid: string, serviceName: string, characteristicName: string, timeoutMs = 1000): Promise<CharacteristicEvent> {
-    const characteristic = this.homeKit.characteristic(accessoryUuid, serviceName, characteristicName);
+  async waitForEvent(
+    accessoryUuid: string,
+    serviceName: string,
+    characteristicName: string,
+    timeoutMs = 1000,
+  ): Promise<CharacteristicEvent> {
+    const characteristic = this.homeKit.characteristic(
+      accessoryUuid,
+      serviceName,
+      characteristicName,
+    );
     if (!characteristic) {
       throw new Error(`Characteristic ${characteristicName} not found on service ${serviceName}`);
     }
@@ -165,7 +177,7 @@ export class TestHarness extends EventEmitter {
   async waitForAnyEvent(timeoutMs = 1000): Promise<CharacteristicEvent> {
     return await new Promise<CharacteristicEvent>((resolve, reject) => {
       let timer: ReturnType<typeof setTimeout> | undefined;
-      const clear = this.homeKit.onCharacteristicEvent(event => {
+      const clear = this.homeKit.onCharacteristicEvent((event) => {
         if (timer) {
           clearTimeout(timer);
         }
@@ -175,7 +187,7 @@ export class TestHarness extends EventEmitter {
 
       timer = setTimeout(() => {
         clear();
-        reject(new Error('Timeout waiting for any event'));
+        reject(new Error("Timeout waiting for any event"));
       }, timeoutMs);
     });
   }

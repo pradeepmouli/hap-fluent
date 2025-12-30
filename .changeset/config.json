@@ -8,12 +8,9 @@
   ],
   "commit": false,
   "fixed": [],
-  "linked": [
-    ["hap-fluent", "hap-test"]
-  ],
+  "linked": [["hap-fluent", "hap-test"]],
   "access": "public",
   "baseBranch": "master",
   "updateInternalDependencies": "patch",
   "ignore": ["hap-codegen"]
 }
-

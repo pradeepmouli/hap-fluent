@@ -7,7 +7,9 @@ This directory contains working examples demonstrating various testing scenarios
 ### Basic Examples
 
 #### [basic-accessory-test.ts](basic-accessory-test.ts)
+
 Simple lightbulb platform test demonstrating:
+
 - Creating a test harness
 - Waiting for accessory registration
 - Testing characteristic get/set operations
@@ -18,7 +20,9 @@ Simple lightbulb platform test demonstrating:
 ---
 
 #### [debug-mode.ts](debug-mode.ts)
+
 Demonstrates debug logging features:
+
 - Enabling debug mode
 - Viewing operation logs
 - Inspecting harness state
@@ -31,7 +35,9 @@ Demonstrates debug logging features:
 ### Validation & Error Handling
 
 #### [hap-protocol-validation.ts](hap-protocol-validation.ts)
+
 Comprehensive HAP protocol validation examples:
+
 - Value range validation (min/max)
 - Format validation (int, float, bool, string)
 - Enum value validation
@@ -43,7 +49,9 @@ Comprehensive HAP protocol validation examples:
 ---
 
 #### [error-scenarios.ts](error-scenarios.ts)
+
 Testing error handling and resilience:
+
 - Network failures and recovery
 - Device timeouts
 - Invalid characteristic values
@@ -57,7 +65,9 @@ Testing error handling and resilience:
 ### Advanced Features
 
 #### [time-based-features.ts](time-based-features.ts)
+
 Time-controlled testing scenarios:
+
 - Polling at regular intervals
 - Scheduled operations
 - Timeout handling
@@ -68,7 +78,9 @@ Time-controlled testing scenarios:
 ---
 
 #### [multi-device-platform.ts](multi-device-platform.ts)
+
 Complex platform with multiple accessories:
+
 - Dynamic accessory discovery
 - Multiple service types
 - Independent accessory control
@@ -85,41 +97,53 @@ Complex platform with multiple accessories:
 The `test/examples/` directory contains complete test suites:
 
 ##### [lightbulb-plugin.test.ts](../test/examples/lightbulb-plugin.test.ts)
+
 Complete lightbulb platform test suite:
+
 - On/Off control
 - Brightness adjustment
 - HAP validation
 - State persistence
 
 ##### [thermostat-plugin.test.ts](../test/examples/thermostat-plugin.test.ts)
+
 Thermostat testing patterns:
+
 - Current temperature reading
 - Target temperature setting
 - Heating/Cooling mode control
 - Temperature range validation
 
 ##### [multi-accessory-platform.test.ts](../test/examples/multi-accessory-platform.test.ts)
+
 Platform with dynamic device discovery:
+
 - Accessory discovery flow
 - Registration tracking
 - Multi-device coordination
 
 ##### [error-handling.test.ts](../test/examples/error-handling.test.ts)
+
 Comprehensive error scenario testing:
+
 - Network disconnection
 - Device unavailability
 - Invalid operations
 - Recovery mechanisms
 
 ##### [time-based-features.test.ts](../test/examples/time-based-features.test.ts)
+
 Time-controlled test examples:
+
 - Polling intervals
 - Scheduled operations
 - Timeout scenarios
 - Deterministic timing
 
 ##### [airpurifier-plugin.test.ts](../test/examples/airpurifier-plugin.test.ts)
+
 Air purifier platform testing:
+
 - Multiple characteristics
 - Fan speed control
 - Air quality monitoring
@@ -204,10 +228,10 @@ describe('Example Description', () => {
 test('controls accessory', async () => {
   const harness = await TestHarness.create({...});
   await harness.waitForAccessories(1);
-  
+
   const service = harness.homekit.service(uuid, 'Lightbulb');
   await service.setCharacteristic('On', true);
-  
+
   expect(service.getCharacteristic('On')?.value).toBe(true);
 });
 ```
@@ -218,7 +242,7 @@ test('controls accessory', async () => {
 test('polls every 30 seconds', async () => {
   const harness = await TestHarness.create({...});
   const char = harness.homekit.characteristic(uuid, 'Service', 'Char');
-  
+
   expect(char.value).toBe(initialValue);
   await harness.time.advance(30000);
   expect(char.value).toBe(updatedValue);
@@ -231,7 +255,7 @@ test('polls every 30 seconds', async () => {
 test('receives value change events', async () => {
   const harness = await TestHarness.create({...});
   const char = harness.homekit.characteristic(uuid, 'Service', 'Char');
-  
+
   const subscription = char.subscribe();
   // Trigger change
   const event = await subscription.waitForNext(1000);
@@ -246,7 +270,7 @@ test('handles errors gracefully', async () => {
   const harness = await TestHarness.create({
     networkSimulation: { enabled: true },
   });
-  
+
   harness.network.disconnect();
   await expect(
     service.setCharacteristic('On', true)
@@ -260,7 +284,7 @@ test('handles errors gracefully', async () => {
 test('validates characteristic constraints', async () => {
   const harness = await TestHarness.create({...});
   const service = harness.homekit.service(uuid, 'Lightbulb');
-  
+
   // Should reject invalid value
   await expect(
     service.setCharacteristic('Brightness', 150) // Max is 100
@@ -273,19 +297,14 @@ test('validates characteristic constraints', async () => {
 ## Learning Path
 
 **Beginner**:
+
 1. Start with `basic-accessory-test.ts`
 2. Run `lightbulb-plugin.test.ts`
 3. Explore `hap-protocol-validation.ts`
 
-**Intermediate**:
-4. Study `time-based-features.ts`
-5. Review `multi-accessory-platform.test.ts`
-6. Examine `error-scenarios.ts`
+**Intermediate**: 4. Study `time-based-features.ts` 5. Review `multi-accessory-platform.test.ts` 6. Examine `error-scenarios.ts`
 
-**Advanced**:
-7. Deep dive into `airpurifier-plugin.test.ts`
-8. Analyze `thermostat-plugin.test.ts`
-9. Create your own custom test suites
+**Advanced**: 7. Deep dive into `airpurifier-plugin.test.ts` 8. Analyze `thermostat-plugin.test.ts` 9. Create your own custom test suites
 
 ---
 

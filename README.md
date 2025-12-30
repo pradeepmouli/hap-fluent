@@ -599,7 +599,7 @@ class SmartLightsPlatform implements DynamicPlatformPlugin {
    */
   configureAccessory(accessory: PlatformAccessory) {
     this.log.info('Loading accessory from cache:', accessory.displayName);
-    
+
     // Re-attach handlers to cached accessory
     this.setupAccessoryHandlers(accessory);
     this.accessories.set(accessory.UUID, accessory);
@@ -627,7 +627,7 @@ class SmartLightsPlatform implements DynamicPlatformPlugin {
         this.log.info('Adding new accessory:', device.name);
         const accessory = new this.api.platformAccessory(device.name, uuid);
         accessory.context.device = device;
-        
+
         this.setupAccessoryHandlers(accessory);
         this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
         this.accessories.set(uuid, accessory);
@@ -771,11 +771,11 @@ class SmartLightsPlatform implements DynamicPlatformPlugin {
     setInterval(async () => {
       try {
         const state = await this.getDeviceState(deviceId);
-        
+
         // Update HomeKit without triggering SET handlers
         lightbulb.characteristics.On.update(state.on);
         lightbulb.characteristics.Brightness.update(state.brightness);
-        
+
         if (state.hue !== undefined) {
           lightbulb.characteristics.Hue?.update(state.hue);
         }
@@ -832,8 +832,9 @@ class SmartLightsPlatform implements DynamicPlatformPlugin {
 ### Comparison: Standard vs hap-fluent
 
 **Standard HAP-NodeJS Approach:**
+
 ```typescript
-const service = accessory.getService(hap.Service.Lightbulb) 
+const service = accessory.getService(hap.Service.Lightbulb)
   || accessory.addService(hap.Service.Lightbulb);
 
 service.getCharacteristic(hap.Characteristic.On)
@@ -850,6 +851,7 @@ service.getCharacteristic(hap.Characteristic.On)
 ```
 
 **hap-fluent Approach:**
+
 ```typescript
 const lightbulb = getOrAddService(accessory, hap.Service.Lightbulb);
 
@@ -1010,6 +1012,7 @@ HAP Fluent is designed for minimal overhead:
 ### From Raw HAP-NodeJS
 
 **Before:**
+
 ```typescript
 const service = accessory.getService(hap.Service.Lightbulb) ||
   accessory.addService(hap.Service.Lightbulb);
@@ -1020,6 +1023,7 @@ service.getCharacteristic(hap.Characteristic.On)
 ```
 
 **After:**
+
 ```typescript
 const lightbulb = getOrAddService(accessory, hap.Service.Lightbulb);
 
@@ -1032,6 +1036,7 @@ lightbulb.onSet('On', async (value) => await setLightState(value));
 ### Type Errors
 
 If you see type errors, ensure:
+
 1. TypeScript 5.0+ is installed
 2. `strict: true` is enabled
 3. Peer dependencies are correctly installed
@@ -1069,7 +1074,9 @@ HAP Fluent has a comprehensive test suite with multiple testing strategies to en
 The test suite is organized into three categories:
 
 #### Unit Tests (`test/unit/`)
+
 Traditional unit tests covering individual functions and classes:
+
 - **FluentCharacteristic**: 31 tests for characteristic operations
 - **FluentService**: 24 tests for service wrapping and operations
 - **AccessoryHandler**: 28 tests for accessory initialization
@@ -1077,13 +1084,17 @@ Traditional unit tests covering individual functions and classes:
 - **Errors**: 10 tests for error class behavior
 
 #### Integration Tests (`test/integration/`)
+
 End-to-end tests verifying complete workflows:
+
 - **integration.test.ts**: 17 tests covering real-world accessory scenarios
 - Tests multi-service accessories, state management, and characteristic updates
 - Validates complete plugin lifecycle from initialization to operation
 
 #### Property-Based Tests (`test/property-based/`)
+
 Generative tests using [fast-check](https://fast-check.dev/) to verify properties across thousands of random inputs:
+
 - **characteristic-values.property.test.ts**: Tests characteristic value handling
   - Boolean, numeric, string, and enum characteristic types
   - Value ranges and constraints (brightness 0-100, hue 0-360, temperature -50-50)
@@ -1113,6 +1124,7 @@ pnpm run test:ui
 ### Coverage
 
 The test suite maintains high code coverage:
+
 - **Lines**: 86.39% (target: >80%)
 - **Branches**: 76.69% (target: >70%)
 - **Functions**: 87.5% (target: >70%)

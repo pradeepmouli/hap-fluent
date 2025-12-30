@@ -27,6 +27,7 @@ npm install --save-dev homebridge hap-nodejs hap-fluent vitest
 ```
 
 **Versions Required**:
+
 - `homebridge`: >=1.11.0
 - `hap-nodejs`: >=0.13.0
 - `hap-fluent`: >=0.3.0
@@ -59,6 +60,7 @@ npm install --save-dev homebridge hap-nodejs hap-fluent vitest
 **Problem**: All tests timeout with "Operation timed out" errors.
 
 **Possible Causes**:
+
 1. Platform constructor never completes
 2. Platform hangs waiting for external resources
 3. TimeController not properly configured
@@ -84,6 +86,7 @@ await harness.time.advance(1000); // Instead of real delays
 **Problem**: `harness.homekit.accessories()` returns empty array.
 
 **Possible Causes**:
+
 1. Platform didn't register any accessories
 2. Platform registers accessories asynchronously after `didFinishLaunching`
 3. Configuration is invalid
@@ -150,6 +153,7 @@ await service.setCharacteristic('On', true);
 **Problem**: `homekit.service(uuid, 'Lightbulb')` returns undefined.
 
 **Possible Causes**:
+
 1. Service name doesn't match exactly (case-sensitive)
 2. Accessory not registered yet
 3. Service created with subtype
@@ -180,6 +184,7 @@ const service = homekit.service(uuid, 'Outlet', 'outlet-1');
 **Problem**: `subscription.waitForNext()` times out even though value changed.
 
 **Possible Causes**:
+
 1. Value didn't actually change (setValue with same value)
 2. Subscription created after value change
 3. Platform updated value without triggering notification
@@ -210,13 +215,13 @@ console.log('Old:', event.oldValue, 'New:', event.newValue);
 // ✅ Good - deterministic time control
 test('polling every 30 seconds', async () => {
   const harness = await TestHarness.create({...});
-  
+
   // Platform should poll on creation
   expect(homekit.characteristic(uuid, 'Lightbulb', 'On').value).toBe(false);
-  
+
   // Advance exactly 30 seconds
   await harness.time.advance(30000);
-  
+
   // Platform should have polled again
   expect(homekit.characteristic(uuid, 'Lightbulb', 'On').value).toBe(true);
 });
@@ -446,6 +451,7 @@ console.log('Properties:', {
 **Meaning**: An async operation didn't complete in time.
 
 **Solutions**:
+
 - Increase timeout in harness options
 - Check if platform is actually responding
 - Use `time.advance()` for time-dependent code
@@ -456,6 +462,7 @@ console.log('Properties:', {
 **Meaning**: Trying to access an accessory that isn't registered.
 
 **Solutions**:
+
 - Wait for registration: `await harness.waitForAccessories(1)`
 - Verify UUID is correct
 - Check if platform actually registered it
@@ -465,6 +472,7 @@ console.log('Properties:', {
 **Meaning**: Service doesn't have that characteristic.
 
 **Solutions**:
+
 - Check characteristic spelling (case-sensitive)
 - Verify service type supports that characteristic
 - Platform may not have added it yet
@@ -474,6 +482,7 @@ console.log('Properties:', {
 **Meaning**: Validation failed per HAP protocol.
 
 **Solutions**:
+
 - Check valid range for characteristic
 - Verify format (int vs float, etc.)
 - Review HAP specification for characteristic
@@ -507,19 +516,19 @@ test('test 1', async () => {
 // ✅ Reuse harness across tests when possible
 describe('my platform', () => {
   let harness: TestHarness;
-  
+
   beforeAll(async () => {
     harness = await TestHarness.create({...}); // Once
   });
-  
+
   afterAll(async () => {
     await harness.shutdown();
   });
-  
+
   test('test 1', async () => {
     // Use harness
   });
-  
+
   test('test 2', async () => {
     // Use same harness
   });

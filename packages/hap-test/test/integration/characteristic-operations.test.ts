@@ -2,19 +2,19 @@
  * Integration test: Characteristic get/set operations
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { TestHarness } from '../../src/TestHarness.js';
-import { MockAccessory, MockService, MockCharacteristic } from '../../src/MockHomeKit.js';
-import type { HarnessOptions } from '../../src/types/harness.js';
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { TestHarness } from "../../src/TestHarness.js";
+import { MockAccessory, MockService, MockCharacteristic } from "../../src/MockHomeKit.js";
+import type { HarnessOptions } from "../../src/types/harness.js";
 
-describe('Characteristic Operations Integration', () => {
+describe("Characteristic Operations Integration", () => {
   let harness: TestHarness;
 
   const options: HarnessOptions = {
     platformConstructor: undefined as any,
     platformConfig: {
-      platform: 'TestPlatform',
-      name: 'Test',
+      platform: "TestPlatform",
+      name: "Test",
     },
   };
 
@@ -28,13 +28,13 @@ describe('Characteristic Operations Integration', () => {
     }
   });
 
-  it('should perform basic get/set on characteristics', async () => {
+  it("should perform basic get/set on characteristics", async () => {
     // Setup accessory with lightbulb service
-    const accessory = new MockAccessory('light-uuid', 'Test Light');
-    const service = new MockService('Lightbulb', 'Lightbulb');
-    const onChar = new MockCharacteristic('On', 'On', false, {
-      format: 'bool',
-      perms: ['pr', 'pw', 'ev'],
+    const accessory = new MockAccessory("light-uuid", "Test Light");
+    const service = new MockService("Lightbulb", "Lightbulb");
+    const onChar = new MockCharacteristic("On", "On", false, {
+      format: "bool",
+      perms: ["pr", "pw", "ev"],
     });
 
     service.addCharacteristic(onChar);
@@ -51,12 +51,12 @@ describe('Characteristic Operations Integration', () => {
     expect(updatedValue).toBe(true);
   });
 
-  it('should retrieve characteristics via HomeKit controller', async () => {
-    const accessory = new MockAccessory('switch-uuid', 'Test Switch');
-    const service = new MockService('Switch', 'Switch');
-    const onChar = new MockCharacteristic('On', 'On', false, {
-      format: 'bool',
-      perms: ['pr', 'pw'],
+  it("should retrieve characteristics via HomeKit controller", async () => {
+    const accessory = new MockAccessory("switch-uuid", "Test Switch");
+    const service = new MockService("Switch", "Switch");
+    const onChar = new MockCharacteristic("On", "On", false, {
+      format: "bool",
+      perms: ["pr", "pw"],
     });
 
     service.addCharacteristic(onChar);
@@ -64,7 +64,7 @@ describe('Characteristic Operations Integration', () => {
     harness.homeKit.addAccessory(accessory);
 
     // Access via HomeKit controller API
-    const char = harness.homeKit.characteristic('switch-uuid', 'Switch', 'On');
+    const char = harness.homeKit.characteristic("switch-uuid", "Switch", "On");
     expect(char).toBeDefined();
     expect(await char?.getValue()).toBe(false);
 
@@ -72,17 +72,17 @@ describe('Characteristic Operations Integration', () => {
     expect(await char?.getValue()).toBe(true);
   });
 
-  it('should support multiple characteristics on a service', async () => {
-    const accessory = new MockAccessory('dimmer-uuid', 'Dimmable Light');
-    const service = new MockService('Lightbulb', 'Lightbulb');
+  it("should support multiple characteristics on a service", async () => {
+    const accessory = new MockAccessory("dimmer-uuid", "Dimmable Light");
+    const service = new MockService("Lightbulb", "Lightbulb");
 
-    const onChar = new MockCharacteristic('On', 'On', false, {
-      format: 'bool',
-      perms: ['pr', 'pw'],
+    const onChar = new MockCharacteristic("On", "On", false, {
+      format: "bool",
+      perms: ["pr", "pw"],
     });
-    const brightnessChar = new MockCharacteristic('Brightness', 'Brightness', 0, {
-      format: 'int',
-      perms: ['pr', 'pw'],
+    const brightnessChar = new MockCharacteristic("Brightness", "Brightness", 0, {
+      format: "int",
+      perms: ["pr", "pw"],
       minValue: 0,
       maxValue: 100,
     });

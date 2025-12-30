@@ -5,14 +5,26 @@
  * event emission, and time-aware event history for deterministic tests.
  */
 
-import { EventEmitter } from 'events';
-import type { CharacteristicValue } from 'hap-nodejs';
-import type { CharacteristicEvent } from './types/events.js';
-import type { MockAccessory as IMockAccessory, MockService as IMockService, MockCharacteristic as IMockCharacteristic, EventSubscription as IEventSubscription, CharacteristicProps } from './types/mocks.js';
-import { buildChangeEvent, ensureReadable, ensureSubscribable, ensureWritable, type TimeProvider } from './utils/characteristic-utils.js';
-import { validateCharacteristicValue } from './utils/validation.js';
-import type { NetworkSimulator } from './NetworkSimulator.js';
-import { logger, LogCategory } from './utils/logger.js';
+import { EventEmitter } from "events";
+import type { CharacteristicValue } from "hap-nodejs";
+import type { CharacteristicEvent } from "./types/events.js";
+import type {
+  MockAccessory as IMockAccessory,
+  MockService as IMockService,
+  MockCharacteristic as IMockCharacteristic,
+  EventSubscription as IEventSubscription,
+  CharacteristicProps,
+} from "./types/mocks.js";
+import {
+  buildChangeEvent,
+  ensureReadable,
+  ensureSubscribable,
+  ensureWritable,
+  type TimeProvider,
+} from "./utils/characteristic-utils.js";
+import { validateCharacteristicValue } from "./utils/validation.js";
+import type { NetworkSimulator } from "./NetworkSimulator.js";
+import { logger, LogCategory } from "./utils/logger.js";
 
 const defaultTime: TimeProvider = { now: () => Date.now() };
 
@@ -24,14 +36,14 @@ export class MockHomeKit {
   private _accessories: Map<string, MockAccessory> = new Map();
   private readonly _eventEmitter: EventEmitter = new EventEmitter();
   private readonly _time: TimeProvider;
-	private _networkSimulator?: NetworkSimulator;
-	private _paired: boolean = true;
-	private _controllerId: string;
+  private _networkSimulator?: NetworkSimulator;
+  private _paired: boolean = true;
+  private _controllerId: string;
 
-	constructor(time?: TimeProvider, controllerId: string = 'default-controller') {
-		this._time = time ?? defaultTime;
-		this._controllerId = controllerId;
-	}
+  constructor(time?: TimeProvider, controllerId: string = "default-controller") {
+    this._time = time ?? defaultTime;
+    this._controllerId = controllerId;
+  }
 
   /** Return all registered accessories. */
   accessories(): MockAccessory[] {
@@ -51,7 +63,11 @@ export class MockHomeKit {
   }
 
   /** Retrieve a characteristic by accessory + service + characteristic identifiers. */
-  characteristic(accessoryUuid: string, serviceNameOrType: string, charNameOrType: string): MockCharacteristic | undefined {
+  characteristic(
+    accessoryUuid: string,
+    serviceNameOrType: string,
+    charNameOrType: string,
+  ): MockCharacteristic | undefined {
     const svc = this.service(accessoryUuid, serviceNameOrType);
     if (!svc) return undefined;
     return svc.getCharacteristic(charNameOrType);
@@ -63,21 +79,28 @@ export class MockHomeKit {
   /** Register an accessory with the simulated controller. */
   addAccessory(accessory: MockAccessory): void {
     if (this._accessories.has(accessory.UUID)) {
-      logger.debug(LogCategory.ACCESSORY, `Accessory already registered: ${accessory.UUID} (${accessory.displayName})`);
+      logger.debug(
+        LogCategory.ACCESSORY,
+        `Accessory already registered: ${accessory.UUID} (${accessory.displayName})`,
+      );
       return;
     }
 
-    logger.info(LogCategory.ACCESSORY, `Adding accessory: ${accessory.UUID} (${accessory.displayName})`, {
-      services: accessory.services.map(s => s.type),
-    });
+    logger.info(
+      LogCategory.ACCESSORY,
+      `Adding accessory: ${accessory.UUID} (${accessory.displayName})`,
+      {
+        services: accessory.services.map((s) => s.type),
+      },
+    );
 
     accessory.bindEvents(this._eventEmitter, this._time, this._networkSimulator);
     this._accessories.set(accessory.UUID, accessory);
   }
 
-	/**
-	 * Set network simulator for testing network conditions
-	 */
+  /**
+   * Set network simulator for testing network conditions
+   */
   /** Attach a network simulator to propagate latency/packet loss to all characteristics. */
   setNetworkSimulator(simulator: NetworkSimulator | undefined): void {
     this._networkSimulator = simulator;
@@ -85,23 +108,23 @@ export class MockHomeKit {
     for (const acc of this._accessories.values()) {
       acc.updateNetworkSimulator(simulator);
     }
-	}
+  }
 
-	/**
-	 * Get current network simulator
-	 */
+  /**
+   * Get current network simulator
+   */
   /** Current network simulator, if any. */
   getNetworkSimulator(): NetworkSimulator | undefined {
-		return this._networkSimulator;
-	}
+    return this._networkSimulator;
+  }
 
   /**
    * Subscribe to all characteristic events.
    */
   /** Subscribe to all characteristic events; returns an unsubscribe function. */
   onCharacteristicEvent(handler: (event: CharacteristicEvent) => void): () => void {
-    this._eventEmitter.on('characteristic', handler);
-    return () => this._eventEmitter.off('characteristic', handler);
+    this._eventEmitter.on("characteristic", handler);
+    return () => this._eventEmitter.off("characteristic", handler);
   }
 
   /**
@@ -109,64 +132,64 @@ export class MockHomeKit {
    */
   /** Internal: emit a characteristic event to global listeners. */
   emitCharacteristicEvent(event: CharacteristicEvent): void {
-    this._eventEmitter.emit('characteristic', event);
+    this._eventEmitter.emit("characteristic", event);
   }
 
-	/**
-	 * Check if controller is paired with accessories
-	 */
+  /**
+   * Check if controller is paired with accessories
+   */
   /** Whether the controller is currently paired. */
   isPaired(): boolean {
-		return this._paired;
-	}
+    return this._paired;
+  }
 
-	/**
-	 * Simulate pairing with accessories
-	 */
+  /**
+   * Simulate pairing with accessories
+   */
   /** Simulate pairing with accessories. */
   pair(): void {
-		this._paired = true;
-	}
+    this._paired = true;
+  }
 
-	/**
-	 * Simulate unpairing from accessories
-	 */
+  /**
+   * Simulate unpairing from accessories
+   */
   /** Simulate unpairing from accessories. */
   unpair(): void {
-		this._paired = false;
-	}
+    this._paired = false;
+  }
 
-	/**
-	 * Get controller identifier
-	 */
+  /**
+   * Get controller identifier
+   */
   /** Controller identifier used for multi-controller scenarios. */
   getControllerId(): string {
-		return this._controllerId;
-	}
+    return this._controllerId;
+  }
 
-	/**
-	 * Refresh all characteristic values (batch read)
-	 */
+  /**
+   * Refresh all characteristic values (batch read)
+   */
   /** Batch-read all readable characteristics. */
   async refreshAll(): Promise<Map<string, CharacteristicValue>> {
-		const results = new Map<string, CharacteristicValue>();
+    const results = new Map<string, CharacteristicValue>();
 
-		for (const accessory of this._accessories.values()) {
-			for (const service of accessory.services) {
-				for (const char of service.characteristics) {
-					const key = `${accessory.UUID}.${service.displayName}.${char.displayName}`;
-					try {
-						const value = await char.getValue();
-						results.set(key, value);
-					} catch {
-						// Skip characteristics that can't be read
-					}
-				}
-			}
-		}
+    for (const accessory of this._accessories.values()) {
+      for (const service of accessory.services) {
+        for (const char of service.characteristics) {
+          const key = `${accessory.UUID}.${service.displayName}.${char.displayName}`;
+          try {
+            const value = await char.getValue();
+            results.set(key, value);
+          } catch {
+            // Skip characteristics that can't be read
+          }
+        }
+      }
+    }
 
-		return results;
-	}
+    return results;
+  }
 }
 
 /**
@@ -194,12 +217,12 @@ export class MockAccessory implements IMockAccessory {
     this._eventEmitter = emitter;
     this._time = time;
     this._networkSimulator = simulator;
-    this.services.forEach(service => service.bindContext(this, emitter, time, simulator));
+    this.services.forEach((service) => service.bindContext(this, emitter, time, simulator));
   }
 
   /** Get a single service by name or type. */
   getService(nameOrType: string): MockService | undefined {
-    return this.services.find(s => s.displayName === nameOrType || s.type === nameOrType);
+    return this.services.find((s) => s.displayName === nameOrType || s.type === nameOrType);
   }
 
   /** Shallow copy of all services. */
@@ -216,7 +239,7 @@ export class MockAccessory implements IMockAccessory {
   /** Propagate network simulator updates to services. */
   updateNetworkSimulator(simulator?: NetworkSimulator): void {
     this._networkSimulator = simulator;
-    this.services.forEach(svc => svc.updateNetworkSimulator(simulator));
+    this.services.forEach((svc) => svc.updateNetworkSimulator(simulator));
   }
 }
 
@@ -241,17 +264,24 @@ export class MockService implements IMockService {
   }
 
   /** Bind accessory/event/time/network context to this service and its characteristics. */
-  bindContext(accessory: MockAccessory, emitter?: EventEmitter, time: TimeProvider = defaultTime, simulator?: NetworkSimulator): void {
+  bindContext(
+    accessory: MockAccessory,
+    emitter?: EventEmitter,
+    time: TimeProvider = defaultTime,
+    simulator?: NetworkSimulator,
+  ): void {
     this.accessory = accessory;
     this._eventEmitter = emitter;
     this._time = time;
     this._networkSimulator = simulator;
-    this.characteristics.forEach(char => char.bindContext(this, accessory, emitter, time, simulator));
+    this.characteristics.forEach((char) =>
+      char.bindContext(this, accessory, emitter, time, simulator),
+    );
   }
 
   /** Get a characteristic by name or type. */
   getCharacteristic(nameOrType: string): MockCharacteristic | undefined {
-    return this.characteristics.find(c => c.displayName === nameOrType || c.type === nameOrType);
+    return this.characteristics.find((c) => c.displayName === nameOrType || c.type === nameOrType);
   }
 
   /** Whether the service has a characteristic matching the name or type. */
@@ -261,14 +291,20 @@ export class MockService implements IMockService {
 
   /** Add a characteristic to the service. */
   addCharacteristic(characteristic: MockCharacteristic): void {
-    characteristic.bindContext(this, this.accessory, this._eventEmitter, this._time, this._networkSimulator);
+    characteristic.bindContext(
+      this,
+      this.accessory,
+      this._eventEmitter,
+      this._time,
+      this._networkSimulator,
+    );
     this.characteristics.push(characteristic);
   }
 
   /** Propagate network simulator updates to characteristics. */
   updateNetworkSimulator(simulator?: NetworkSimulator): void {
     this._networkSimulator = simulator;
-    this.characteristics.forEach(char => char.updateNetworkSimulator(simulator));
+    this.characteristics.forEach((char) => char.updateNetworkSimulator(simulator));
   }
 }
 
@@ -291,7 +327,12 @@ export class MockCharacteristic implements IMockCharacteristic {
   private _time: TimeProvider = defaultTime;
   private _networkSimulator?: NetworkSimulator;
 
-  constructor(type: string, displayName: string, initial: CharacteristicValue, props: CharacteristicProps) {
+  constructor(
+    type: string,
+    displayName: string,
+    initial: CharacteristicValue,
+    props: CharacteristicProps,
+  ) {
     this.type = type;
     this.displayName = displayName;
     this.value = initial;
@@ -299,7 +340,13 @@ export class MockCharacteristic implements IMockCharacteristic {
   }
 
   /** Bind service/accessory/event/time/network context to this characteristic. */
-  bindContext(service?: MockService, accessory?: MockAccessory, emitter?: EventEmitter, time: TimeProvider = defaultTime, simulator?: NetworkSimulator): void {
+  bindContext(
+    service?: MockService,
+    accessory?: MockAccessory,
+    emitter?: EventEmitter,
+    time: TimeProvider = defaultTime,
+    simulator?: NetworkSimulator,
+  ): void {
     this._service = service;
     this._accessory = accessory;
     this._eventEmitter = emitter;
@@ -311,7 +358,7 @@ export class MockCharacteristic implements IMockCharacteristic {
   async getValue(): Promise<CharacteristicValue> {
     const op = async () => {
       ensureReadable(this.type, this.props);
-      validateCharacteristicValue(this.type, this.value, this.props, 'read');
+      validateCharacteristicValue(this.type, this.value, this.props, "read");
 
       logger.debug(LogCategory.CHARACTERISTIC, `getValue: ${this.displayName} = ${this.value}`, {
         accessory: this._accessory?.UUID,
@@ -333,18 +380,22 @@ export class MockCharacteristic implements IMockCharacteristic {
   async setValue(value: CharacteristicValue): Promise<void> {
     const op = async () => {
       ensureWritable(this.type, this.props);
-      validateCharacteristicValue(this.type, value, this.props, 'write');
+      validateCharacteristicValue(this.type, value, this.props, "write");
 
       const oldValue = this.value;
       this.value = value;
 
-      logger.info(LogCategory.CHARACTERISTIC, `setValue: ${this.displayName} ${oldValue} → ${value}`, {
-        accessory: this._accessory?.UUID,
-        service: this._service?.type,
-        characteristic: this.type,
-        oldValue,
-        newValue: value,
-      });
+      logger.info(
+        LogCategory.CHARACTERISTIC,
+        `setValue: ${this.displayName} ${oldValue} → ${value}`,
+        {
+          accessory: this._accessory?.UUID,
+          service: this._service?.type,
+          characteristic: this.type,
+          oldValue,
+          newValue: value,
+        },
+      );
 
       const event = buildChangeEvent({
         accessoryUUID: this._accessory?.UUID,
@@ -387,8 +438,8 @@ export class MockCharacteristic implements IMockCharacteristic {
   }
 
   private notifySubscribers(event: CharacteristicEvent): void {
-    this._subscriptions.forEach(sub => sub.receive(event));
-    this._eventEmitter?.emit('characteristic', event);
+    this._subscriptions.forEach((sub) => sub.receive(event));
+    this._eventEmitter?.emit("characteristic", event);
   }
 
   /** Internal: remove a subscription and update state. */
@@ -434,7 +485,7 @@ class EventSubscription implements IEventSubscription {
 
   waitForNext(timeout?: number): Promise<CharacteristicEvent> {
     if (!this._active) {
-      return Promise.reject(new Error('Subscription is inactive'));
+      return Promise.reject(new Error("Subscription is inactive"));
     }
 
     if (this._queue.length > 0) {
@@ -449,7 +500,7 @@ class EventSubscription implements IEventSubscription {
         this._timeoutId = setTimeout(() => {
           this._pendingResolver = undefined;
           this._pendingReject = undefined;
-          reject(new Error('Timeout waiting for next event'));
+          reject(new Error("Timeout waiting for next event"));
         }, timeout);
       }
     });
@@ -468,7 +519,7 @@ class EventSubscription implements IEventSubscription {
     }
     this._pendingResolver = undefined;
     if (this._pendingReject) {
-      this._pendingReject(new Error('Subscription cancelled'));
+      this._pendingReject(new Error("Subscription cancelled"));
       this._pendingReject = undefined;
     }
     this.source.removeSubscription(this);

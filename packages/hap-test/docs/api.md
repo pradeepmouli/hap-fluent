@@ -5,6 +5,7 @@ Generated docs can be produced with `pnpm --filter hap-test docs:api`. This summ
 ## Core classes
 
 ### TestHarness
+
 - `static create(options: HarnessOptions): Promise<TestHarness>`
 - `api`: `MockHomebridgeAPI` instance
 - `homeKit`: `MockHomeKit` controller
@@ -16,6 +17,7 @@ Generated docs can be produced with `pnpm --filter hap-test docs:api`. This summ
 - `shutdown()`
 
 ### MockHomeKit
+
 - `accessories()` → `MockAccessory[]`
 - `accessory(uuid)` → `MockAccessory | undefined`
 - `service(accessoryUuid, serviceName)` → `MockService | undefined`
@@ -27,24 +29,28 @@ Generated docs can be produced with `pnpm --filter hap-test docs:api`. This summ
 - `onCharacteristicEvent(handler)` → unsubscribe fn
 
 ### MockAccessory
+
 - `addService(service)`
 - `getService(nameOrType)`
 - `getServices()`
 - `context`: mutable record
 
 ### MockService
+
 - `addCharacteristic(characteristic)`
 - `getCharacteristic(nameOrType)`
 - `hasCharacteristic(nameOrType)`
 - `characteristics`: list
 
 ### MockCharacteristic
+
 - `getValue()` / `setValue(value)`
 - `subscribe()` → `EventSubscription`
 - `isSubscribed()`
 - `getHistory()`
 
 ### EventSubscription
+
 - `waitForNext(timeout?)`
 - `getHistory()`
 - `latest?()`
@@ -52,6 +58,7 @@ Generated docs can be produced with `pnpm --filter hap-test docs:api`. This summ
 - `unsubscribe()`
 
 ### TimeController
+
 - `advance(ms)`
 - `freeze()`
 - `setTime(date)`
@@ -59,6 +66,7 @@ Generated docs can be produced with `pnpm --filter hap-test docs:api`. This summ
 - `reset()`
 
 ### NetworkSimulator
+
 - `setLatency(ms)`
 - `setPacketLoss(rate)`
 - `disconnect()` / `reconnect()` / `reset()`
@@ -74,12 +82,14 @@ Generated docs can be produced with `pnpm --filter hap-test docs:api`. This summ
 ## Matchers
 
 Import from `hap-test/matchers`:
+
 - `toHaveAccessory`, `toHaveService`, `toHaveCharacteristic`
 - `toHaveValue`, `toBeInRange`, `toHaveFormat`
 
 ## Validation helpers
 
 From `utils/validation`:
+
 - `validateCharacteristicValue(type, value, props, operation)`
 - `validateConstraints(value, min, max, step, validValues)`
 - `validatePermissions(operation, permissions)`

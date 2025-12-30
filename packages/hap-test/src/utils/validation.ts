@@ -7,32 +7,32 @@
  * - Permission validation (read, write, notify)
  */
 
-import { CharacteristicValidationError } from '../errors/CharacteristicValidationError.js';
-import type { CharacteristicValue } from 'hap-nodejs';
-import type { CharacteristicProps } from '../types/mocks.js';
+import { CharacteristicValidationError } from "../errors/CharacteristicValidationError.js";
+import type { CharacteristicValue } from "hap-nodejs";
+import type { CharacteristicProps } from "../types/mocks.js";
 
 /**
  * Validate characteristic format
  */
 export function validateFormat(value: CharacteristicValue, format: string): boolean {
   switch (format.toLowerCase()) {
-    case 'bool':
-      return typeof value === 'boolean';
-    case 'int':
-      return typeof value === 'number' && Number.isInteger(value);
-    case 'float':
-      return typeof value === 'number';
-    case 'uint8':
-    case 'uint16':
-    case 'uint32':
-    case 'uint64':
-      return typeof value === 'number' && value >= 0 && Number.isInteger(value);
-    case 'string':
-      return typeof value === 'string';
-    case 'data':
-      return Buffer.isBuffer(value) || typeof value === 'string';
-    case 'tlv8':
-      return Buffer.isBuffer(value) || typeof value === 'string';
+    case "bool":
+      return typeof value === "boolean";
+    case "int":
+      return typeof value === "number" && Number.isInteger(value);
+    case "float":
+      return typeof value === "number";
+    case "uint8":
+    case "uint16":
+    case "uint32":
+    case "uint64":
+      return typeof value === "number" && value >= 0 && Number.isInteger(value);
+    case "string":
+      return typeof value === "string";
+    case "data":
+      return Buffer.isBuffer(value) || typeof value === "string";
+    case "tlv8":
+      return Buffer.isBuffer(value) || typeof value === "string";
     default:
       return true; // Unknown format accepted by default
   }
@@ -50,13 +50,13 @@ export function validateConstraints(
     if (!props.validValues.includes(value as any)) {
       return {
         valid: false,
-        reason: `Value ${value} not in valid values: ${props.validValues.join(', ')}`,
+        reason: `Value ${value} not in valid values: ${props.validValues.join(", ")}`,
       };
     }
   }
 
   // Only check numeric constraints for numbers
-  if (typeof value !== 'number') {
+  if (typeof value !== "number") {
     return { valid: true };
   }
 
@@ -95,15 +95,15 @@ export function validateConstraints(
  * Validate permissions for an operation
  */
 export function validatePermission(
-  operation: 'read' | 'write' | 'notify',
+  operation: "read" | "write" | "notify",
   perms: string[] | undefined,
 ): boolean {
   if (!perms) return true; // No permissions defined, allow all
 
   const permMap: Record<string, string> = {
-    read: 'pr',
-    write: 'pw',
-    notify: 'ev',
+    read: "pr",
+    write: "pw",
+    notify: "ev",
   };
 
   const requiredPerm = permMap[operation];
@@ -119,11 +119,11 @@ export function validateCharacteristicValue(
   type: string,
   value: CharacteristicValue,
   props: CharacteristicProps,
-  operation: 'read' | 'write' = 'write',
+  operation: "read" | "write" = "write",
 ): void {
   // Validate permission first
   if (!validatePermission(operation, props.perms)) {
-    const opLabel = operation === 'read' ? 'reading' : 'writing';
+    const opLabel = operation === "read" ? "reading" : "writing";
     throw new CharacteristicValidationError(
       type,
       value,
@@ -146,7 +146,7 @@ export function validateCharacteristicValue(
     throw new CharacteristicValidationError(
       type,
       value,
-      constraintResult.reason || 'Constraint validation failed',
+      constraintResult.reason || "Constraint validation failed",
     );
   }
 }

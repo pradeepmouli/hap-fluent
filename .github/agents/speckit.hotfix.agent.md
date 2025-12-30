@@ -19,12 +19,12 @@ $ARGUMENTS
 
 The text the user typed after `/speckit.hotfix` in the triggering message **is** the incident description. Assume you always have it available in this conversation even if `$ARGUMENTS` appears literally below. Do not ask the user to repeat it unless they provided an empty command.
 
-**⚠️  EMERGENCY WORKFLOW - EXPEDITED PROCESS ⚠️**
+**⚠️ EMERGENCY WORKFLOW - EXPEDITED PROCESS ⚠️**
 
 Given that incident description, do this:
 
 1. Run the script `.specify/scripts/bash/create-hotfix.sh --json "$ARGUMENTS"` from repo root and parse its JSON output for HOTFIX_ID, BRANCH_NAME, HOTFIX_FILE, POSTMORTEM_FILE, and TIMESTAMP. All file paths must be absolute.
-  **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
+   **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
 
 2. Load `.specify/extensions/workflows/hotfix/hotfix-template.md` to understand required sections.
 

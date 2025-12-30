@@ -10,13 +10,13 @@ Move from ad-hoc/manual Homebridge testing to automated harness-based tests.
 
 ## Replace manual steps with harness
 
-| Manual step | Harness equivalent |
-|-------------|--------------------|
-| Launch Homebridge + plugin | `TestHarness.create({ platformConstructor, platformConfig })` |
-| Pair controller | `harness.homeKit.pair()` |
-| Add accessories via UI | `MockAccessory` + `MockService` + `MockCharacteristic` then `homeKit.addAccessory()` |
-| Flip switches in Home app | `setValue()`/`getValue()` on characteristics |
-| Observe logs for changes | Subscribe via `subscribe()` or `waitForAnyEvent()` |
+| Manual step                | Harness equivalent                                                                   |
+| -------------------------- | ------------------------------------------------------------------------------------ |
+| Launch Homebridge + plugin | `TestHarness.create({ platformConstructor, platformConfig })`                        |
+| Pair controller            | `harness.homeKit.pair()`                                                             |
+| Add accessories via UI     | `MockAccessory` + `MockService` + `MockCharacteristic` then `homeKit.addAccessory()` |
+| Flip switches in Home app  | `setValue()`/`getValue()` on characteristics                                         |
+| Observe logs for changes   | Subscribe via `subscribe()` or `waitForAnyEvent()`                                   |
 
 ## Incremental migration plan
 

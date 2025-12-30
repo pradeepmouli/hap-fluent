@@ -2,15 +2,21 @@
  * Example: Thermostat plugin test (temperature and modes)
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { TestHarness } from '../../src/TestHarness.js';
-import { MockAccessory, MockService, MockCharacteristic } from '../../src/MockHomeKit.js';
-import { CharacteristicValidationError } from '../../src/errors/CharacteristicValidationError.js';
-import { toHaveAccessory, toHaveService, toHaveCharacteristic, toHaveValue, toBeInRange } from '../../src/matchers/index.js';
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { TestHarness } from "../../src/TestHarness.js";
+import { MockAccessory, MockService, MockCharacteristic } from "../../src/MockHomeKit.js";
+import { CharacteristicValidationError } from "../../src/errors/CharacteristicValidationError.js";
+import {
+  toHaveAccessory,
+  toHaveService,
+  toHaveCharacteristic,
+  toHaveValue,
+  toBeInRange,
+} from "../../src/matchers/index.js";
 
 const HeatingCoolingState = { Off: 0, Heat: 1, Cool: 2, Auto: 3 } as const;
 
-describe('Thermostat platform', () => {
+describe("Thermostat platform", () => {
   let harness: TestHarness;
   let thermostat: MockAccessory;
   let service: MockService;
@@ -22,38 +28,58 @@ describe('Thermostat platform', () => {
   beforeEach(async () => {
     harness = await TestHarness.create({
       platformConstructor: undefined as any,
-      platformConfig: { platform: 'ThermostatPlatform', name: 'Climate Control' },
+      platformConfig: { platform: "ThermostatPlatform", name: "Climate Control" },
     });
 
-    thermostat = new MockAccessory('thermostat-uuid', 'Living Room Thermostat');
-    service = new MockService('Thermostat', 'Thermostat');
+    thermostat = new MockAccessory("thermostat-uuid", "Living Room Thermostat");
+    service = new MockService("Thermostat", "Thermostat");
 
-    currentTemp = new MockCharacteristic('CurrentTemperature', 'CurrentTemperature', 22.0, {
-      format: 'float',
-      perms: ['pr', 'ev'],
+    currentTemp = new MockCharacteristic("CurrentTemperature", "CurrentTemperature", 22.0, {
+      format: "float",
+      perms: ["pr", "ev"],
       minValue: -50,
       maxValue: 100,
     });
 
-    targetTemp = new MockCharacteristic('TargetTemperature', 'TargetTemperature', 21.0, {
-      format: 'float',
-      perms: ['pr', 'pw', 'ev'],
+    targetTemp = new MockCharacteristic("TargetTemperature", "TargetTemperature", 21.0, {
+      format: "float",
+      perms: ["pr", "pw", "ev"],
       minValue: 10,
       maxValue: 32,
       minStep: 0.5,
     });
 
-    currentState = new MockCharacteristic('CurrentHeatingCoolingState', 'CurrentHeatingCoolingState', HeatingCoolingState.Off, {
-      format: 'int',
-      perms: ['pr', 'ev'],
-      validValues: [HeatingCoolingState.Off, HeatingCoolingState.Heat, HeatingCoolingState.Cool, HeatingCoolingState.Auto],
-    });
+    currentState = new MockCharacteristic(
+      "CurrentHeatingCoolingState",
+      "CurrentHeatingCoolingState",
+      HeatingCoolingState.Off,
+      {
+        format: "int",
+        perms: ["pr", "ev"],
+        validValues: [
+          HeatingCoolingState.Off,
+          HeatingCoolingState.Heat,
+          HeatingCoolingState.Cool,
+          HeatingCoolingState.Auto,
+        ],
+      },
+    );
 
-    targetState = new MockCharacteristic('TargetHeatingCoolingState', 'TargetHeatingCoolingState', HeatingCoolingState.Auto, {
-      format: 'int',
-      perms: ['pr', 'pw', 'ev'],
-      validValues: [HeatingCoolingState.Off, HeatingCoolingState.Heat, HeatingCoolingState.Cool, HeatingCoolingState.Auto],
-    });
+    targetState = new MockCharacteristic(
+      "TargetHeatingCoolingState",
+      "TargetHeatingCoolingState",
+      HeatingCoolingState.Auto,
+      {
+        format: "int",
+        perms: ["pr", "pw", "ev"],
+        validValues: [
+          HeatingCoolingState.Off,
+          HeatingCoolingState.Heat,
+          HeatingCoolingState.Cool,
+          HeatingCoolingState.Auto,
+        ],
+      },
+    );
 
     service.addCharacteristic(currentTemp);
     service.addCharacteristic(targetTemp);
@@ -69,17 +95,17 @@ describe('Thermostat platform', () => {
     vi.restoreAllMocks();
   });
 
-  it('registers thermostat services and characteristics', () => {
-    expect(toHaveAccessory(harness.homeKit, 'thermostat-uuid').pass).toBe(true);
-    expect(toHaveService(harness.homeKit, 'Thermostat').pass).toBe(true);
+  it("registers thermostat services and characteristics", () => {
+    expect(toHaveAccessory(harness.homeKit, "thermostat-uuid").pass).toBe(true);
+    expect(toHaveService(harness.homeKit, "Thermostat").pass).toBe(true);
 
-    const svc = harness.homeKit.service('thermostat-uuid', 'Thermostat');
-    expect(toHaveCharacteristic(svc!, 'CurrentTemperature').pass).toBe(true);
-    expect(toHaveCharacteristic(svc!, 'TargetTemperature').pass).toBe(true);
-    expect(toHaveCharacteristic(svc!, 'TargetHeatingCoolingState').pass).toBe(true);
+    const svc = harness.homeKit.service("thermostat-uuid", "Thermostat");
+    expect(toHaveCharacteristic(svc!, "CurrentTemperature").pass).toBe(true);
+    expect(toHaveCharacteristic(svc!, "TargetTemperature").pass).toBe(true);
+    expect(toHaveCharacteristic(svc!, "TargetHeatingCoolingState").pass).toBe(true);
   });
 
-  it('adjusts target temperature and mode', async () => {
+  it("adjusts target temperature and mode", async () => {
     const tempSubscription = targetTemp.subscribe();
     const modeSubscription = targetState.subscribe();
 
@@ -97,7 +123,7 @@ describe('Thermostat platform', () => {
     modeSubscription.unsubscribe();
   });
 
-  it('enforces read-only and range constraints', async () => {
+  it("enforces read-only and range constraints", async () => {
     await expect(currentTemp.setValue(30)).rejects.toBeInstanceOf(CharacteristicValidationError);
     await expect(targetTemp.setValue(40)).rejects.toBeInstanceOf(CharacteristicValidationError);
     expect(toHaveValue(currentState, HeatingCoolingState.Off).pass).toBe(true);

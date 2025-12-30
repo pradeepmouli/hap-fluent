@@ -4,25 +4,25 @@
 /**
  * FluentCharacteristic wraps a HAP characteristic with strong typing and fluent API
  */
-export * from './FluentCharacteristic.js';
+export * from "./FluentCharacteristic.js";
 
-export * from './FluentService.js';
+export * from "./FluentService.js";
 
-export * from './AccessoryHandler.js';
+export * from "./AccessoryHandler.js";
 
-export * from './types/index.js';
+export * from "./types/index.js";
 
 // Export error classes for type-safe error handling
-export * from './errors.js';
+export * from "./errors.js";
 
 // Export type guards for runtime type validation
-export * from './type-guards.js';
+export * from "./type-guards.js";
 
 // Export type utilities for improved developer experience
-export * from './type-utils.js';
+export * from "./type-utils.js";
 
 // Export logger configuration
-export * from './logger.js';
+export * from "./logger.js";
 
 // Example usage (to be replaced with generated interfaces)
 // import { AccessoryInformationCharacteristics } from 'hap-codegen/hap-interfaces';

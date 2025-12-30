@@ -1,294 +1,296 @@
-import { describe, it, expect } from 'vitest';
-import { FluentCharacteristic } from '../../src/FluentCharacteristic.js';
+import { describe, it, expect } from "vitest";
+import { FluentCharacteristic } from "../../src/FluentCharacteristic.js";
 
 // Mock Characteristic class for testing
 class MockCharacteristic {
-displayName: string;
-UUID: string;
-value: any = undefined;
-private setHandler: ((value: any) => void | Promise<void>) | null = null;
-private getHandler: (() => any | Promise<any>) | null = null;
+  displayName: string;
+  UUID: string;
+  value: any = undefined;
+  private setHandler: ((value: any) => void | Promise<void>) | null = null;
+  private getHandler: (() => any | Promise<any>) | null = null;
 
-constructor(displayName: string, uuid: string) {
-this.displayName = displayName;
-this.UUID = uuid;
+  constructor(displayName: string, uuid: string) {
+    this.displayName = displayName;
+    this.UUID = uuid;
+  }
+
+  setValue(value: any) {
+    this.value = value;
+  }
+
+  updateValue(value: any) {
+    this.value = value;
+  }
+
+  onSet(handler: (value: any) => void | Promise<void>) {
+    this.setHandler = handler;
+  }
+
+  onGet(handler: () => any | Promise<any>) {
+    this.getHandler = handler;
+  }
+
+  async triggerSet(value: any) {
+    if (this.setHandler) {
+      await this.setHandler(value);
+    }
+  }
+
+  async triggerGet() {
+    if (this.getHandler) {
+      return await this.getHandler();
+    }
+    return this.value;
+  }
+
+  setProps(props: any) {
+    Object.assign(this, props);
+  }
 }
 
-setValue(value: any) {
-this.value = value;
-}
+describe("Interceptor System - Fluent API", () => {
+  describe("log() interceptor", () => {
+    it("should add logging interceptor", () => {
+      const mockChar = new MockCharacteristic("Brightness", "brightness-uuid");
+      const fluent = new FluentCharacteristic(mockChar as any);
 
-updateValue(value: any) {
-this.value = value;
-}
+      const result = fluent.log();
+      expect(result).toBe(fluent); // Should return this for chaining
+    });
 
-onSet(handler: (value: any) => void | Promise<void>) {
-this.setHandler = handler;
-}
+    it("should log set operations", async () => {
+      const mockChar = new MockCharacteristic("Brightness", "brightness-uuid");
+      const fluent = new FluentCharacteristic(mockChar as any);
 
-onGet(handler: () => any | Promise<any>) {
-this.getHandler = handler;
-}
+      let handlerValue: any;
+      fluent.log().onSet(async (value) => {
+        handlerValue = value;
+      });
 
-async triggerSet(value: any) {
-if (this.setHandler) {
-await this.setHandler(value);
-}
-}
+      await mockChar.triggerSet(50);
+      expect(handlerValue).toBe(50);
+    });
+  });
 
-async triggerGet() {
-if (this.getHandler) {
-return await this.getHandler();
-}
-return this.value;
-}
+  describe("limit() interceptor", () => {
+    it("should add rate limiting interceptor", () => {
+      const mockChar = new MockCharacteristic("Brightness", "brightness-uuid");
+      const fluent = new FluentCharacteristic(mockChar as any);
 
-setProps(props: any) {
-Object.assign(this, props);
-}
-}
+      const result = fluent.limit(3, 1000);
+      expect(result).toBe(fluent); // Should return this for chaining
+    });
 
-describe('Interceptor System - Fluent API', () => {
-describe('log() interceptor', () => {
-it('should add logging interceptor', () => {
-const mockChar = new MockCharacteristic('Brightness', 'brightness-uuid');
-const fluent = new FluentCharacteristic(mockChar as any);
+    it("should allow calls within rate limit", async () => {
+      const mockChar = new MockCharacteristic("Brightness", "brightness-uuid");
+      const fluent = new FluentCharacteristic(mockChar as any);
 
-const result = fluent.log();
-expect(result).toBe(fluent); // Should return this for chaining
-});
+      const values: number[] = [];
+      fluent.limit(3, 1000).onSet(async (value) => {
+        values.push(value);
+      });
 
-it('should log set operations', async () => {
-const mockChar = new MockCharacteristic('Brightness', 'brightness-uuid');
-const fluent = new FluentCharacteristic(mockChar as any);
+      // First 3 calls should succeed
+      await mockChar.triggerSet(1);
+      await mockChar.triggerSet(2);
+      await mockChar.triggerSet(3);
 
-let handlerValue: any;
-fluent.log().onSet(async (value) => {
-handlerValue = value;
-});
+      expect(values).toEqual([1, 2, 3]);
+    });
 
-await mockChar.triggerSet(50);
-expect(handlerValue).toBe(50);
-});
-});
+    it("should reject calls exceeding rate limit", async () => {
+      const mockChar = new MockCharacteristic("Brightness", "brightness-uuid");
+      const fluent = new FluentCharacteristic(mockChar as any);
 
-describe('limit() interceptor', () => {
-it('should add rate limiting interceptor', () => {
-const mockChar = new MockCharacteristic('Brightness', 'brightness-uuid');
-const fluent = new FluentCharacteristic(mockChar as any);
+      fluent.limit(2, 1000).onSet(async (value) => {
+        // Handler
+      });
 
-const result = fluent.limit(3, 1000);
-expect(result).toBe(fluent); // Should return this for chaining
-});
+      // First 2 calls succeed
+      await mockChar.triggerSet(1);
+      await mockChar.triggerSet(2);
 
-it('should allow calls within rate limit', async () => {
-const mockChar = new MockCharacteristic('Brightness', 'brightness-uuid');
-const fluent = new FluentCharacteristic(mockChar as any);
+      // 3rd call should fail
+      await expect(mockChar.triggerSet(3)).rejects.toThrow();
+    });
+  });
 
-const values: number[] = [];
-fluent.limit(3, 1000).onSet(async (value) => {
-values.push(value);
-});
+  describe("clamp() interceptor", () => {
+    it("should add clamping interceptor", () => {
+      const mockChar = new MockCharacteristic("Brightness", "brightness-uuid");
+      const fluent = new FluentCharacteristic(mockChar as any);
 
-// First 3 calls should succeed
-await mockChar.triggerSet(1);
-await mockChar.triggerSet(2);
-await mockChar.triggerSet(3);
+      const result = fluent.clamp(0, 100);
+      expect(result).toBe(fluent); // Should return this for chaining
+    });
 
-expect(values).toEqual([1, 2, 3]);
-});
+    it("should clamp values to range", async () => {
+      const mockChar = new MockCharacteristic("Brightness", "brightness-uuid");
+      const fluent = new FluentCharacteristic(mockChar as any);
 
-it('should reject calls exceeding rate limit', async () => {
-const mockChar = new MockCharacteristic('Brightness', 'brightness-uuid');
-const fluent = new FluentCharacteristic(mockChar as any);
+      let handlerValue: any;
+      fluent.clamp(0, 100).onSet(async (value) => {
+        handlerValue = value;
+      });
 
-fluent.limit(2, 1000).onSet(async (value) => {
-// Handler
-});
+      // Value within range
+      await mockChar.triggerSet(50);
+      expect(handlerValue).toBe(50);
 
-// First 2 calls succeed
-await mockChar.triggerSet(1);
-await mockChar.triggerSet(2);
+      // Value below min
+      await mockChar.triggerSet(-10);
+      expect(handlerValue).toBe(0);
 
-// 3rd call should fail
-await expect(mockChar.triggerSet(3)).rejects.toThrow();
-});
-});
+      // Value above max
+      await mockChar.triggerSet(150);
+      expect(handlerValue).toBe(100);
+    });
 
-describe('clamp() interceptor', () => {
-it('should add clamping interceptor', () => {
-const mockChar = new MockCharacteristic('Brightness', 'brightness-uuid');
-const fluent = new FluentCharacteristic(mockChar as any);
+    it("should pass through non-numeric values", async () => {
+      const mockChar = new MockCharacteristic("Name", "name-uuid");
+      const fluent = new FluentCharacteristic(mockChar as any);
 
-const result = fluent.clamp(0, 100);
-expect(result).toBe(fluent); // Should return this for chaining
-});
+      let handlerValue: any;
+      fluent.clamp(0, 100).onSet(async (value) => {
+        handlerValue = value;
+      });
 
-it('should clamp values to range', async () => {
-const mockChar = new MockCharacteristic('Brightness', 'brightness-uuid');
-const fluent = new FluentCharacteristic(mockChar as any);
+      await mockChar.triggerSet("test");
+      expect(handlerValue).toBe("test");
+    });
+  });
 
-let handlerValue: any;
-fluent.clamp(0, 100).onSet(async (value) => {
-handlerValue = value;
-});
+  describe("transform() interceptor", () => {
+    it("should add transformation interceptor", () => {
+      const mockChar = new MockCharacteristic("Brightness", "brightness-uuid");
+      const fluent = new FluentCharacteristic(mockChar as any);
 
-// Value within range
-await mockChar.triggerSet(50);
-expect(handlerValue).toBe(50);
+      const result = fluent.transform((v) => v);
+      expect(result).toBe(fluent); // Should return this for chaining
+    });
 
-// Value below min
-await mockChar.triggerSet(-10);
-expect(handlerValue).toBe(0);
+    it("should transform values", async () => {
+      const mockChar = new MockCharacteristic("Brightness", "brightness-uuid");
+      const fluent = new FluentCharacteristic(mockChar as any);
 
-// Value above max
-await mockChar.triggerSet(150);
-expect(handlerValue).toBe(100);
-});
+      let handlerValue: any;
+      fluent
+        .transform((v) => Math.round(v as number))
+        .onSet(async (value) => {
+          handlerValue = value;
+        });
 
-it('should pass through non-numeric values', async () => {
-const mockChar = new MockCharacteristic('Name', 'name-uuid');
-const fluent = new FluentCharacteristic(mockChar as any);
+      await mockChar.triggerSet(42.7);
+      expect(handlerValue).toBe(43);
 
-let handlerValue: any;
-fluent.clamp(0, 100).onSet(async (value) => {
-handlerValue = value;
-});
+      await mockChar.triggerSet(42.3);
+      expect(handlerValue).toBe(42);
+    });
+  });
 
-await mockChar.triggerSet('test');
-expect(handlerValue).toBe('test');
-});
-});
+  describe("audit() interceptor", () => {
+    it("should add audit interceptor", () => {
+      const mockChar = new MockCharacteristic("LockState", "lock-uuid");
+      const fluent = new FluentCharacteristic(mockChar as any);
 
-describe('transform() interceptor', () => {
-it('should add transformation interceptor', () => {
-const mockChar = new MockCharacteristic('Brightness', 'brightness-uuid');
-const fluent = new FluentCharacteristic(mockChar as any);
+      const result = fluent.audit();
+      expect(result).toBe(fluent); // Should return this for chaining
+    });
 
-const result = fluent.transform(v => v);
-expect(result).toBe(fluent); // Should return this for chaining
-});
+    it("should track operations", async () => {
+      const mockChar = new MockCharacteristic("LockState", "lock-uuid");
+      const fluent = new FluentCharacteristic(mockChar as any);
 
-it('should transform values', async () => {
-const mockChar = new MockCharacteristic('Brightness', 'brightness-uuid');
-const fluent = new FluentCharacteristic(mockChar as any);
+      const values: number[] = [];
+      fluent.audit().onSet(async (value) => {
+        values.push(value);
+      });
 
-let handlerValue: any;
-fluent.transform(v => Math.round(v as number)).onSet(async (value) => {
-handlerValue = value;
-});
+      await mockChar.triggerSet(0);
+      await mockChar.triggerSet(1);
 
-await mockChar.triggerSet(42.7);
-expect(handlerValue).toBe(43);
+      expect(values).toEqual([0, 1]);
+    });
+  });
 
-await mockChar.triggerSet(42.3);
-expect(handlerValue).toBe(42);
-});
-});
+  describe("Fluent chaining", () => {
+    it("should chain multiple interceptors", () => {
+      const mockChar = new MockCharacteristic("Brightness", "brightness-uuid");
+      const fluent = new FluentCharacteristic(mockChar as any);
 
-describe('audit() interceptor', () => {
-it('should add audit interceptor', () => {
-const mockChar = new MockCharacteristic('LockState', 'lock-uuid');
-const fluent = new FluentCharacteristic(mockChar as any);
+      const result = fluent
+        .log()
+        .transform((v) => Math.round(v as number))
+        .clamp(0, 100)
+        .limit(5, 1000);
 
-const result = fluent.audit();
-expect(result).toBe(fluent); // Should return this for chaining
-});
+      expect(result).toBe(fluent); // Should return this for chaining
+    });
 
-it('should track operations', async () => {
-const mockChar = new MockCharacteristic('LockState', 'lock-uuid');
-const fluent = new FluentCharacteristic(mockChar as any);
+    it("should apply interceptors in order", async () => {
+      const mockChar = new MockCharacteristic("Brightness", "brightness-uuid");
+      const fluent = new FluentCharacteristic(mockChar as any);
 
-const values: number[] = [];
-fluent.audit().onSet(async (value) => {
-values.push(value);
-});
+      let handlerValue: any;
+      fluent
+        .transform((v) => (v as number) * 2) // 50 * 2 = 100
+        .clamp(0, 80) // clamp 100 to 80
+        .onSet(async (value) => {
+          handlerValue = value;
+        });
 
-await mockChar.triggerSet(0);
-await mockChar.triggerSet(1);
+      await mockChar.triggerSet(50);
+      expect(handlerValue).toBe(80); // 50 * 2 = 100, clamped to 80
+    });
 
-expect(values).toEqual([0, 1]);
-});
-});
+    it("should chain multiple interceptors without validation", async () => {
+      const mockChar = new MockCharacteristic("Brightness", "brightness-uuid");
+      const fluent = new FluentCharacteristic(mockChar as any);
 
-describe('Fluent chaining', () => {
-it('should chain multiple interceptors', () => {
-const mockChar = new MockCharacteristic('Brightness', 'brightness-uuid');
-const fluent = new FluentCharacteristic(mockChar as any);
+      let handlerValue: any;
+      fluent
+        .log()
+        .clamp(0, 100)
+        .onSet(async (value) => {
+          handlerValue = value;
+        });
 
-const result = fluent
-.log()
-.transform(v => Math.round(v as number))
-.clamp(0, 100)
-.limit(5, 1000);
+      // Valid value
+      await mockChar.triggerSet(50);
+      expect(handlerValue).toBe(50);
 
-expect(result).toBe(fluent); // Should return this for chaining
-});
+      // Out of range value should be clamped
+      await mockChar.triggerSet(150);
+      expect(handlerValue).toBe(100); // Clamped to max
+    });
+  });
 
-it('should apply interceptors in order', async () => {
-const mockChar = new MockCharacteristic('Brightness', 'brightness-uuid');
-const fluent = new FluentCharacteristic(mockChar as any);
+  describe("clearInterceptors()", () => {
+    it("should remove all interceptors", async () => {
+      const mockChar = new MockCharacteristic("Brightness", "brightness-uuid");
+      const fluent = new FluentCharacteristic(mockChar as any);
 
-let handlerValue: any;
-fluent
-.transform(v => (v as number) * 2)  // 50 * 2 = 100
-.clamp(0, 80)                         // clamp 100 to 80
-.onSet(async (value) => {
-handlerValue = value;
-});
+      fluent.limit(1, 1000).onSet(async (_value) => {
+        // Handler
+      });
 
-await mockChar.triggerSet(50);
-expect(handlerValue).toBe(80); // 50 * 2 = 100, clamped to 80
-});
+      // First call succeeds
+      await mockChar.triggerSet(1);
 
-it('should chain multiple interceptors without validation', async () => {
-const mockChar = new MockCharacteristic('Brightness', 'brightness-uuid');
-const fluent = new FluentCharacteristic(mockChar as any);
+      // Second call would fail with rate limit
+      await expect(mockChar.triggerSet(2)).rejects.toThrow();
 
-let handlerValue: any;
-fluent
-.log()
-.clamp(0, 100)
-.onSet(async (value) => {
-handlerValue = value;
-});
+      // Clear interceptors and re-register handler
+      fluent.clearInterceptors();
+      fluent.onSet(async (_value) => {
+        // New handler without rate limit
+      });
 
-// Valid value
-await mockChar.triggerSet(50);
-expect(handlerValue).toBe(50);
-
-// Out of range value should be clamped
-await mockChar.triggerSet(150);
-expect(handlerValue).toBe(100); // Clamped to max
-});
-});
-
-describe('clearInterceptors()', () => {
-it('should remove all interceptors', async () => {
-const mockChar = new MockCharacteristic('Brightness', 'brightness-uuid');
-const fluent = new FluentCharacteristic(mockChar as any);
-
-fluent.limit(1, 1000).onSet(async (_value) => {
-// Handler
-});
-
-// First call succeeds
-await mockChar.triggerSet(1);
-
-// Second call would fail with rate limit
-await expect(mockChar.triggerSet(2)).rejects.toThrow();
-
-// Clear interceptors and re-register handler
-fluent.clearInterceptors();
-fluent.onSet(async (_value) => {
-// New handler without rate limit
-});
-
-// Now should work without rate limiting
-await mockChar.triggerSet(3);
-await mockChar.triggerSet(4);
-await mockChar.triggerSet(5);
-// All should succeed
-});
-});
+      // Now should work without rate limiting
+      await mockChar.triggerSet(3);
+      await mockChar.triggerSet(4);
+      await mockChar.triggerSet(5);
+      // All should succeed
+    });
+  });
 });

@@ -1,26 +1,17 @@
 {
-	"compilerOptions": {
-		"target": "esnext",
-		"module": "node18",
-		"moduleResolution": "node16",
-		"rootDir": "src",
-		"outDir": "dist",
-		"strict": true,
-		"esModuleInterop": true,
-		"skipLibCheck": true,
-		"paths": {
-			"ts-morph": [
-				"../hap-codegen/node_modules/ts-morph"
-			],
-		}
-	},
-	"include": [
-		"src"
-	],
-	"exclude": [
-		"node_modules",
-		"dist",
-		"CharacteristicDefinitions.ts",
-		"ServiceDefinitions.ts",
-	]
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "node18",
+    "moduleResolution": "node16",
+    "rootDir": "src",
+    "outDir": "dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "paths": {
+      "ts-morph": ["../hap-codegen/node_modules/ts-morph"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "CharacteristicDefinitions.ts", "ServiceDefinitions.ts"]
 }

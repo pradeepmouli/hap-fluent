@@ -18,6 +18,7 @@ User input:
 $ARGUMENTS
 
 The text the user typed after `/speckit.deprecate` in the triggering message can be:
+
 - `/speckit.deprecate <feature_number> "reason"` - Direct with feature number
 - `/speckit.deprecate "reason"` - Interactive (will prompt for feature selection)
 
@@ -35,16 +36,18 @@ Given that input, do this:
    a. Run `.specify/scripts/bash/create-deprecate.sh --list-features "$REASON"` to get list of features
    b. Parse the JSON output which contains: `{"mode":"list","reason":"...","features":[...]}`
    c. Present the features list to the user in a clear, numbered format:
-      ```
-      Which feature do you want to deprecate?
 
-      1. 001 - ability-for-new
-      2. 002 - ability-for-users
-      3. 014 - edit-profile-form
-      ...
+   ```
+   Which feature do you want to deprecate?
 
-      Type the feature number (e.g., 014) or respond with the line number (e.g., 3).
-      ```
+   1. 001 - ability-for-new
+   2. 002 - ability-for-users
+   3. 014 - edit-profile-form
+   ...
+
+   Type the feature number (e.g., 014) or respond with the line number (e.g., 3).
+   ```
+
    d. Wait for user response with their selection
    e. Extract the feature number from their response (handle both "014" and "3" formats)
    f. Continue to step 3 with the selected feature number
@@ -92,6 +95,7 @@ Given that input, do this:
 ```
 
 **Important Notes**:
+
 - Deprecation is a **multi-month process** - not a quick fix
 - Each phase requires careful planning and communication
 - Users need time to migrate - rushing causes churn
@@ -101,5 +105,6 @@ Given that input, do this:
 - Get stakeholder sign-off before starting (Product, Engineering, Support)
 
 **Interactive Mode Usage Examples**:
+
 - User: `/speckit.deprecate "low usage"` → Shows feature list → User selects → Creates deprecation plan
 - User: `/speckit.deprecate 014 "low usage"` → Directly creates deprecation plan for feature 014

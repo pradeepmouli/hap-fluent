@@ -11,7 +11,9 @@ This spec outlines the integration of `hap-fluent` (fluent interface for HAP cha
 ## Background
 
 ### Current State
+
 The homebridge-rabbitair plugin:
+
 - **Technology:** TypeScript, based on Homebridge Plugin Template
 - **Testing:** Mocha-based test framework (test/ directory exists)
 - **Coverage:** Uses c8 for coverage reporting
@@ -21,6 +23,7 @@ The homebridge-rabbitair plugin:
 - **Network Protocol:** UDP communication on port 9009 with 32-char token authentication
 
 ### Target Libraries
+
 - **hap-fluent:** Fluent interface for HomeKit accessories with type-safe characteristic operations
 - **hap-test:** Test harness with MockHomeKit, TimeController, NetworkSimulator, custom matchers
 
@@ -45,6 +48,7 @@ The homebridge-rabbitair plugin:
 ## Architecture
 
 ### Package Structure
+
 ```
 homebridge-rabbitair/
 ├── src/
@@ -69,6 +73,7 @@ homebridge-rabbitair/
 ### Dependency Integration
 
 #### package.json Updates
+
 ```json
 {
   "dependencies": {
@@ -92,6 +97,7 @@ homebridge-rabbitair/
 ```
 
 #### Testing Framework Migration
+
 - **Phase 1:** Keep Mocha for existing tests, add Vitest for new hap-test tests
 - **Phase 2:** Gradually migrate Mocha tests to Vitest
 - **Phase 3:** Remove Mocha dependency once migration complete
@@ -101,6 +107,7 @@ homebridge-rabbitair/
 ### Phase 1: Setup & Dependencies (2-3 hours)
 
 #### Task 1.1: Install Dependencies
+
 ```bash
 cd homebridge-rabbitair
 pnpm add hap-fluent homebridge
@@ -108,7 +115,9 @@ pnpm add -D hap-test vitest @vitest/coverage-istanbul
 ```
 
 #### Task 1.2: Configure Vitest
+
 Create `vitest.config.ts`:
+
 ```typescript
 import { defineConfig } from 'vitest/config';
 
@@ -131,7 +140,9 @@ export default defineConfig({
 ```
 
 #### Task 1.3: Update TypeScript Config
+
 Ensure `tsconfig.json` includes test files:
+
 ```json
 {
   "compilerOptions": {
@@ -146,6 +157,7 @@ Ensure `tsconfig.json` includes test files:
 #### Task 2.1: Refactor RabbitAirAccessory Service Setup
 
 **Before (Current):**
+
 ```typescript
 // Imperative service setup
 const service = this.accessory.getService(this.platform.Service.AirPurifier)
@@ -163,6 +175,7 @@ service.getCharacteristic(this.platform.Characteristic.RotationSpeed)
 ```
 
 **After (with hap-fluent):**
+
 ```typescript
 import { AccessoryHandler } from 'hap-fluent';
 
@@ -210,6 +223,7 @@ export class RabbitAirAccessory {
 ```
 
 #### Task 2.2: Implement Type-Safe State Management
+
 ```typescript
 import type { InterfaceFor } from 'hap-fluent';
 
@@ -224,6 +238,7 @@ private async updateAirPurifierState(state: AirPurifierInterface['currentAirPuri
 ```
 
 #### Task 2.3: Add Interceptors for Device State Mapping
+
 ```typescript
 import { debounce, mapValues } from 'hap-fluent/interceptors';
 
@@ -244,7 +259,9 @@ import { debounce, mapValues } from 'hap-fluent/interceptors';
 ### Phase 3: Unit Testing with hap-test (6-8 hours)
 
 #### Task 3.1: Test RabbitAirClient Protocol Logic
+
 Create `test/unit/rabbitAirClient.test.ts`:
+
 ```typescript
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { NetworkSimulator } from 'hap-test';
@@ -266,14 +283,14 @@ describe('RabbitAirClient', () => {
   describe('Protocol Commands', () => {
     it('should send properly formatted power on command', async () => {
       await client.setPower(true);
-      
+
       expect(mockSocket.send).toHaveBeenCalledWith(
         expect.any(Buffer),
         9009,
         '192.168.1.100',
         expect.any(Function)
       );
-      
+
       // Verify command structure
       const sentBuffer = mockSocket.send.mock.calls[0][0];
       expect(sentBuffer).toMatchSnapshot();
@@ -281,9 +298,9 @@ describe('RabbitAirClient', () => {
 
     it('should parse device state response correctly', async () => {
       const mockResponse = Buffer.from(/* ... */);
-      
+
       const state = await client.parseState(mockResponse);
-      
+
       expect(state).toEqual({
         power: true,
         mode: 'auto',
@@ -301,12 +318,12 @@ describe('RabbitAirClient', () => {
         .mockImplementationOnce((buf, port, host, cb) => cb(null));
 
       await expect(client.setPower(true)).resolves.not.toThrow();
-      
+
       expect(mockSocket.send).toHaveBeenCalledTimes(2);
     });
 
     it('should timeout after max retries', async () => {
-      mockSocket.send.mockImplementation((buf, port, host, cb) => 
+      mockSocket.send.mockImplementation((buf, port, host, cb) =>
         cb(new Error('Network error'))
       );
 
@@ -317,7 +334,9 @@ describe('RabbitAirClient', () => {
 ```
 
 #### Task 3.2: Test RabbitAirAccessory Setup
+
 Create `test/unit/platformAccessory.test.ts`:
+
 ```typescript
 import { describe, it, expect, beforeEach } from 'vitest';
 import { TestHarness, toHaveService, toHaveCharacteristic } from 'hap-test';
@@ -348,7 +367,7 @@ describe('RabbitAirAccessory', () => {
     );
 
     expect(toHaveService(harness.homeKit, 'AirPurifier').pass).toBe(true);
-    
+
     const service = harness.homeKit.service('test-uuid', 'AirPurifier')!;
     expect(toHaveCharacteristic(service, 'Active').pass).toBe(true);
     expect(toHaveCharacteristic(service, 'CurrentAirPurifierState').pass).toBe(true);
@@ -359,7 +378,7 @@ describe('RabbitAirAccessory', () => {
 
   it('should update characteristics when device state changes', async () => {
     const accessory = new RabbitAirAccessory(/* ... */);
-    
+
     // Simulate device state update
     await accessory.updateFromDevice({
       power: true,
@@ -371,7 +390,7 @@ describe('RabbitAirAccessory', () => {
 
     const active = harness.homeKit.characteristic('test-uuid', 'AirPurifier', 'Active')!;
     const speed = harness.homeKit.characteristic('test-uuid', 'AirPurifier', 'RotationSpeed')!;
-    
+
     expect(active.value).toBe(1); // Active
     expect(speed.value).toBe(50); // Medium = 50%
   });
@@ -379,7 +398,9 @@ describe('RabbitAirAccessory', () => {
 ```
 
 #### Task 3.3: Test Platform Lifecycle
+
 Create `test/unit/platform.test.ts`:
+
 ```typescript
 import { describe, it, expect, beforeEach } from 'vitest';
 import { TestHarness } from 'hap-test';
@@ -439,7 +460,9 @@ describe('RabbitAirPlatform', () => {
 ### Phase 4: Integration Testing (4-6 hours)
 
 #### Task 4.1: Test Complete Platform Lifecycle
+
 Create `test/integration/platform-lifecycle.test.ts`:
+
 ```typescript
 import { describe, it, expect, beforeEach } from 'vitest';
 import { TestHarness } from 'hap-test';
@@ -478,7 +501,7 @@ describe('RabbitAir Platform Lifecycle', () => {
 
   it('should handle platform restart with cached accessories', async () => {
     const firstAccessories = harness.homeKit.accessories();
-    
+
     // Simulate platform restart
     const harness2 = await TestHarness.create({
       platformConstructor: RabbitAirPlatform,
@@ -495,7 +518,9 @@ describe('RabbitAir Platform Lifecycle', () => {
 ```
 
 #### Task 4.2: Test Network Resilience
+
 Create `test/integration/network-resilience.test.ts`:
+
 ```typescript
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestHarness, NetworkSimulator } from 'hap-test';
@@ -507,7 +532,7 @@ describe('Network Resilience', () => {
 
   beforeEach(async () => {
     simulator = new NetworkSimulator();
-    
+
     harness = await TestHarness.create({
       platformConstructor: RabbitAirPlatform,
       platformConfig: { /* ... */ },
@@ -554,7 +579,9 @@ describe('Network Resilience', () => {
 ```
 
 #### Task 4.3: Test Device State Synchronization
+
 Create `test/integration/accessory-updates.test.ts`:
+
 ```typescript
 import { describe, it, expect, beforeEach } from 'vitest';
 import { TestHarness, toHaveValue } from 'hap-test';
@@ -610,7 +637,9 @@ describe('RabbitAir Device State Updates', () => {
 ### Phase 5: E2E Testing & Documentation (3-4 hours)
 
 #### Task 5.1: Create Comprehensive E2E Test
+
 Create `test/e2e/rabbitair-plugin.test.ts`:
+
 ```typescript
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestHarness, toHaveService, toHaveAccessory } from 'hap-test';
@@ -664,8 +693,10 @@ describe('RabbitAir Plugin E2E', () => {
 ```
 
 #### Task 5.2: Update Documentation
+
 Create `TESTING.md` update:
-```markdown
+
+````markdown
 # Testing Guide
 
 This plugin uses [hap-test](../hap-test) for comprehensive testing.
@@ -687,7 +718,7 @@ pnpm test:coverage
 
 # Watch mode for development
 pnpm test:watch
-```
+````
 
 ## Test Structure
 
@@ -725,7 +756,8 @@ it('should handle network latency', async () => {
   // Test characteristic operations with latency
 });
 ```
-```
+
+````
 
 #### Task 5.3: Create Migration Guide
 Add to `README.md`:
@@ -754,7 +786,8 @@ const { airPurifier } = handler
       .onSet(async (value) => this.setActive(value))
       .parent
     .build();
-```
+````
+
 ```
 
 ## Testing Strategy
@@ -859,3 +892,4 @@ const { airPurifier } = handler
 - [hap-test README](../hap-test/README.md)
 - [Homebridge Plugin Development](https://developers.homebridge.io/)
 - [RabbitAir Protocol (python-rabbitair)](https://github.com/rabbit-air/python-rabbitair)
+```

@@ -5,9 +5,11 @@ The extension system provides additional workflow types beyond the core `/specif
 ## Available Workflows
 
 ### Core Workflow (Built-in)
+
 - **`/specify`** - Create new features from scratch (greenfield development)
 
 ### Extension Workflows
+
 - **`/speckit.baseline`** - Establish project baseline and track all changes by workflow type
 - **`/speckit.bugfix`** - Bug remediation with regression-test-first approach
 - **`/speckit.modify`** - Extend or modify existing features with impact analysis
@@ -21,19 +23,20 @@ Extensions are enabled by default in this project. To disable an extension, edit
 
 ## Workflow Selection Guide
 
-| Scenario | Use This Workflow |
-|----------|------------------|
-| Establishing project context | `/speckit.baseline` |
-| Building new feature | `/specify` |
-| Fixing a bug | `/speckit.bugfix` |
-| Adding fields to existing feature | `/speckit.modify` |
-| Extracting duplicate code | `/speckit.refactor` |
-| Production is down | `/speckit.hotfix` |
-| Removing old feature | `/speckit.deprecate` |
+| Scenario                          | Use This Workflow    |
+| --------------------------------- | -------------------- |
+| Establishing project context      | `/speckit.baseline`  |
+| Building new feature              | `/specify`           |
+| Fixing a bug                      | `/speckit.bugfix`    |
+| Adding fields to existing feature | `/speckit.modify`    |
+| Extracting duplicate code         | `/speckit.refactor`  |
+| Production is down                | `/speckit.hotfix`    |
+| Removing old feature              | `/speckit.deprecate` |
 
 ## Extension Structure
 
 Each workflow extension contains:
+
 - **Template files** - Markdown templates for specs and documentation
 - **Command definition** - `.claude/commands/speckit.{workflow}.md` for AI agents
 - **Bash scripts** - `.specify/scripts/bash/create-{workflow}.sh` for automation
@@ -46,6 +49,7 @@ See `docs/extension-development.md` for guide on creating your own workflow exte
 ## Compatibility
 
 These extensions are designed to be:
+
 - **Agent-agnostic** - Work with Claude Code, GitHub Copilot, Gemini CLI, etc.
 - **Non-breaking** - Don't modify core Specify functionality
 - **Spec Kit compatible** - Follow GitHub Spec Kit conventions for future contribution

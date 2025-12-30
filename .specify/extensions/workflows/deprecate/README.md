@@ -16,6 +16,7 @@ Use `/speckit.deprecate` when:
 - Technical debt reduction initiative
 
 **Do NOT use `/speckit.deprecate` for**:
+
 - Quick bug fixes → use `/speckit.bugfix` instead
 - Temporary feature disabling → use feature flags
 - Emergency removal → explain why it's urgent first
@@ -105,6 +106,7 @@ specs/
 ```
 
 This will:
+
 1. Find original feature `014-edit-profile-form`
 2. Run dependency scan automatically
 3. Create branch `deprecate/001-edit-profile-form`
@@ -114,6 +116,7 @@ This will:
 7. Show "Next Steps" for checkpoint-based workflow
 
 **Next steps after running the command:**
+
 1. Review `deprecation.md` and `dependencies.md` - are all dependencies identified?
 2. Assess business impact - get stakeholder approvals for deprecation
 3. Define 3-phase timeline - how long should each phase take?
@@ -266,21 +269,25 @@ Files importing `app/components/EditProfileForm.tsx`:
 The deprecation workflow uses checkpoints to ensure proper planning and stakeholder alignment before executing a multi-month sunset:
 
 ### Phase 1: Analysis & Dependency Scan
+
 - **Command**: `/speckit.deprecate 014 "reason"`
 - **Creates**: `deprecation.md` plan template and auto-generated `dependencies.md`
 - **Checkpoint**: Review dependencies and usage data - is deprecation justified? Are there hidden dependencies the scan missed?
 
 ### Phase 2: Stakeholder Alignment & Timeline Planning
+
 - **Command**: `/speckit.plan`
 - **Creates**: `plan.md` with 3-phase timeline and communication strategy
 - **Checkpoint**: Review plan - get stakeholder approvals (Product, Engineering, Support). Is timeline realistic for user migration? Is communication strategy comprehensive?
 
 ### Phase 3: Task Breakdown
+
 - **Command**: `/speckit.tasks`
 - **Creates**: `tasks.md` with phased tasks across all 3 deprecation phases
 - **Checkpoint**: Review tasks - are all 3 phases represented? Are communication tasks included for each phase? Migration guide creation planned?
 
 ### Phase 4: Phased Execution (Spans 3-6 months)
+
 - **Command**: `/speckit.implement`
 - **Executes**: Tasks across months, one phase at a time
 - **Result**: Feature successfully sunset with users migrated to alternative
@@ -292,16 +299,19 @@ The deprecation workflow uses checkpoints to ensure proper planning and stakehol
 ### Setting Realistic Timelines
 
 **Phase 1 Duration** (Warnings):
+
 - Internal/power users: 1 month minimum
 - Consumer product: 2-3 months
 - Enterprise/API: 6-12 months (longer contracts)
 
 **Phase 2 Duration** (Disabled):
+
 - Low-stakes feature: 1 month
 - Medium-stakes: 2 months
 - High-stakes: 3+ months
 
 **Total Sunset**:
+
 - Minor feature: 3 months
 - Major feature: 6 months
 - Core functionality: 12+ months
@@ -309,6 +319,7 @@ The deprecation workflow uses checkpoints to ensure proper planning and stakehol
 ### Effective Communication
 
 **Email Template**:
+
 ```
 Subject: [Feature Name] will be retired on [Date]
 
@@ -390,6 +401,7 @@ This workflow upholds:
 ## Communication Templates
 
 ### API Deprecation Header
+
 ```
 Deprecation: version="1.0"
 Sunset: "2026-02-01T00:00:00Z"
@@ -397,6 +409,7 @@ Link: <https://example.com/docs/migration-guide>; rel="deprecation"
 ```
 
 ### In-App Warning
+
 ```
 ⚠️ This feature will be removed on February 1, 2026
 
@@ -406,6 +419,7 @@ We recommend switching to the new [Feature Name].
 ```
 
 ### Console Warning
+
 ```javascript
 console.warn(
   '[DEPRECATED] OldFeature will be removed on 2026-02-01. ' +
@@ -415,4 +429,4 @@ console.warn(
 
 ---
 
-*Deprecation Workflow Documentation - Part of Specify Extension System*
+_Deprecation Workflow Documentation - Part of Specify Extension System_

@@ -62,6 +62,7 @@ characteristic.addValidator(
 ### Design Evolution
 
 **Initial Approach**: Complex custom interceptor system with factory functions:
+
 ```typescript
 import { createLoggingInterceptor } from 'hap-fluent/interceptors';
 characteristic.intercept(createLoggingInterceptor()).onSet(handler);
@@ -70,6 +71,7 @@ characteristic.intercept(createLoggingInterceptor()).onSet(handler);
 **User Feedback**: Requested simpler standard methods instead of custom interceptors
 
 **Final Design**: Standard fluent methods directly on FluentCharacteristic:
+
 ```typescript
 characteristic.log().limit(5, 1000).onSet(handler);
 ```
@@ -86,13 +88,15 @@ characteristic.log().limit(5, 1000).onSet(handler);
 
 **Key Design Decision**: Interceptors wrap **onSet/onGet handlers** (listening side), not direct `set()` calls.
 
-**Rationale**: 
+**Rationale**:
+
 - HAP-nodejs already handles validation/rate-limiting for its own operations
 - Our interceptors apply when **HomeKit initiates changes** (via onSet/onGet)
 - Programmatic `set()` calls remain clean and fast (no interceptor overhead)
 - Aligns with HAP-nodejs architecture
 
 **Execution Flow**:
+
 1. HomeKit calls onSet with new value
 2. **beforeSet interceptors** run (transformation, rate limit check)
 3. **Validators** run (if any)
@@ -219,6 +223,7 @@ test/
 **Decision**: Implement 5 standard methods directly on FluentCharacteristic class.
 
 **Rationale**:
+
 - More discoverable (autocomplete shows methods)
 - Less boilerplate (no imports, no factory functions)
 - More readable (`characteristic.log().limit(5, 1000)`)
@@ -236,6 +241,7 @@ test/
 **Decision**: Interceptors wrap onSet/onGet handlers, not the set() method.
 
 **Rationale**:
+
 - Aligns with HAP-nodejs architecture
 - Avoids redundant validation/rate-limiting with HAP-nodejs
 - Applies interceptors to HomeKit-initiated changes (the interesting cases)
@@ -251,6 +257,7 @@ test/
 **Decision**: Skip event system implementation.
 
 **Rationale**:
+
 - Interceptors with hooks (beforeSet, afterSet, beforeGet, afterGet, onError) provide equivalent functionality
 - Event system would add API surface area with limited additional value
 - Simpler API is better - one pattern (interceptors) vs two (interceptors + events)
@@ -288,6 +295,7 @@ Phase 4 is complete. Remaining phases are:
 - **Phase 6 (Build & Tooling)**: Source maps, modern exports, bundle size tracking
 
 These phases are **LOW PRIORITY** and optional. The library is now production-ready with:
+
 - ✅ Type safety (Phase 1)
 - ✅ Developer experience (Phase 2)
 - ✅ Comprehensive testing (Phase 3)

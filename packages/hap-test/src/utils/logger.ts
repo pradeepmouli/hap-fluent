@@ -1,14 +1,14 @@
 /**
  * Debug logger for hap-test
- * 
+ *
  * Provides detailed logging for troubleshooting and understanding test behavior
  */
 
 export enum LogLevel {
-  DEBUG = 'DEBUG',
-  INFO = 'INFO',
-  WARN = 'WARN',
-  ERROR = 'ERROR',
+  DEBUG = "DEBUG",
+  INFO = "INFO",
+  WARN = "WARN",
+  ERROR = "ERROR",
 }
 
 export interface LogEntry {
@@ -77,14 +77,14 @@ export class Logger {
    * Enable specific categories
    */
   enableCategories(...categories: string[]): void {
-    categories.forEach(cat => this.categories.add(cat));
+    categories.forEach((cat) => this.categories.add(cat));
   }
 
   /**
    * Disable specific categories
    */
   disableCategories(...categories: string[]): void {
-    categories.forEach(cat => this.categories.delete(cat));
+    categories.forEach((cat) => this.categories.delete(cat));
   }
 
   /**
@@ -146,7 +146,7 @@ export class Logger {
     const levels = [LogLevel.DEBUG, LogLevel.INFO, LogLevel.WARN, LogLevel.ERROR];
     const currentLevelIndex = levels.indexOf(this.logLevel);
     const messageLevelIndex = levels.indexOf(level);
-    
+
     if (messageLevelIndex < currentLevelIndex) {
       return false;
     }
@@ -166,16 +166,16 @@ export class Logger {
 
     switch (entry.level) {
       case LogLevel.DEBUG:
-        console.debug(message, entry.data || '');
+        console.debug(message, entry.data || "");
         break;
       case LogLevel.INFO:
-        console.info(message, entry.data || '');
+        console.info(message, entry.data || "");
         break;
       case LogLevel.WARN:
-        console.warn(message, entry.data || '');
+        console.warn(message, entry.data || "");
         break;
       case LogLevel.ERROR:
-        console.error(message, entry.data || '');
+        console.error(message, entry.data || "");
         break;
     }
   }
@@ -197,14 +197,14 @@ export class Logger {
    * Get logs filtered by category
    */
   getLogsByCategory(category: string): LogEntry[] {
-    return this.logs.filter(log => log.category === category);
+    return this.logs.filter((log) => log.category === category);
   }
 
   /**
    * Get logs filtered by level
    */
   getLogsByLevel(level: LogLevel): LogEntry[] {
-    return this.logs.filter(log => log.level === level);
+    return this.logs.filter((log) => log.level === level);
   }
 
   /**
@@ -242,12 +242,12 @@ export const logger = Logger.getInstance();
  * Log categories for different subsystems
  */
 export const LogCategory = {
-  ACCESSORY: 'accessory',
-  SERVICE: 'service',
-  CHARACTERISTIC: 'characteristic',
-  EVENT: 'event',
-  NETWORK: 'network',
-  VALIDATION: 'validation',
-  HARNESS: 'harness',
-  TIME: 'time',
+  ACCESSORY: "accessory",
+  SERVICE: "service",
+  CHARACTERISTIC: "characteristic",
+  EVENT: "event",
+  NETWORK: "network",
+  VALIDATION: "validation",
+  HARNESS: "harness",
+  TIME: "time",
 } as const;

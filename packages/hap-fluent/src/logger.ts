@@ -3,33 +3,33 @@
  * Uses Pino for fast, JSON-structured logging with configurable levels
  */
 
-import pino from 'pino';
+import pino from "pino";
 
-export type LogLevel = 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace' | 'silent';
+export type LogLevel = "fatal" | "error" | "warn" | "info" | "debug" | "trace" | "silent";
 
 export interface LoggerOptions {
-	/**
-	 * Minimum log level to output
-	 * @default 'info'
-	 */
-	level?: LogLevel;
+  /**
+   * Minimum log level to output
+   * @default 'info'
+   */
+  level?: LogLevel;
 
-	/**
-	 * Enable pretty printing for development
-	 * @default false
-	 */
-	pretty?: boolean;
+  /**
+   * Enable pretty printing for development
+   * @default false
+   */
+  pretty?: boolean;
 
-	/**
-	 * Custom log destination
-	 * @default process.stdout
-	 */
-	destination?: pino.DestinationStream;
+  /**
+   * Custom log destination
+   * @default process.stdout
+   */
+  destination?: pino.DestinationStream;
 
-	/**
-	 * Additional context to include in all log messages
-	 */
-	base?: Record<string, unknown>;
+  /**
+   * Additional context to include in all log messages
+   */
+  base?: Record<string, unknown>;
 }
 
 /**
@@ -59,34 +59,29 @@ let loggerInstance: pino.Logger | null = null;
  * ```
  */
 export function configureLogger(options: LoggerOptions = {}): pino.Logger {
-	const {
-		level = 'info',
-		pretty = false,
-		destination,
-		base = { name: 'hap-fluent' },
-	} = options;
+  const { level = "info", pretty = false, destination, base = { name: "hap-fluent" } } = options;
 
-	const transport = pretty
-		? {
-				target: 'pino-pretty',
-				options: {
-					colorize: true,
-					translateTime: 'HH:MM:ss.l',
-					ignore: 'pid,hostname',
-				},
-			}
-		: undefined;
+  const transport = pretty
+    ? {
+        target: "pino-pretty",
+        options: {
+          colorize: true,
+          translateTime: "HH:MM:ss.l",
+          ignore: "pid,hostname",
+        },
+      }
+    : undefined;
 
-	loggerInstance = pino(
-		{
-			level,
-			base,
-			...(transport && { transport }),
-		},
-		destination,
-	);
+  loggerInstance = pino(
+    {
+      level,
+      base,
+      ...(transport && { transport }),
+    },
+    destination,
+  );
 
-	return loggerInstance;
+  return loggerInstance;
 }
 
 /**
@@ -103,13 +98,13 @@ export function configureLogger(options: LoggerOptions = {}): pino.Logger {
  * ```
  */
 export function getLogger(): pino.Logger {
-	if (!loggerInstance) {
-		loggerInstance = pino({
-			level: 'info',
-			base: { name: 'hap-fluent' },
-		});
-	}
-	return loggerInstance;
+  if (!loggerInstance) {
+    loggerInstance = pino({
+      level: "info",
+      base: { name: "hap-fluent" },
+    });
+  }
+  return loggerInstance;
 }
 
 /**
@@ -126,12 +121,12 @@ export function getLogger(): pino.Logger {
  * ```
  */
 export function createChildLogger(context: Record<string, unknown>): pino.Logger {
-	return getLogger().child(context);
+  return getLogger().child(context);
 }
 
 /**
  * Reset the logger instance (primarily for testing)
  */
 export function resetLogger(): void {
-	loggerInstance = null;
+  loggerInstance = null;
 }

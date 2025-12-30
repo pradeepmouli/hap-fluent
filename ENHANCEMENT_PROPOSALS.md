@@ -17,6 +17,7 @@ This is a well-conceived TypeScript wrapper for HAP-NodeJS that provides type-sa
 ## Key Findings
 
 ### Strengths
+
 - Strong TypeScript typing with generated interfaces
 - Fluent API design improves developer experience
 - Good test coverage structure with Vitest
@@ -27,6 +28,7 @@ This is a well-conceived TypeScript wrapper for HAP-NodeJS that provides type-sa
 ### Critical Issues Found
 
 #### 1. **Type Safety Violations**
+
 - Multiple `as any` casts throughout codebase (FluentService.ts:73, 83, 89, 92)
 - `//@ts-ignore` and `//@ts-expect-error` directives masking type issues
 - Type assertions without runtime validation
@@ -34,6 +36,7 @@ This is a well-conceived TypeScript wrapper for HAP-NodeJS that provides type-sa
 - **Location**: `packages/hap-fluent/src/AccessoryHandler.ts:66, 69, 150`
 
 #### 2. **Missing Error Handling**
+
 - No try-catch blocks in async operations
 - No validation of characteristic values before setting
 - No error recovery mechanisms
@@ -41,18 +44,21 @@ This is a well-conceived TypeScript wrapper for HAP-NodeJS that provides type-sa
 - **Impact**: Runtime errors can crash the application
 
 #### 3. **Code Quality Issues**
+
 - Large blocks of commented-out code (AccessoryHandler.ts:102-113, 240-294)
 - Incomplete/broken example files (usage-examples.ts:25 has syntax error)
 - Inconsistent validation (getOrAddService validates, wrapService doesn't)
 - Dead code that should be removed
 
 #### 4. **Package Configuration**
+
 - homebridge/hap-nodejs should be peerDependencies, not devDependencies
 - Missing modern package.json "exports" field
 - No source maps for debugging
 - **Impact**: Incorrect dependency resolution in consumer projects
 
 #### 5. **Documentation Gaps**
+
 - No package-level README for hap-fluent
 - No migration guide or changelog
 - Examples have syntax errors and don't run
@@ -60,6 +66,7 @@ This is a well-conceived TypeScript wrapper for HAP-NodeJS that provides type-sa
 - Missing contributing guidelines
 
 #### 6. **Limited Testability**
+
 - No integration tests with real HAP-NodeJS services
 - No test coverage reporting configured
 - Edge cases not covered in tests
@@ -244,6 +251,7 @@ export function getOrAddService<T extends typeof Service>(
 **Task**: Eliminate all `as any` casts with proper type guards
 
 **Files to modify**:
+
 - `packages/hap-fluent/src/FluentService.ts`
 - `packages/hap-fluent/src/AccessoryHandler.ts`
 
@@ -279,6 +287,7 @@ const obj = {
 ```
 
 **Action Items**:
+
 1. Add runtime type checking where TypeScript types can't guarantee safety
 2. Remove all `//@ts-ignore` and `//@ts-expect-error` directives
 3. Fix underlying type issues instead of suppressing them
@@ -287,18 +296,22 @@ const obj = {
 #### 1.3 Clean Up Codebase
 
 **Files to modify**:
+
 - `packages/hap-fluent/src/AccessoryHandler.ts` (lines 102-113, 240-294)
 - `packages/hap-fluent/examples/usage-examples.ts` (line 25)
 
 **Tasks**:
+
 1. Remove all commented-out code blocks
 2. Fix syntax errors in examples:
+
    ```typescript
    // Line 25 - Fix this:
    createFluentServic()) // BROKEN
 
    // Should be removed or completed properly
    ```
+
 3. Add consistent input validation across all public methods
 4. Remove duplicate code between `initializeAccessory` and `AccessoryHandler.initialize`
 
@@ -352,7 +365,7 @@ const obj = {
 
 **File to create**: `packages/hap-fluent/README.md`
 
-```markdown
+````markdown
 # HAP Fluent
 
 Type-safe, fluent wrapper for HAP-NodeJS services and characteristics.
@@ -363,7 +376,7 @@ Type-safe, fluent wrapper for HAP-NodeJS services and characteristics.
 npm install hap-fluent
 # or
 pnpm add hap-fluent
-```
+````
 
 ## Quick Start
 
@@ -413,6 +426,7 @@ lightbulb.update('Brightness', 75);
 Get an existing service or add a new one to an accessory.
 
 **Parameters**:
+
 - `accessory: PlatformAccessory` - The Homebridge platform accessory
 - `serviceClass: typeof Service` - The HAP service class
 - `displayName?: string` - Optional display name for the service
@@ -425,11 +439,13 @@ Get an existing service or add a new one to an accessory.
 A type-safe wrapper around a HAP service.
 
 **Methods**:
+
 - `onGet<K>(key, handler)` - Register an async getter for a characteristic
 - `onSet<K>(key, handler)` - Register an async setter for a characteristic
 - `update<K>(key, value)` - Update a characteristic value without triggering SET handlers
 
 **Properties**:
+
 - `characteristics` - Object containing all FluentCharacteristic wrappers
 
 ### `FluentCharacteristic<T>`
@@ -437,6 +453,7 @@ A type-safe wrapper around a HAP service.
 A type-safe wrapper around a HAP characteristic.
 
 **Methods**:
+
 - `get()` - Get the current value
 - `set(value)` - Set the value (triggers SET handlers)
 - `update(value)` - Update the value (skips SET handlers)
@@ -451,7 +468,8 @@ See the [examples](./examples) directory for more usage patterns.
 ## License
 
 Apache-2.0
-```
+
+````
 
 #### 2.2 Improve Error Messages
 
@@ -521,7 +539,7 @@ export class ValidationError extends FluentCharacteristicError {
     this.name = 'ValidationError';
   }
 }
-```
+````
 
 #### 2.3 Add Debug Logging
 
@@ -582,6 +600,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 ```
 
 **Usage**:
+
 ```bash
 # Enable debug logging
 DEBUG=hap-fluent:* homebridge
@@ -641,6 +660,7 @@ export function isCharacteristicKey<S extends typeof Service>(
 ```
 
 **Export from index**:
+
 ```typescript
 // packages/hap-fluent/src/index.ts
 export * from './type-utils.js';
@@ -1023,6 +1043,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 ```
 
 **Usage Example**:
+
 ```typescript
 import { RangeValidator, EnumValidator } from 'hap-fluent';
 
@@ -1113,6 +1134,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 ```
 
 **Usage Example**:
+
 ```typescript
 const lightbulb = getOrAddService(accessory, Service.Lightbulb);
 
@@ -1270,6 +1292,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 ```
 
 **Usage Example**:
+
 ```typescript
 import { LoggingMiddleware, RateLimitMiddleware } from 'hap-fluent';
 
@@ -1447,6 +1470,7 @@ export function wrapService<T extends typeof Service>(
 ```
 
 **Usage Example**:
+
 ```typescript
 const lightbulb = getOrAddService(accessory, Service.Lightbulb);
 
@@ -1497,6 +1521,7 @@ console.log(state); // { On: true, Brightness: 75, Hue: 180 }
 ```
 
 **Benefits**:
+
 - Better debugging in production
 - Stack traces point to original source
 - IDE support for jump-to-definition
@@ -1545,6 +1570,7 @@ console.log(state); // { On: true, Brightness: 75, Hue: 180 }
 ```
 
 **Benefits**:
+
 - Better tree-shaking
 - Explicit module boundaries
 - Prevents importing internal modules
@@ -1616,6 +1642,7 @@ jobs:
 ## Implementation Priority
 
 ### Immediate (Week 1)
+
 **Goal**: Fix critical issues and make library safe to use
 
 - [ ] Fix package dependencies (move to peerDependencies)
@@ -1628,6 +1655,7 @@ jobs:
 **Deliverable**: Version 0.4.0 - "Stability Release"
 
 ### Short-term (Weeks 2-4)
+
 **Goal**: Production readiness
 
 - [ ] Add comprehensive error handling across all modules
@@ -1642,6 +1670,7 @@ jobs:
 **Deliverable**: Version 1.0.0 - "Production Ready"
 
 ### Medium-term (Months 2-3)
+
 **Goal**: Enhanced developer experience
 
 - [ ] Add event system for characteristic changes
@@ -1655,6 +1684,7 @@ jobs:
 **Deliverable**: Version 1.1.0 - "Enhanced DX"
 
 ### Long-term (Months 3-6)
+
 **Goal**: Performance and scalability
 
 - [ ] Implement caching layer
@@ -1672,11 +1702,13 @@ jobs:
 ## Recommended Next Steps
 
 ### 1. Start with Phase 1
+
 Focus on robustness and code quality first. A stable foundation is essential before adding advanced features.
 
 ### 2. Create Project Governance Files
 
 **CHANGELOG.md**
+
 ```markdown
 # Changelog
 
@@ -1705,6 +1737,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ```
 
 **CONTRIBUTING.md**
+
 ```markdown
 # Contributing to HAP Fluent
 
@@ -1792,6 +1825,7 @@ The library has strong foundations - with these enhancements, it will become a b
 ---
 
 **Next Actions**:
+
 1. Review and prioritize enhancements
 2. Create GitHub issues for each task
 3. Begin Phase 1 implementation

@@ -14,6 +14,7 @@ A comprehensive, developer-friendly test harness that enables Homebridge plugin 
 ### Current State Problems
 
 **Pain Points for Plugin Developers**:
+
 - No standardized way to test Homebridge plugins in isolation
 - Integration testing requires full Homebridge setup with physical iOS devices or simulators
 - No mock Apple Home client available for automated testing
@@ -24,6 +25,7 @@ A comprehensive, developer-friendly test harness that enables Homebridge plugin 
 - Testing async operations and state management is cumbersome
 
 **Concrete Examples**:
+
 - Plugin developers manually test with real Homebridge + iOS Home app for every change
 - Cannot automate testing of accessory discovery and registration flows
 - No way to verify characteristic value constraints and validation
@@ -34,6 +36,7 @@ A comprehensive, developer-friendly test harness that enables Homebridge plugin 
 ### Business/Technical Justification
 
 **Why This Matters**:
+
 - **Quality**: Enables comprehensive automated testing, reducing bugs in production
 - **Velocity**: Faster development cycles without manual testing overhead
 - **Adoption**: Lower barrier to entry for new plugin developers
@@ -41,6 +44,7 @@ A comprehensive, developer-friendly test harness that enables Homebridge plugin 
 - **Documentation**: Tests serve as executable examples of plugin behavior
 
 **Why NOW**:
+
 - hap-fluent provides foundation with FluentService/FluentCharacteristic wrappers
 - Existing mock infrastructure (`homebridge.mock.ts`) can be expanded
 - Growing plugin ecosystem needs standardized testing approach
@@ -51,6 +55,7 @@ A comprehensive, developer-friendly test harness that enables Homebridge plugin 
 ### Goals
 
 **Primary Objectives**:
+
 1. **Mock Homebridge Environment**: Complete Homebridge API mock including platform lifecycle, logging, config
 2. **Mock HomeKit Controller**: Simulate Apple Home app interactions (read, write, subscribe, events)
 3. **Fluent Test API**: Developer-friendly API for writing readable tests
@@ -61,6 +66,7 @@ A comprehensive, developer-friendly test harness that enables Homebridge plugin 
 8. **Time Control**: Ability to control time for testing timeouts, retries, scheduled operations
 
 **Success Metrics**:
+
 - Plugin developers can write full integration tests without external dependencies
 - Test execution time < 100ms per test case
 - Zero false positives from mock implementation differences
@@ -70,6 +76,7 @@ A comprehensive, developer-friendly test harness that enables Homebridge plugin 
 ### Non-Goals
 
 **Explicitly Out of Scope**:
+
 - ❌ **Real HAP Protocol Testing**: Not a replacement for testing against actual HomeKit controllers
 - ❌ **Performance Benchmarking**: Not designed for load testing or performance measurement
 - ❌ **HomeKit Certification**: Does not validate HomeKit certification requirements
@@ -83,6 +90,7 @@ A comprehensive, developer-friendly test harness that enables Homebridge plugin 
 ### Target Users
 
 **Primary Users**:
+
 1. **Homebridge Plugin Developers**: Writing new plugins or maintaining existing ones
 2. **hap-fluent Users**: Developers using hap-fluent library for plugin development
 3. **Plugin Contributors**: Community members contributing to open-source plugins
@@ -418,6 +426,7 @@ describe('HAP Protocol Compliance', () => {
 **Responsibility**: Orchestrate test environment setup and teardown
 
 **API**:
+
 ```typescript
 class TestHarness {
   /**
@@ -504,6 +513,7 @@ interface HarnessOptions {
 ```
 
 **Implementation Notes**:
+
 - Manages lifecycle: setup → init → configure → launch → test → shutdown
 - Tracks async operations for `waitFor*` methods
 - Provides access to all mock subsystems
@@ -514,6 +524,7 @@ interface HarnessOptions {
 **Responsibility**: Mock the Homebridge API that plugins interact with
 
 **API**:
+
 ```typescript
 interface MockHomebridgeAPI {
   /** HAP library instance */
@@ -567,6 +578,7 @@ interface MockHomebridgeAPI {
 ```
 
 **Mock Behavior**:
+
 - Tracks registered/unregistered accessories
 - Emits lifecycle events (didFinishLaunching, shutdown)
 - Provides HAP types and classes
@@ -577,6 +589,7 @@ interface MockHomebridgeAPI {
 **Responsibility**: Simulate Apple Home app interactions with accessories
 
 **API**:
+
 ```typescript
 class MockHomeKit {
   /**
@@ -729,6 +742,7 @@ interface EventSubscription {
 ```
 
 **Mock Behavior**:
+
 - Validates characteristic read/write permissions
 - Enforces constraints (min/max/step/validValues)
 - Validates value formats (bool, int, float, string, etc.)
@@ -741,6 +755,7 @@ interface EventSubscription {
 **Responsibility**: Control time for deterministic testing
 
 **API**:
+
 ```typescript
 class TimeController {
   /**
@@ -776,6 +791,7 @@ class TimeController {
 ```
 
 **Implementation Notes**:
+
 - Wraps setTimeout/setInterval/Date.now
 - Integrates with testing framework (Vitest fake timers)
 - Flushes pending timers when advancing time
@@ -785,6 +801,7 @@ class TimeController {
 **Responsibility**: Simulate network conditions for testing resilience
 
 **API**:
+
 ```typescript
 class NetworkSimulator {
   /**
@@ -820,6 +837,7 @@ class NetworkSimulator {
 ```
 
 **Mock Behavior**:
+
 - Delays characteristic get/set operations
 - Randomly fails operations based on packet loss
 - Throws errors when disconnected
@@ -982,6 +1000,7 @@ class NetworkError extends Error {
 ### Performance Considerations
 
 **Performance Targets**:
+
 - Test harness initialization: < 50ms
 - Accessory registration: < 10ms per accessory
 - Characteristic get/set: < 5ms
@@ -989,6 +1008,7 @@ class NetworkError extends Error {
 - Total test execution: < 100ms per test case
 
 **Optimization Strategies**:
+
 1. **Lazy Initialization**: Only create mocks when accessed
 2. **Object Pooling**: Reuse mock objects across tests
 3. **Minimal Validation**: Only validate what's necessary for correctness
@@ -998,16 +1018,19 @@ class NetworkError extends Error {
 ### Security Considerations
 
 **Test Isolation**:
+
 - Each test gets fresh harness instance
 - No shared state between tests
 - Cleanup after each test (temp files, timers, listeners)
 
 **Safe Defaults**:
+
 - No network access (all mocked)
 - Temp directories for storage
 - No access to real Homebridge config
 
 **Data Safety**:
+
 - Mock data never persisted to real locations
 - No access to user's actual Homebridge setup
 - Test configs isolated from production
@@ -1017,6 +1040,7 @@ class NetworkError extends Error {
 ### Phase 1: Core Infrastructure (Week 1-2)
 
 **Tasks**:
+
 1. Create `packages/hap-test` package structure
 2. Implement `TestHarness` class with basic lifecycle
 3. Implement `MockHomebridgeAPI` with registration tracking
@@ -1025,6 +1049,7 @@ class NetworkError extends Error {
 6. Write unit tests for core components
 
 **Deliverables**:
+
 - Basic harness that can initialize platform
 - Mock Homebridge API accepting registrations
 - Mock HomeKit controller for simple get/set
@@ -1034,6 +1059,7 @@ class NetworkError extends Error {
 ### Phase 2: HAP Protocol Validation (Week 3)
 
 **Tasks**:
+
 1. Implement characteristic constraint validation
 2. Implement format validation (bool, int, float, string, etc.)
 3. Implement permission checking (read/write/notify)
@@ -1042,6 +1068,7 @@ class NetworkError extends Error {
 6. Write comprehensive validation tests
 
 **Deliverables**:
+
 - Full HAP protocol validation
 - Proper error messages for violations
 - Test suite for all characteristic types
@@ -1050,6 +1077,7 @@ class NetworkError extends Error {
 ### Phase 3: Event System (Week 4)
 
 **Tasks**:
+
 1. Implement event subscription mechanism
 2. Implement `EventSubscription` class
 3. Add event notifications from platform to controller
@@ -1058,6 +1086,7 @@ class NetworkError extends Error {
 6. Write event system tests
 
 **Deliverables**:
+
 - Working event subscriptions
 - Event waiting with timeouts
 - Event history and assertions
@@ -1066,6 +1095,7 @@ class NetworkError extends Error {
 ### Phase 4: Advanced Features (Week 5)
 
 **Tasks**:
+
 1. Implement `NetworkSimulator` for resilience testing
 2. Add cached accessory restoration
 3. Add multi-user simulation
@@ -1074,6 +1104,7 @@ class NetworkError extends Error {
 6. Write advanced scenario tests
 
 **Deliverables**:
+
 - Network condition simulation
 - Cached accessory flows
 - Multi-user test support
@@ -1082,6 +1113,7 @@ class NetworkError extends Error {
 ### Phase 5: Developer Experience (Week 6)
 
 **Tasks**:
+
 1. Create custom Vitest matchers
 2. Add helpful error messages
 3. Create debugging utilities
@@ -1090,6 +1122,7 @@ class NetworkError extends Error {
 6. Add TypeScript types and JSDoc
 
 **Deliverables**:
+
 - Custom matchers package
 - Rich error messages with context
 - Debug mode with detailed logging
@@ -1099,6 +1132,7 @@ class NetworkError extends Error {
 ### Phase 6: Integration & Polish (Week 7)
 
 **Tasks**:
+
 1. Integrate with hap-fluent package
 2. Add CI/CD pipeline
 3. Add npm publishing setup
@@ -1107,6 +1141,7 @@ class NetworkError extends Error {
 6. Final testing and bug fixes
 
 **Deliverables**:
+
 - Published npm package
 - CI/CD running tests
 - Migration documentation
@@ -1118,6 +1153,7 @@ class NetworkError extends Error {
 ### Unit Tests
 
 Test each component in isolation:
+
 - `TestHarness` lifecycle management
 - `MockHomebridgeAPI` registration tracking
 - `MockHomeKit` characteristic operations
@@ -1129,6 +1165,7 @@ Test each component in isolation:
 ### Integration Tests
 
 Test components working together:
+
 - Platform initialization through harness
 - Accessory registration end-to-end
 - HomeKit controller interactions
@@ -1140,6 +1177,7 @@ Test components working together:
 ### Example-Based Tests
 
 Real-world scenarios as tests:
+
 - Lightbulb plugin test suite
 - Thermostat plugin test suite
 - Multi-accessory platform test suite
@@ -1151,6 +1189,7 @@ Real-world scenarios as tests:
 ### Performance Tests
 
 Measure performance targets:
+
 - Harness initialization time
 - Accessory registration time
 - Characteristic operations throughput
@@ -1164,6 +1203,7 @@ Measure performance targets:
 ### API Reference
 
 Auto-generated from TypeScript types:
+
 - All public classes and methods
 - Parameters and return types
 - Usage examples for each method
@@ -1172,12 +1212,14 @@ Auto-generated from TypeScript types:
 ### User Guides
 
 **Getting Started Guide**:
+
 - Installation
 - First test
 - Basic assertions
 - Common patterns
 
 **Advanced Testing Guide**:
+
 - Time control
 - Network simulation
 - Event testing
@@ -1185,6 +1227,7 @@ Auto-generated from TypeScript types:
 - Performance testing
 
 **Migration Guide**:
+
 - From manual testing
 - From other test frameworks
 - Best practices
@@ -1192,6 +1235,7 @@ Auto-generated from TypeScript types:
 ### Examples
 
 **Example Test Suites**:
+
 - Simple accessory plugin
 - Multi-device platform
 - Dynamic discovery platform
@@ -1236,6 +1280,7 @@ Auto-generated from TypeScript types:
 ### Post-1.0 Features
 
 **v1.1 - Advanced Scenarios**:
+
 - Multi-bridge simulation
 - Child bridge testing
 - HomeKit Secure Video support
@@ -1243,6 +1288,7 @@ Auto-generated from TypeScript types:
 - HomeKit Camera support
 
 **v1.2 - Developer Tools**:
+
 - Test recorder (record real interactions)
 - Snapshot testing for accessory state
 - Visual test reports
@@ -1250,12 +1296,14 @@ Auto-generated from TypeScript types:
 - Code coverage reports with HomeKit annotations
 
 **v1.3 - Protocol Testing**:
+
 - Real HAP protocol validation
 - Network packet inspection
 - Certification helper tools
 - Protocol compliance reports
 
 **v2.0 - Ecosystem**:
+
 - Homebridge Config UI X testing
 - Plugin configuration testing
 - Child process plugin testing
@@ -1267,18 +1315,21 @@ Auto-generated from TypeScript types:
 
 **Risk**: Mock diverges from real Homebridge behavior
 **Mitigation**:
+
 - Test harness against real Homebridge in CI
 - Version compatibility matrix
 - Regular sync with Homebridge updates
 
 **Risk**: Performance overhead from validation
 **Mitigation**:
+
 - Lazy validation (only when needed)
 - Optional strict mode
 - Performance benchmarks in CI
 
 **Risk**: Complex HAP protocol edge cases
 **Mitigation**:
+
 - Property-based testing for characteristic values
 - Comprehensive test suite
 - Real HAP protocol tests as reference
@@ -1287,6 +1338,7 @@ Auto-generated from TypeScript types:
 
 **Risk**: Developers continue manual testing
 **Mitigation**:
+
 - Excellent documentation
 - Example test suites
 - Migration guides
@@ -1294,6 +1346,7 @@ Auto-generated from TypeScript types:
 
 **Risk**: Learning curve too steep
 **Mitigation**:
+
 - Fluent API design
 - Good defaults
 - Interactive tutorials
@@ -1331,11 +1384,13 @@ Auto-generated from TypeScript types:
 ### Related Technologies
 
 **Similar Projects**:
+
 - `homebridge-plugin-testing` (abandoned) - Basic mock, no controller simulation
 - `hap-testing-helpers` (community) - Minimal helpers, no lifecycle support
 - None provide comprehensive test harness
 
 **Inspiration From**:
+
 - `@testing-library/react` - Fluent API, user-centric assertions
 - `supertest` - HTTP testing with chainable API
 - `nock` - Network mocking with recording/playback

@@ -16,6 +16,7 @@ Use `/speckit.refactor` when:
 - Reducing technical debt
 
 **Do NOT use `/speckit.refactor` for**:
+
 - Changing behavior intentionally → use `/speckit.modify` instead
 - Fixing bugs → use `/speckit.bugfix` instead
 - Adding features → use `/speckit.specify` instead
@@ -30,6 +31,7 @@ All existing tests should pass before, during, and after the refactor. If tests 
 ## Process
 
 ### 0. Testing Gap Assessment (Pre-Baseline)
+
 **CRITICAL FIRST STEP**: Assess test coverage BEFORE capturing baseline
 
 - **Purpose**: Ensure adequate test coverage exists to validate behavior preservation
@@ -44,6 +46,7 @@ All existing tests should pass before, during, and after the refactor. If tests 
 **Checkpoint**: Only proceed to baseline capture when critical testing gaps are addressed.
 
 ### 1. Baseline Capture
+
 - Baseline metrics are **automatically captured** when you run `/speckit.refactor`
 - To manually re-capture: `.specify/extensions/workflows/refactor/measure-metrics.sh --before`
 - Document current metrics (LOC, complexity, performance, bundle size)
@@ -52,12 +55,14 @@ All existing tests should pass before, during, and after the refactor. If tests 
 - Commit baseline
 
 ### 2. Target Setting
+
 - Define specific improvement goals (e.g., "reduce complexity by 30%")
 - Document code smells being addressed
 - Set measurable success criteria
 - Estimate effort and risk
 
 ### 3. Incremental Refactoring
+
 **CRITICAL RULE**: After EVERY change, tests must pass
 
 - Make one small change
@@ -69,6 +74,7 @@ All existing tests should pass before, during, and after the refactor. If tests 
 This ensures you always have a working state to return to.
 
 ### 4. Post-Refactor Verification
+
 - Run `measure-metrics.sh --after` to capture new state
 - Compare metrics to baseline
 - Verify improvement goals met
@@ -76,6 +82,7 @@ This ensures you always have a working state to return to.
 - Verify bundle size didn't increase unexpectedly
 
 ### 5. Deployment & Monitoring
+
 - Deploy to staging
 - Run performance tests
 - Monitor error rates
@@ -114,6 +121,7 @@ specs/
 ```
 
 This will:
+
 1. Create branch `refactor/001-extract-tweet-service`
 2. Generate `refactor-spec.md` with template
 3. Generate `behavioral-snapshot.md` and `metrics-before.md` placeholders
@@ -121,6 +129,7 @@ This will:
 5. Show "Next Steps" for checkpoint-based workflow
 
 **Next steps after running the command:**
+
 1. **FIRST**: Complete testing gap assessment in `testing-gaps.md`
    - Identify all code that will be modified
    - Assess test coverage for each area
@@ -258,26 +267,31 @@ The `measure-metrics.sh` script captures:
 The refactor workflow uses checkpoints with metrics to ensure code quality improves without breaking behavior:
 
 ### Phase 0: Testing Gap Assessment (NEW)
+
 - **Command**: `/speckit.refactor "description"`
 - **Creates**: `refactor-spec.md`, `testing-gaps.md`, `behavioral-snapshot.md`, `metrics-before.md`
 - **Checkpoint**: Complete testing gap assessment FIRST. Identify untested code that will be refactored. Add tests for critical gaps BEFORE capturing baseline.
 
 ### Phase 1: Baseline Capture
+
 - **Command**: `.specify/extensions/workflows/refactor/measure-metrics.sh --before`
 - **Updates**: `metrics-before.md` with actual metrics
 - **Checkpoint**: Capture baseline metrics AFTER testing gaps are addressed. Document behaviors to preserve.
 
 ### Phase 2: Refactoring Planning
+
 - **Command**: `/speckit.plan`
 - **Creates**: `plan.md` with incremental refactoring steps
 - **Checkpoint**: Review plan - are steps small enough? Is there a test after EVERY change?
 
 ### Phase 3: Task Breakdown
+
 - **Command**: `/speckit.tasks`
 - **Creates**: `tasks.md` with micro-tasks (one per refactoring step + test)
 - **Checkpoint**: Review tasks - every task must end with passing tests
 
 ### Phase 4: Incremental Execution
+
 - **Command**: `/speckit.implement`
 - **Executes**: Tasks one at a time, running tests after each
 - **Result**: Refactored code with all tests passing, metrics improved
@@ -289,6 +303,7 @@ The refactor workflow uses checkpoints with metrics to ensure code quality impro
 ### Safe Refactoring Techniques
 
 **1. Extract Method**
+
 ```typescript
 // Before: Long method
 function createTweet(content: string) {
@@ -307,6 +322,7 @@ function createTweet(content: string) {
 ```
 
 **2. Extract Class/Service**
+
 ```typescript
 // Before: God class
 class TweetController {
@@ -324,6 +340,7 @@ class TweetFormatter { format() }
 ```
 
 **3. Replace Conditional with Polymorphism**
+
 ```typescript
 // Before: Type checking
 if (type === 'text') { ... }
@@ -349,12 +366,14 @@ Never make multiple changes before running tests. If tests fail, you won't know 
 ### When to Stop Refactoring
 
 **Stop when**:
+
 - Target metrics achieved
 - Code is readable and maintainable
 - No obvious code smells remain
 - Team agrees it's "good enough"
 
 **Don't over-engineer**:
+
 - Premature abstraction is worse than duplication
 - Simpler is better than clever
 - YAGNI applies to refactoring too
@@ -385,6 +404,7 @@ This workflow upholds:
 Common refactorings to apply:
 
 ### Code Structure
+
 - Extract Method
 - Extract Class/Service
 - Inline Method
@@ -392,18 +412,21 @@ Common refactorings to apply:
 - Rename Variable/Function
 
 ### Complexity Reduction
+
 - Replace Conditional with Polymorphism
 - Decompose Conditional
 - Consolidate Duplicate Conditional Fragments
 - Remove Dead Code
 
 ### Data Organization
+
 - Encapsulate Field
 - Replace Data Value with Object
 - Change Value to Reference
 - Extract Interface
 
 ### Dependency Management
+
 - Hide Delegate
 - Remove Middle Man
 - Introduce Parameter Object
@@ -411,4 +434,4 @@ Common refactorings to apply:
 
 ---
 
-*Refactor Workflow Documentation - Part of Specify Extension System*
+_Refactor Workflow Documentation - Part of Specify Extension System_
