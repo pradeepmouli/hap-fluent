@@ -1,6 +1,6 @@
 {
   "name": "hap-test",
-  "version": "0.1.0",
+  "version": "0.4.0",
   "description": "Test harness for Homebridge plugin development - write integration tests without physical HomeKit controllers",
   "keywords": [
     "hap-nodejs",

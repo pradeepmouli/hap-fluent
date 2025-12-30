@@ -1,6 +1,6 @@
 {
   "name": "hap-fluent",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Fluent, strongly-typed wrapper for HAP-NodeJS services and characteristics.",
   "license": "Apache-2.0",
   "author": "Pradeep Mouli",
