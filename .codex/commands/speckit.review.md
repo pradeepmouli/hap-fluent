@@ -1,14 +1,5 @@
 ---
 description: Review completed implementation work and update task status.
-handoffs:
-  - label: Create Implementation Plan
-    agent: speckit.plan
-    prompt: Create a plan based on review feedback
-    send: true
-  - label: Update Tasks
-    agent: speckit.tasks
-    prompt: Update tasks based on review feedback
-    send: true
 ---
 
 The user input to you can be provided directly by the agent or as a command argument - you **MUST** consider it before proceeding with the prompt (if not empty).
@@ -280,3 +271,11 @@ Issues: [N found]
 Review context: $ARGUMENTS
 
 Ensure all review feedback is actionable, specific, and constructive.
+
+
+---
+
+## Next Steps
+
+1. Create Implementation Plan
+2. Update Tasks

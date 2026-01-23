@@ -1,14 +1,15 @@
 ---
-description: Modify an existing feature with impact analysis and backward compatibility tracking.
-handoffs:
-  - label: Create Implementation Plan
-    agent: speckit.plan
-    prompt: Create a plan for the modification. I am modifying...
-    send: true
-  - label: Break Down Into Tasks
-    agent: speckit.tasks
-    prompt: Break the modification plan into tasks
-    send: true
+description: Modify an existing feature with impact analysis and backward compatibility
+  tracking.
+hooks:
+  Stop:
+  - hooks:
+    - type: prompt
+      prompt: "After completing this workflow, consider these next steps:\n\n1. **Create\
+        \ Implementation Plan**\n   - Run: `/speckit.plan` or use the `speckit.plan`\
+        \ subagent\n   - Context: Create a plan for the modification. I am modifying...\n\
+        2. **Break Down Into Tasks**\n   - Run: `/speckit.tasks` or use the `speckit.tasks`\
+        \ subagent\n   - Context: Break the modification plan into tasks"
 ---
 
 The user input to you can be provided directly by the agent or as a command argument - you **MUST** consider it before proceeding with the prompt (if not empty).
@@ -94,3 +95,15 @@ Note: The script creates and checks out the new branch, runs impact analysis, an
 **Interactive Mode Usage Examples**:
 - User: `/speckit.modify "add avatar compression"` → Shows feature list → User selects → Creates modification
 - User: `/speckit.modify 014 "add avatar compression"` → Directly creates modification for feature 014
+
+
+---
+
+## Recommended Next Steps
+
+After completing this workflow, consider these next steps:
+
+1. **Create Implementation Plan**: Run `/speckit.plan`
+   - Suggested prompt: Create a plan for the modification. I am modifying...
+2. **Break Down Into Tasks**: Run `/speckit.tasks`
+   - Suggested prompt: Break the modification plan into tasks

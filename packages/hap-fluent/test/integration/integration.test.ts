@@ -14,6 +14,7 @@ import {
 describe('Integration Tests', () => {
 	let mockAccessory: MockPlatformAccessory;
 	let mockPlugin: any;
+	let mockApi: any;
 
 	beforeEach(() => {
 		mockAccessory = new MockPlatformAccessory('Test Device', 'test-uuid-123');
@@ -25,6 +26,11 @@ describe('Integration Tests', () => {
 				debug: vi.fn(),
 			},
 		};
+		mockApi = {
+			hap: {
+				Service: MockService,
+			},
+		};
 	});
 
 	describe('End-to-End Lightbulb Control', () => {
@@ -32,7 +38,7 @@ describe('Integration Tests', () => {
 			const lightbulbService = createMockLightbulbService();
 			mockAccessory.addService(lightbulbService);
 
-			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any, mockApi as any);
 			const services = createServicesObject(lightbulbService as any) as any;
 
 			// Turn on the lightbulb
@@ -90,7 +96,7 @@ describe('Integration Tests', () => {
 			mockAccessory.addService(lightbulbService);
 			mockAccessory.addService(switchService);
 
-			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any, mockApi as any);
 			expect(mockAccessory.services).toHaveLength(2);
 		});
 
@@ -120,7 +126,7 @@ describe('Integration Tests', () => {
 			mockAccessory.addService(lightbulbService);
 			mockAccessory.addService(thermostatService);
 
-			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any, mockApi as any);
 
 			await handler.initialize({
 				lightbulb: {
@@ -226,7 +232,7 @@ describe('Integration Tests', () => {
 				customData: { key: 'value' },
 			};
 
-			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any, mockApi as any);
 
 			expect(handler.context.deviceId).toBe('ABC123');
 			expect(handler.context.firmwareVersion).toBe('1.2.3');
@@ -239,7 +245,7 @@ describe('Integration Tests', () => {
 
 		it('should allow context modifications', () => {
 			mockAccessory.context = { count: 0 };
-			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any, mockApi as any);
 
 			handler.context.count++;
 			expect(handler.context.count).toBe(1);
@@ -251,7 +257,7 @@ describe('Integration Tests', () => {
 
 	describe('Dynamic Service Addition', () => {
 		it('should add services dynamically during runtime', () => {
-			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any, mockApi as any);
 
 			class DynamicService extends MockService {
 				static UUID = 'dynamic-service-uuid';
@@ -261,14 +267,14 @@ describe('Integration Tests', () => {
 				}
 			}
 
-			const service1 = handler.addService(DynamicService as any, 'Service 1');
-			expect(mockAccessory.services).toHaveLength(1);
+		const handler1 = handler.with(DynamicService as any, 'Service 1');
+		expect(mockAccessory.services).toHaveLength(1);
 
-			const service2 = handler.addService(DynamicService as any, 'Service 2', 'subtype1');
-			expect(mockAccessory.services).toHaveLength(2);
+		const handler2 = handler1.with(DynamicService as any, 'Service 2', 'subtype1');
+		expect(mockAccessory.services).toHaveLength(2);
 
-			expect(service1.characteristics).toBeDefined();
-			expect(service2.characteristics).toBeDefined();
+		expect(handler1.services).toBeDefined();
+		expect(handler2.services).toBeDefined();
 		});
 	});
 
@@ -384,7 +390,7 @@ describe('Integration Tests', () => {
 
 			outlets.forEach((outlet) => mockAccessory.addService(outlet));
 
-			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any, mockApi as any);
 			expect(mockAccessory.services).toHaveLength(4);
 
 			// Turn on outlets 1 and 3

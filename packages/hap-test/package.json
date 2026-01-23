@@ -55,8 +55,8 @@
 		"directory": "packages/hap-test"
 	},
 	"peerDependencies": {
-		"homebridge": "^1.6.0 || ^2.0.0",
 		"hap-nodejs": "^0.11.0 || ^0.12.0",
+		"homebridge": "^1.6.0 || ^2.0.0",
 		"vitest": "^1.0.0 || ^2.0.0"
 	},
 	"peerDependenciesMeta": {
@@ -65,8 +65,8 @@
 		}
 	},
 	"devDependencies": {
-		"@types/node": "^18.0.0",
-		"typescript": "^5.0.0"
+		"@types/node": "^25.0.10",
+		"typescript": "^5.9.3"
 	},
 	"files": [
 		"dist",

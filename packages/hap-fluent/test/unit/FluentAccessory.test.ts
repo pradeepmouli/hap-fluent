@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
 	AccessoryHandler,
 	createServicesObject,
-	initializeAccessory,
+	wrapAccessory,
 	isMultiService,
 } from '../../src/AccessoryHandler.js';
 import {
@@ -18,6 +18,7 @@ import {
 describe('FluentAccessory', () => {
 	let mockAccessory: MockPlatformAccessory;
 	let mockPlugin: any;
+	let mockApi: any;
 
 	beforeEach(() => {
 		mockAccessory = new MockPlatformAccessory('Test Accessory', 'test-uuid');
@@ -27,6 +28,11 @@ describe('FluentAccessory', () => {
 				error: vi.fn(),
 				warn: vi.fn(),
 				debug: vi.fn(),
+			},
+		};
+		mockApi = {
+			hap: {
+				Service: {},
 			},
 		};
 	});
@@ -113,61 +119,15 @@ describe('FluentAccessory', () => {
 		});
 	});
 
-	describe('initializeAccessory()', () => {
-		it('should initialize accessory with services', () => {
-			const lightbulbService = createMockLightbulbService();
-			mockAccessory.addService(lightbulbService);
-
-			const initialState = {
-				lightbulb: {
-					on: true,
-					brightness: 75,
-				},
-			};
-
-			const fluentAccessory = initializeAccessory(mockAccessory as any, initialState as any);
-
-			expect(fluentAccessory).toBeDefined();
-		});
-
-		it('should set initial characteristic values', () => {
-			const lightbulbService = createMockLightbulbService();
-			mockAccessory.addService(lightbulbService);
-
-			const initialState = {
-				lightbulb: {
-					on: true,
-					brightness: 75,
-				},
-			};
-
-			const fluentAccessory = initializeAccessory(mockAccessory as any, initialState as any);
-			const service = mockAccessory.services[0];
-
-			// Note: The actual implementation may vary, this tests the structure
-			expect(service).toBeDefined();
-		});
-
-		it('should extend accessory with services object', () => {
-			const lightbulbService = createMockLightbulbService();
-			mockAccessory.addService(lightbulbService);
-
-			const fluentAccessory = initializeAccessory(mockAccessory as any, {} as any);
-
-			expect(fluentAccessory).toHaveProperty('displayName');
-			expect(fluentAccessory).toHaveProperty('UUID');
-		});
-	});
-
 	describe('AccessoryHandler', () => {
 		it('should create an AccessoryHandler instance', () => {
-			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any, mockApi as any);
 			expect(handler).toBeInstanceOf(AccessoryHandler);
 		});
 
 		it('should expose accessory context', () => {
 			mockAccessory.context = { customData: 'test' };
-			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any, mockApi as any);
 			expect(handler.context).toEqual({ customData: 'test' });
 		});
 
@@ -175,30 +135,31 @@ describe('FluentAccessory', () => {
 			const lightbulbService = createMockLightbulbService();
 			mockAccessory.addService(lightbulbService);
 
-			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any, mockApi as any);
 			expect(handler.services).toBeDefined();
 		});
 
 		it('should expose the underlying accessory', () => {
-			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any, mockApi as any);
 			expect(handler.accessory).toBe(mockAccessory);
 		});
 
 		describe('addService()', () => {
 			it('should add a new service to the accessory', () => {
-				const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+				const handler = new AccessoryHandler(mockPlugin, mockAccessory as any, mockApi as any);
 
 				class TestService extends MockService {
 					static UUID = 'test-service-uuid';
 				}
 
-				const service = handler.addService(TestService as any, 'Test Service');
+				const result = handler.with(TestService as any, 'Test Service');
 				expect(mockAccessory.services).toHaveLength(1);
-				expect(service).toBeDefined();
+				// addService returns the handler itself with updated type
+				expect(result).toBeInstanceOf(AccessoryHandler);
 			});
 
 			it('should wrap the added service with fluent interface', () => {
-				const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+				const handler = new AccessoryHandler(mockPlugin, mockAccessory as any, mockApi as any);
 
 				class TestService extends MockService {
 					static UUID = 'test-service-uuid';
@@ -208,47 +169,55 @@ describe('FluentAccessory', () => {
 					}
 				}
 
-				const service = handler.addService(TestService as any, 'Test Service');
-				expect(service.characteristics).toBeDefined();
+				const result = handler.with(TestService as any, 'Test Service');
+				// The service is now available through services property
+				const serviceKey = Object.keys(result.services).find(key => key !== 'accessoryInformation');
+				if (serviceKey) {
+					const service = (result.services as any)[serviceKey];
+					expect(service.characteristics).toBeDefined();
+				}
 			});
 
 			it('should handle adding service with subtype', () => {
-				const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+				const handler = new AccessoryHandler(mockPlugin, mockAccessory as any, mockApi as any);
 
 				class TestService extends MockService {
 					static UUID = 'test-service-uuid';
 				}
 
-				const service = handler.addService(TestService as any, 'Test Service', 'subtype1');
+				handler.with(TestService as any, 'Test Service', 'subtype1');
 				expect(mockAccessory.services[0].subtype).toBe('subtype1');
 			});
 		});
 
 		describe('initialize()', () => {
-			it('should initialize with state', async () => {
+			it('should initialize with state', () => {
 				const lightbulbService = createMockLightbulbService();
 				mockAccessory.addService(lightbulbService);
 
-				const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+				const handler = new AccessoryHandler(mockPlugin, mockAccessory as any, mockApi as any);
 
-				await handler.initialize({
+				const result = handler.initialize({
 					lightbulb: {
 						on: true,
 						brightness: 50,
 					},
 				} as any);
 
-				expect(handler.services).toBeDefined();
+				expect(result).toBeDefined();
+				expect(result.services).toBeDefined();
 			});
 
-			it('should initialize without state', async () => {
-				const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
-				await expect(handler.initialize()).resolves.not.toThrow();
+			it('should initialize without state', () => {
+				const handler = new AccessoryHandler(mockPlugin, mockAccessory as any, mockApi as any);
+				const result = handler.initialize();
+				expect(result).toBeDefined();
 			});
 
-			it('should handle empty state object', async () => {
-				const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
-				await expect(handler.initialize({} as any)).resolves.not.toThrow();
+			it('should handle empty state object', () => {
+				const handler = new AccessoryHandler(mockPlugin, mockAccessory as any, mockApi as any);
+				const result = handler.initialize({} as any);
+				expect(result).toBeDefined();
 			});
 		});
 	});
@@ -260,22 +229,22 @@ describe('FluentAccessory', () => {
 			mockAccessory.addService(lightbulbService);
 			mockAccessory.addService(switchService);
 
-			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any, mockApi as any);
 			expect(mockAccessory.services).toHaveLength(2);
 		});
 
-		it('should maintain context throughout lifecycle', async () => {
+		it('should maintain context throughout lifecycle', () => {
 			mockAccessory.context = { deviceId: '12345' };
-			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any, mockApi as any);
 
 			expect(handler.context).toEqual({ deviceId: '12345' });
 
-			await handler.initialize();
+			handler.initialize();
 			expect(handler.context).toEqual({ deviceId: '12345' });
 		});
 
 		it('should allow adding services after construction', () => {
-			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any, mockApi as any);
 
 			class TestService1 extends MockService {
 				static UUID = 'test-service-1-uuid';
@@ -284,8 +253,8 @@ describe('FluentAccessory', () => {
 				static UUID = 'test-service-2-uuid';
 			}
 
-			handler.addService(TestService1 as any, 'Service 1');
-			handler.addService(TestService2 as any, 'Service 2');
+			handler.with(TestService1 as any, 'Service 1');
+			handler.with(TestService2 as any, 'Service 2');
 
 			expect(mockAccessory.services).toHaveLength(2);
 		});
@@ -293,16 +262,16 @@ describe('FluentAccessory', () => {
 
 	describe('error handling', () => {
 		it('should handle accessory with no services', () => {
-			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any, mockApi as any);
 			expect(handler.services).toBeDefined();
 			expect(Object.keys(handler.services)).toHaveLength(0);
 		});
 
 		it('should handle invalid service class in addService', () => {
-			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+			const handler = new AccessoryHandler(mockPlugin, mockAccessory as any, mockApi as any);
 
 			expect(() => {
-				handler.addService(null as any, 'Invalid Service');
+				handler.with(null as any, 'Invalid Service');
 			}).toThrow();
 		});
 	});

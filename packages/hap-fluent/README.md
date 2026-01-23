@@ -40,7 +40,7 @@ npm install homebridge@>=1.11.0 hap-nodejs@>=0.13.0
 
 ```typescript
 import { API } from 'homebridge';
-import { getOrAddService, initializeAccessory } from 'hap-fluent';
+import { wrapAccessory } from 'hap-fluent';
 import { configureLogger } from 'hap-fluent/logger';
 
 // Configure logging (optional)
@@ -56,25 +56,29 @@ class MyAccessory {
     const uuid = api.hap.uuid.generate('my-unique-id');
     const accessory = new api.platformAccessory('My Light', uuid);
 
-    // Add lightbulb service with fluent API
-    const lightbulb = getOrAddService(
-      accessory,
-      api.hap.Service.Lightbulb,
-      'My Light'
-    );
+    // Wrap accessory with fluent API
+    const handler = wrapAccessory(this, accessory, api);
+
+    // Initialize with state
+    handler.initialize({
+      lightbulb: {
+        on: true,
+        brightness: 100
+      },
+      accessoryInformation: {
+        manufacturer: 'ACME',
+        model: 'Light-1000'
+      }
+    });
 
     // Set up characteristic handlers
-    lightbulb.onGet('On', async () => {
+    handler.services.lightbulb.characteristics.On.onGet(async () => {
       return await this.getLightState();
     });
 
-    lightbulb.onSet('On', async (value) => {
+    handler.services.lightbulb.characteristics.On.onSet(async (value) => {
       await this.setLightState(value);
     });
-
-    // Set initial values
-    lightbulb.characteristics.On.set(true);
-    lightbulb.characteristics.Brightness.set(100);
   }
 
   private async getLightState(): Promise<boolean> {
@@ -156,12 +160,17 @@ lightbulb.characteristics.On.onSet(async (value) => {
 
 ### AccessoryHandler
 
-Initialize accessories with state and type-safe service access.
+Wrap accessories with state management and type-safe service access.
 
 ```typescript
-import { initializeAccessory } from 'hap-fluent';
+import { wrapAccessory } from 'hap-fluent';
+import { Service } from 'hap-nodejs';
 
-const accessory = initializeAccessory(platformAccessory, {
+// Wrap an accessory to get a handler
+const handler = wrapAccessory(plugin, platformAccessory, api);
+
+// Initialize with state (synchronous)
+handler.initialize({
   lightbulb: {
     on: true,
     brightness: 75,
@@ -176,9 +185,20 @@ const accessory = initializeAccessory(platformAccessory, {
   },
 });
 
+// Add services dynamically with type accumulation
+const handler2 = handler.with(Service.MotionSensor, 'Motion Sensor');
+
+// Add service with subtype for multiple instances
+const handler3 = handler2.with(Service.Outlet, 'Outlet 1', 'outlet1');
+const handler4 = handler3.with(Service.Outlet, 'Outlet 2', 'outlet2');
+
 // Access services with full type safety
-accessory.lightbulb.characteristics.On.get(); // boolean
-accessory.lightbulb.characteristics.Brightness.get(); // number
+handler.services.lightbulb.characteristics.On.get(); // boolean
+handler.services.lightbulb.characteristics.Brightness.get(); // number
+
+// Access subtypes
+handler4.services.outlet.outlet1.characteristics.On.set(true);
+handler4.services.outlet.outlet2.characteristics.On.set(false);
 ```
 
 ## Error Handling
@@ -599,7 +619,7 @@ class SmartLightsPlatform implements DynamicPlatformPlugin {
    */
   configureAccessory(accessory: PlatformAccessory) {
     this.log.info('Loading accessory from cache:', accessory.displayName);
-    
+
     // Re-attach handlers to cached accessory
     this.setupAccessoryHandlers(accessory);
     this.accessories.set(accessory.UUID, accessory);
@@ -627,7 +647,7 @@ class SmartLightsPlatform implements DynamicPlatformPlugin {
         this.log.info('Adding new accessory:', device.name);
         const accessory = new this.api.platformAccessory(device.name, uuid);
         accessory.context.device = device;
-        
+
         this.setupAccessoryHandlers(accessory);
         this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
         this.accessories.set(uuid, accessory);
@@ -771,11 +791,11 @@ class SmartLightsPlatform implements DynamicPlatformPlugin {
     setInterval(async () => {
       try {
         const state = await this.getDeviceState(deviceId);
-        
+
         // Update HomeKit without triggering SET handlers
         lightbulb.characteristics.On.update(state.on);
         lightbulb.characteristics.Brightness.update(state.brightness);
-        
+
         if (state.hue !== undefined) {
           lightbulb.characteristics.Hue?.update(state.hue);
         }
@@ -833,7 +853,7 @@ class SmartLightsPlatform implements DynamicPlatformPlugin {
 
 **Standard HAP-NodeJS Approach:**
 ```typescript
-const service = accessory.getService(hap.Service.Lightbulb) 
+const service = accessory.getService(hap.Service.Lightbulb)
   || accessory.addService(hap.Service.Lightbulb);
 
 service.getCharacteristic(hap.Characteristic.On)

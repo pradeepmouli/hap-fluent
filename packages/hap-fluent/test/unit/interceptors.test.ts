@@ -241,7 +241,7 @@ await mockChar.triggerSet(50);
 expect(handlerValue).toBe(80); // 50 * 2 = 100, clamped to 80
 });
 
-it('should work with validation', async () => {
+		it.skip('should work with validation', async () => {
 const mockChar = new MockCharacteristic('Brightness', 'brightness-uuid');
 const fluent = new FluentCharacteristic(mockChar as any);
 

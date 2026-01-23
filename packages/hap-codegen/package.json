@@ -13,12 +13,12 @@
 	},
 	"license": "Apache-2.0",
 	"devDependencies": {
-		"ts-morph": "^20.0.0",
+		"ts-morph": "^27.0.2",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.9.3"
 	},
 	"dependencies": {
-		"camelcase": "^8.0.0",
+		"camelcase": "^9.0.0",
 		"reflect-metadata": "^0.2.2"
 	}
 }

@@ -2,12 +2,6 @@
 // This file will be extended to use generated interfaces from hap-codegen
 
 
-import { Service, Characteristic, type WithUUID, type CharacteristicValue, type CharacteristicSetHandler } from 'homebridge';
-import type { InterfaceForService } from './types/index.js';
-import { CamelCase, PascalCase } from 'type-fest';
-import  {PlatformAccessory} from 'homebridge';
-import camelcase from 'camelcase';
-
 
 
 
@@ -18,6 +12,7 @@ export * from './FluentCharacteristic.js';
 
 export * from './FluentService.js';
 
+// Export AccessoryHandler and the primary single-surface API: wrapAccessory
 export * from './AccessoryHandler.js';
 
 export * from './types/index.js';

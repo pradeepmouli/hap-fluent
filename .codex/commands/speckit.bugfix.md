@@ -1,14 +1,5 @@
 ---
 description: Create a bug fix workflow with regression test and minimal documentation.
-handoffs:
-  - label: Create Implementation Plan
-    agent: speckit.plan
-    prompt: Create a plan for the bugfix. I am fixing...
-    send: true
-  - label: Break Down Into Tasks
-    agent: speckit.tasks
-    prompt: Break the bugfix plan into tasks
-    send: true
 ---
 
 The user input to you can be provided directly by the agent or as a command argument - you **MUST** consider it before proceeding with the prompt (if not empty).
@@ -52,3 +43,11 @@ Given that bug description, do this:
 ```
 
 Note: The script creates and checks out the new branch before writing files.
+
+
+---
+
+## Next Steps
+
+1. Create Implementation Plan
+2. Break Down Into Tasks

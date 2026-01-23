@@ -38,6 +38,11 @@ else
     fi
 fi
 
+# Source branch utilities if present (kept for consistency across workflows)
+if [ -f "$SCRIPT_DIR/branch-utils.sh" ]; then
+    source "$SCRIPT_DIR/branch-utils.sh"
+fi
+
 JSON_MODE=false
 for arg in "$@"; do
     case "$arg" in
@@ -294,6 +299,11 @@ This document tracks all changes to the project, organized by specification and 
 *Current state document maintained by `/speckit.baseline` workflow*
 EOF
 fi
+
+# Create symlinks for standard spec-kit artifact names
+ln -sf "baseline-spec.md" "$HISTORY_DIR/spec.md"
+ln -sf "current-state.md" "$HISTORY_DIR/plan.md"
+ln -sf "current-state.md" "$HISTORY_DIR/tasks.md"
 
 BASELINE_ID="baseline-$(date +%Y%m%d)"
 

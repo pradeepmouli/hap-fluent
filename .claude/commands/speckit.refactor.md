@@ -1,14 +1,15 @@
 ---
-description: Create a refactoring workflow with metrics tracking and behavior preservation validation.
-handoffs:
-  - label: Create Implementation Plan
-    agent: speckit.plan
-    prompt: Create a plan for the refactoring. I am refactoring...
-    send: true
-  - label: Break Down Into Tasks
-    agent: speckit.tasks
-    prompt: Break the refactoring plan into tasks
-    send: true
+description: Create a refactoring workflow with metrics tracking and behavior preservation
+  validation.
+hooks:
+  Stop:
+  - hooks:
+    - type: prompt
+      prompt: "After completing this workflow, consider these next steps:\n\n1. **Create\
+        \ Implementation Plan**\n   - Run: `/speckit.plan` or use the `speckit.plan`\
+        \ subagent\n   - Context: Create a plan for the refactoring. I am refactoring...\n\
+        2. **Break Down Into Tasks**\n   - Run: `/speckit.tasks` or use the `speckit.tasks`\
+        \ subagent\n   - Context: Break the refactoring plan into tasks"
 ---
 
 The user input to you can be provided directly by the agent or as a command argument - you **MUST** consider it before proceeding with the prompt (if not empty).
@@ -73,3 +74,15 @@ Given that refactoring description, do this:
 ```
 
 Note: The script creates and checks out the new branch before writing files. Refactoring MUST follow test-first approach - all existing tests must pass before and after. **NEW**: Testing gaps must be assessed and critical gaps filled BEFORE baseline capture. Baseline metrics are automatically captured during workflow creation but should only be trusted after testing gaps are addressed.
+
+
+---
+
+## Recommended Next Steps
+
+After completing this workflow, consider these next steps:
+
+1. **Create Implementation Plan**: Run `/speckit.plan`
+   - Suggested prompt: Create a plan for the refactoring. I am refactoring...
+2. **Break Down Into Tasks**: Run `/speckit.tasks`
+   - Suggested prompt: Break the refactoring plan into tasks

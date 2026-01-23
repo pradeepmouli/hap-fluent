@@ -1,4 +1,4 @@
-import { Service, Characteristic, type WithUUID, type CharacteristicValue, type PrimitiveTypes } from 'homebridge';
+import { type Service, type Characteristic, type WithUUID, type CharacteristicValue, type PrimitiveTypes } from 'homebridge';
 import { PlatformAccessory } from 'homebridge';
 import camelcase from 'camelcase';
 import type { InterfaceForService } from './types/index.js';

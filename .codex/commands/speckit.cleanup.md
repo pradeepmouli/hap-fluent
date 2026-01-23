@@ -1,5 +1,6 @@
 ---
-description: Validate and reorganize spec-kit artifacts with proper numbering and structure
+description: Validate and reorganize spec-kit artifacts with proper numbering and
+  structure
 ---
 
 The user input to you can be provided directly by the agent or as a command argument - you **MUST** consider it before proceeding with the prompt (if not empty).

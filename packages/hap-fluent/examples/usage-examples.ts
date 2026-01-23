@@ -1,8 +1,9 @@
 // Usage Examples for HAP Fluent API
 // These examples demonstrate the improved type-safe fluent interface
 
-import { wrapService, createFluentServices } from '../src/index.js';
-import { Service } from 'homebridge';
+import { wrapService, createFluentServices, wrapAccessory, AccessoryHandler } from '../src/index.js';
+import { Service, PlatformAccessory } from 'homebridge';
+import type { DynamicPlatformPlugin } from 'homebridge';
 
 // Example 1: Basic Service Creation and Usage
 export function basicUsageExample() {
@@ -238,7 +239,7 @@ export function errorHandlingExample() {
 
 // Type-safe usage demonstration
 export function typeSafetyDemo() {
-	const service = createFluentService('AirPurifier');
+	const service = createFluentServices('AirPurifier');
 
 	// All of these are type-safe and will provide IntelliSense
 	service.onCharacteristicGet('active', () => 1);

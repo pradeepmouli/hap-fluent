@@ -1,14 +1,6 @@
 ---
-description: Initiate a feature deprecation workflow with phased sunset process (warnings → disabled → removed).
-handoffs:
-  - label: Create Deprecation Plan
-    agent: speckit.plan
-    prompt: Create a detailed plan for the deprecation phases. I am deprecating...
-    send: true
-  - label: Break Down Into Tasks
-    agent: speckit.tasks
-    prompt: Break the deprecation plan into tasks for each phase
-    send: true
+description: "Initiate a feature deprecation workflow with phased sunset process (warnings\
+  \ \u2192 disabled \u2192 removed)."
 ---
 
 The user input to you can be provided directly by the agent or as a command argument - you **MUST** consider it before proceeding with the prompt (if not empty).
@@ -103,3 +95,11 @@ Given that input, do this:
 **Interactive Mode Usage Examples**:
 - User: `/speckit.deprecate "low usage"` → Shows feature list → User selects → Creates deprecation plan
 - User: `/speckit.deprecate 014 "low usage"` → Directly creates deprecation plan for feature 014
+
+
+---
+
+## Next Steps
+
+1. Create Deprecation Plan
+2. Break Down Into Tasks

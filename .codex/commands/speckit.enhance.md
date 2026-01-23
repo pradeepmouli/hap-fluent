@@ -1,10 +1,5 @@
 ---
 description: Create a minor enhancement workflow with condensed single-document planning.
-handoffs:
-  - label: Implement Enhancement
-    agent: speckit.implement
-    prompt: Implement the enhancement following the tasks in enhancement.md
-    send: true
 ---
 
 The user input to you can be provided directly by the agent or as a command argument - you **MUST** consider it before proceeding with the prompt (if not empty).
@@ -52,3 +47,10 @@ Given that enhancement description, do this:
 ```
 
 Note: The script creates and checks out the new branch before writing files.
+
+
+---
+
+## Next Steps
+
+1. Implement Enhancement
