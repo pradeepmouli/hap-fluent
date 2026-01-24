@@ -13,6 +13,7 @@ Transform hap-fluent from a prototype with 40% test failures and 17 type safety 
 
 **Language/Version**: TypeScript 5.9.3 (strict mode) targeting ES2022
 **Primary Dependencies**:
+
 - Runtime: `camelcase@8.0.0`, `pino` (logging)
 - Peer: `homebridge@^1.8.0 || ^2.0.0`, `hap-nodejs@^0.11.0 || ^0.12.0 || ^0.13.0` (currently misconfigured)
 - Build: `tsgo` (build/type-check), `oxlint` (linting), `oxfmt` (formatting), Vitest (testing)
@@ -25,47 +26,55 @@ Transform hap-fluent from a prototype with 40% test failures and 17 type safety 
 **Project Type**: Single library package in monorepo (packages/hap-fluent)
 
 **Performance Goals**:
+
 - No observable performance regression (≤5% variance acceptable)
 - Method call overhead <1ms per characteristic operation
 - Memory footprint <100KB additional over raw HAP-NodeJS
 
 **Constraints**:
+
 - MUST maintain backwards compatibility for 0.x users during transition
 - Cannot break existing Homebridge plugins using the library
 - All changes must pass existing tests (after fixing test infrastructure)
 - Type safety improvements cannot weaken existing types
 
 **Scale/Scope**:
+
 - Current: ~2,338 LOC, 4 test files, 100 tests (60 passing, 40 failing)
 - Target: ~4,000-5,000 LOC (with new features), >80% test coverage, 100% tests passing
 - Expected to support 10-100 Homebridge plugins in production
 
 ## Constitution Check
 
-*GATE: All phases must comply with HAP Fluent Constitution v1.0.0*
+_GATE: All phases must comply with HAP Fluent Constitution v1.0.0_
 
 ### ✅ Principle I: Type Safety First (NON-NEGOTIABLE)
+
 **Current Status**: ❌ VIOLATING (17 violations: 14 `as any`, 3 suppressions)
 **Plan Compliance**: Phase 1 eliminates ALL violations with proper type guards
 **Gate**: MUST pass before Phase 2
 
 ### ✅ Principle II: Library-First Architecture
+
 **Current Status**: ⚠️ PARTIAL (incorrect peerDependencies)
 **Plan Compliance**: Phase 1 fixes package.json dependencies, Phase 6 adds modern exports
 **Gate**: Phase 1 achieves full compliance
 
 ### ⚠️ Principle III: Test-First Development
+
 **Current Status**: ❌ VIOLATING (40% test failure rate, no TDD process)
 **Plan Compliance**: Phase 3 establishes TDD infrastructure, coverage thresholds
 **Gate**: Must fix existing tests in Phase 1, establish TDD in Phase 3
 **EXCEPTION**: Existing code predates constitution - refactor will bring into compliance
 
 ### ✅ Principle IV: Fluent API Design
+
 **Current Status**: ✅ COMPLIANT (good method chaining, type safety)
 **Plan Compliance**: Phases 4-5 enhance with validators, events, batching
 **Gate**: No blocking issues
 
 ### ⚠️ Principle V: Developer Experience (DX)
+
 **Current Status**: ❌ VIOLATING (no README, broken examples, poor errors)
 **Plan Compliance**: Phase 2 adds comprehensive docs, error messages, debug logging
 **Gate**: Phase 2 achieves full compliance
@@ -103,6 +112,7 @@ specs/refactor/001-implement-phase-1/
 ### Source Code (repository root)
 
 **Current Structure**:
+
 ```text
 packages/hap-fluent/
 ├── src/
@@ -131,6 +141,7 @@ packages/hap-fluent/
 ```
 
 **Structure After Refactoring** (all phases):
+
 ```text
 packages/hap-fluent/
 ├── README.md                      # NEW: Comprehensive documentation
@@ -164,17 +175,17 @@ packages/hap-fluent/
 
 > Tracking constitution violations and their justified exceptions
 
-| Violation | Current State | Phase that Resolves | Justification |
-|-----------|---------------|---------------------|---------------|
-| 17 type safety violations | 14 `as any`, 3 suppressions | Phase 1 | Pre-constitution code; refactor eliminates ALL |
-| 40% test failure rate | 40 of 100 tests failing | Phase 1 (fix mocks) + Phase 3 (coverage) | Test infrastructure needs overhaul |
-| No package README | Missing documentation | Phase 2 | Library existed before DX standards |
-| Broken examples | Syntax errors | Phase 1 | Code not maintained |
-| Wrong dependencies | homebridge in devDeps | Phase 1 | Configuration error |
+| Violation                 | Current State               | Phase that Resolves                      | Justification                                  |
+| ------------------------- | --------------------------- | ---------------------------------------- | ---------------------------------------------- |
+| 17 type safety violations | 14 `as any`, 3 suppressions | Phase 1                                  | Pre-constitution code; refactor eliminates ALL |
+| 40% test failure rate     | 40 of 100 tests failing     | Phase 1 (fix mocks) + Phase 3 (coverage) | Test infrastructure needs overhaul             |
+| No package README         | Missing documentation       | Phase 2                                  | Library existed before DX standards            |
+| Broken examples           | Syntax errors               | Phase 1                                  | Code not maintained                            |
+| Wrong dependencies        | homebridge in devDeps       | Phase 1                                  | Configuration error                            |
 
 **No unjustified complexity** - all issues are pre-existing technical debt being resolved by this refactor.
 
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+| Violation                  | Why Needed         | Simpler Alternative Rejected Because |
+| -------------------------- | ------------------ | ------------------------------------ |
+| [e.g., 4th project]        | [current need]     | [why 3 projects insufficient]        |
+| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient]  |

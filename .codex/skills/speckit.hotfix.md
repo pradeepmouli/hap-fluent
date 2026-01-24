@@ -15,7 +15,6 @@ The user wants to incorporate the document at: {document_path}
 Based on analysis above, create a new hotfix workflow using this document as the primary source.
 This is urgent - extract incident details, impact, and immediate fix requirements. Please save this as research in the appropriate workflow directory.
 
-
 ## Usage
 
 This skill is invoked as part of workflow orchestration. When called:

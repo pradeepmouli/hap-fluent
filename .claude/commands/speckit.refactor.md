@@ -3,13 +3,13 @@ description: Create a refactoring workflow with metrics tracking and behavior pr
   validation.
 hooks:
   Stop:
-  - hooks:
-    - type: prompt
-      prompt: "After completing this workflow, consider these next steps:\n\n1. **Create\
-        \ Implementation Plan**\n   - Run: `/speckit.plan` or use the `speckit.plan`\
-        \ subagent\n   - Context: Create a plan for the refactoring. I am refactoring...\n\
-        2. **Break Down Into Tasks**\n   - Run: `/speckit.tasks` or use the `speckit.tasks`\
-        \ subagent\n   - Context: Break the refactoring plan into tasks"
+    - hooks:
+        - type: prompt
+          prompt: "After completing this workflow, consider these next steps:\n\n1. **Create\
+            \ Implementation Plan**\n   - Run: `/speckit.plan` or use the `speckit.plan`\
+            \ subagent\n   - Context: Create a plan for the refactoring. I am refactoring...\n\
+            2. **Break Down Into Tasks**\n   - Run: `/speckit.tasks` or use the `speckit.tasks`\
+            \ subagent\n   - Context: Break the refactoring plan into tasks"
 ---
 
 The user input to you can be provided directly by the agent or as a command argument - you **MUST** consider it before proceeding with the prompt (if not empty).
@@ -23,7 +23,7 @@ The text the user typed after `/speckit.refactor` in the triggering message **is
 Given that refactoring description, do this:
 
 1. Run the script `.specify/scripts/bash/create-refactor.sh --json "$ARGUMENTS"` from repo root and parse its JSON output for REFACTOR_ID, BRANCH_NAME, REFACTOR_SPEC_FILE, TESTING_GAPS, METRICS_BEFORE, BEHAVIORAL_SNAPSHOT. All file paths must be absolute.
-  **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
+   **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
 
 2. Load `.specify/extensions/workflows/refactor/refactor-template.md` to understand required sections.
 
@@ -74,7 +74,6 @@ Given that refactoring description, do this:
 ```
 
 Note: The script creates and checks out the new branch before writing files. Refactoring MUST follow test-first approach - all existing tests must pass before and after. **NEW**: Testing gaps must be assessed and critical gaps filled BEFORE baseline capture. Baseline metrics are automatically captured during workflow creation but should only be trusted after testing gaps are addressed.
-
 
 ---
 

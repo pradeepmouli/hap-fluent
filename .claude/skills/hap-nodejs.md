@@ -10,6 +10,7 @@ Use this skill when implementing HomeKit accessories using HAP-NodeJS, creating 
 ## HAP Architecture Overview
 
 HAP is Apple's protocol for smart home device communication:
+
 - **Accessories**: Physical or virtual devices (lights, locks, thermostats)
 - **Services**: Functional units within accessories (lightbulb service, battery service)
 - **Characteristics**: Properties of services (on/off, brightness, temperature)
@@ -26,7 +27,7 @@ import {
   CharacteristicEventTypes,
   CharacteristicValue,
   Service,
-} from 'hap-nodejs';
+} from "hap-nodejs";
 
 export class LightbulbAccessory {
   private accessory: Accessory;
@@ -46,8 +47,8 @@ export class LightbulbAccessory {
     // Configure accessory information
     this.accessory
       .getService(Service.AccessoryInformation)!
-      .setCharacteristic(Characteristic.Manufacturer, 'My Company')
-      .setCharacteristic(Characteristic.Model, 'Light v1.0')
+      .setCharacteristic(Characteristic.Manufacturer, "My Company")
+      .setCharacteristic(Characteristic.Model, "Light v1.0")
       .setCharacteristic(Characteristic.SerialNumber, uuid);
 
     // Add lightbulb service
@@ -68,26 +69,23 @@ export class LightbulbAccessory {
     // Publish accessory
     this.accessory.publish({
       username: this.generateMacAddress(uuid),
-      pincode: '031-45-154',
+      pincode: "031-45-154",
       port: 0, // Random port
       category: Categories.LIGHTBULB,
     });
 
     console.log(`Accessory "${name}" published`);
-    console.log('Setup code: 031-45-154');
+    console.log("Setup code: 031-45-154");
   }
 
   private getOn(callback: (error: Error | null, value?: CharacteristicValue) => void) {
-    console.log('GET On:', this.powerOn);
+    console.log("GET On:", this.powerOn);
     callback(null, this.powerOn);
   }
 
-  private setOn(
-    value: CharacteristicValue,
-    callback: (error?: Error | null) => void
-  ) {
+  private setOn(value: CharacteristicValue, callback: (error?: Error | null) => void) {
     this.powerOn = value as boolean;
-    console.log('SET On:', this.powerOn);
+    console.log("SET On:", this.powerOn);
 
     // Control physical device here
     this.controlDevice({ power: this.powerOn });
@@ -96,16 +94,13 @@ export class LightbulbAccessory {
   }
 
   private getBrightness(callback: (error: Error | null, value?: CharacteristicValue) => void) {
-    console.log('GET Brightness:', this.brightness);
+    console.log("GET Brightness:", this.brightness);
     callback(null, this.brightness);
   }
 
-  private setBrightness(
-    value: CharacteristicValue,
-    callback: (error?: Error | null) => void
-  ) {
+  private setBrightness(value: CharacteristicValue, callback: (error?: Error | null) => void) {
     this.brightness = value as number;
-    console.log('SET Brightness:', this.brightness);
+    console.log("SET Brightness:", this.brightness);
 
     this.controlDevice({ brightness: this.brightness });
 
@@ -114,7 +109,7 @@ export class LightbulbAccessory {
 
   private controlDevice(command: { power?: boolean; brightness?: number }) {
     // Implement device control logic
-    console.log('Controlling device:', command);
+    console.log("Controlling device:", command);
   }
 
   // Update characteristic from device state
@@ -123,20 +118,18 @@ export class LightbulbAccessory {
     this.brightness = brightness;
 
     // Notify HomeKit of state change
-    this.lightbulbService
-      .getCharacteristic(Characteristic.On)!
-      .updateValue(power);
+    this.lightbulbService.getCharacteristic(Characteristic.On)!.updateValue(power);
 
-    this.lightbulbService
-      .getCharacteristic(Characteristic.Brightness)!
-      .updateValue(brightness);
+    this.lightbulbService.getCharacteristic(Characteristic.Brightness)!.updateValue(brightness);
   }
 
   private generateMacAddress(uuid: string): string {
     // Generate valid MAC address from UUID
-    const hex = uuid.replace(/-/g, '');
-    return `${hex.substring(0, 2)}:${hex.substring(2, 4)}:${hex.substring(4, 6)}:` +
-           `${hex.substring(6, 8)}:${hex.substring(8, 10)}:${hex.substring(10, 12)}`;
+    const hex = uuid.replace(/-/g, "");
+    return (
+      `${hex.substring(0, 2)}:${hex.substring(2, 4)}:${hex.substring(4, 6)}:` +
+      `${hex.substring(6, 8)}:${hex.substring(8, 10)}:${hex.substring(10, 12)}`
+    );
   }
 
   destroy() {
@@ -150,14 +143,7 @@ export class LightbulbAccessory {
 A bridge exposes multiple accessories through a single pairing:
 
 ```typescript
-import {
-  Accessory,
-  Bridge,
-  Categories,
-  Characteristic,
-  Service,
-  uuid,
-} from 'hap-nodejs';
+import { Accessory, Bridge, Categories, Characteristic, Service, uuid } from "hap-nodejs";
 
 export class MyBridge {
   private bridge: Bridge;
@@ -165,25 +151,25 @@ export class MyBridge {
 
   constructor(name: string) {
     // Create bridge
-    this.bridge = new Bridge(name, uuid.generate('MyBridge'));
+    this.bridge = new Bridge(name, uuid.generate("MyBridge"));
 
     // Configure bridge information
     this.bridge
       .getService(Service.AccessoryInformation)!
-      .setCharacteristic(Characteristic.Manufacturer, 'My Company')
-      .setCharacteristic(Characteristic.Model, 'Bridge v1.0')
-      .setCharacteristic(Characteristic.SerialNumber, '12345');
+      .setCharacteristic(Characteristic.Manufacturer, "My Company")
+      .setCharacteristic(Characteristic.Model, "Bridge v1.0")
+      .setCharacteristic(Characteristic.SerialNumber, "12345");
 
     // Publish bridge
     this.bridge.publish({
-      username: 'CC:22:3D:E3:CE:F6',
-      pincode: '031-45-154',
+      username: "CC:22:3D:E3:CE:F6",
+      pincode: "031-45-154",
       port: 51826,
       category: Categories.BRIDGE,
     });
 
-    console.log('Bridge published');
-    console.log('Setup code: 031-45-154');
+    console.log("Bridge published");
+    console.log("Setup code: 031-45-154");
   }
 
   addAccessory(accessory: Accessory) {
@@ -220,14 +206,14 @@ export class MyBridge {
 }
 
 // Usage
-const bridge = new MyBridge('My Home Bridge');
+const bridge = new MyBridge("My Home Bridge");
 
 // Create accessories
-const light1 = new Accessory('Living Room Light', uuid.generate('light-1'));
-light1.addService(Service.Lightbulb, 'Living Room Light');
+const light1 = new Accessory("Living Room Light", uuid.generate("light-1"));
+light1.addService(Service.Lightbulb, "Living Room Light");
 
-const light2 = new Accessory('Bedroom Light', uuid.generate('light-2'));
-light2.addService(Service.Lightbulb, 'Bedroom Light');
+const light2 = new Accessory("Bedroom Light", uuid.generate("light-2"));
+light2.addService(Service.Lightbulb, "Bedroom Light");
 
 // Add to bridge
 bridge.addAccessory(light1);
@@ -300,9 +286,7 @@ lockService
     performLockOperation(targetLockState === 1)
       .then(() => {
         lockState = targetLockState;
-        lockService
-          .getCharacteristic(Characteristic.LockCurrentState)!
-          .updateValue(lockState);
+        lockService.getCharacteristic(Characteristic.LockCurrentState)!.updateValue(lockState);
         callback();
       })
       .catch((error) => {
@@ -326,9 +310,7 @@ contactService
 // Update from device
 function updateContactState(detected: boolean) {
   contactState = detected ? 0 : 1;
-  contactService
-    .getCharacteristic(Characteristic.ContactSensorState)!
-    .updateValue(contactState);
+  contactService.getCharacteristic(Characteristic.ContactSensorState)!.updateValue(contactState);
 }
 ```
 
@@ -346,9 +328,7 @@ tempService
 // Update from device
 function updateTemperature(temp: number) {
   currentTemperature = temp;
-  tempService
-    .getCharacteristic(Characteristic.CurrentTemperature)!
-    .updateValue(temp);
+  tempService.getCharacteristic(Characteristic.CurrentTemperature)!.updateValue(temp);
 }
 ```
 
@@ -399,7 +379,7 @@ garageDoorService
     targetDoorState = value as number;
 
     try {
-      await controlGarageDoor(targetDoorState === 0 ? 'open' : 'close');
+      await controlGarageDoor(targetDoorState === 0 ? "open" : "close");
       callback();
     } catch (error) {
       callback(error);
@@ -420,9 +400,9 @@ garageDoorService
 HAP-NodeJS requires persistent storage for pairing information:
 
 ```typescript
-import { AccessoryInfo } from 'hap-nodejs';
-import fs from 'fs/promises';
-import path from 'path';
+import { AccessoryInfo } from "hap-nodejs";
+import fs from "fs/promises";
+import path from "path";
 
 class PersistentStorage {
   private storageDir: string;
@@ -444,7 +424,7 @@ class PersistentStorage {
     const filepath = path.join(this.storageDir, `${uuid}.json`);
 
     try {
-      const data = await fs.readFile(filepath, 'utf-8');
+      const data = await fs.readFile(filepath, "utf-8");
       return JSON.parse(data);
     } catch {
       return null;
@@ -453,9 +433,9 @@ class PersistentStorage {
 }
 
 // Usage with HAP-NodeJS
-import { HAPStorage } from 'hap-nodejs';
+import { HAPStorage } from "hap-nodejs";
 
-HAPStorage.setCustomStoragePath('./persist');
+HAPStorage.setCustomStoragePath("./persist");
 ```
 
 ### Custom Characteristics
@@ -463,13 +443,13 @@ HAPStorage.setCustomStoragePath('./persist');
 Create custom characteristics for manufacturer-specific features:
 
 ```typescript
-import { Characteristic, Formats, Perms } from 'hap-nodejs';
+import { Characteristic, Formats, Perms } from "hap-nodejs";
 
 class CustomCharacteristic extends Characteristic {
-  static readonly UUID = 'CUSTOM-UUID-HERE';
+  static readonly UUID = "CUSTOM-UUID-HERE";
 
   constructor() {
-    super('Custom Setting', CustomCharacteristic.UUID, {
+    super("Custom Setting", CustomCharacteristic.UUID, {
       format: Formats.BOOL,
       perms: [Perms.PAIRED_READ, Perms.PAIRED_WRITE, Perms.NOTIFY],
     });
@@ -515,9 +495,7 @@ class DeviceController {
   }
 
   private updateHAPState(power: boolean) {
-    this.lightbulbService
-      .getCharacteristic(Characteristic.On)!
-      .updateValue(power);
+    this.lightbulbService.getCharacteristic(Characteristic.On)!.updateValue(power);
   }
 }
 ```
@@ -542,12 +520,12 @@ class DeviceController {
 Use stable UUIDs that persist across restarts:
 
 ```typescript
-import { uuid } from 'hap-nodejs';
-import crypto from 'crypto';
+import { uuid } from "hap-nodejs";
+import crypto from "crypto";
 
 function generateStableUUID(deviceId: string): string {
   // Generate UUID from device ID (stable across restarts)
-  const hash = crypto.createHash('sha256').update(deviceId).digest('hex');
+  const hash = crypto.createHash("sha256").update(deviceId).digest("hex");
   return uuid.generate(`device-${hash}`);
 }
 ```
@@ -555,8 +533,8 @@ function generateStableUUID(deviceId: string): string {
 ### 4. Graceful Shutdown
 
 ```typescript
-process.on('SIGINT', async () => {
-  console.log('Shutting down...');
+process.on("SIGINT", async () => {
+  console.log("Shutting down...");
 
   // Unpublish accessories
   bridge.destroy();
@@ -570,21 +548,17 @@ process.on('SIGINT', async () => {
 Add multiple services to a single accessory:
 
 ```typescript
-const accessory = new Accessory('Multi-function Device', uuid);
+const accessory = new Accessory("Multi-function Device", uuid);
 
 // Add multiple services
-const lightService = accessory.addService(Service.Lightbulb, 'Light');
-const fanService = accessory.addService(Service.Fanv2, 'Fan');
-const tempService = accessory.addService(Service.TemperatureSensor, 'Temperature');
+const lightService = accessory.addService(Service.Lightbulb, "Light");
+const fanService = accessory.addService(Service.Fanv2, "Fan");
+const tempService = accessory.addService(Service.TemperatureSensor, "Temperature");
 
 // Configure each service independently
-lightService
-  .getCharacteristic(Characteristic.On)!
-  .on(CharacteristicEventTypes.SET, handleLightSet);
+lightService.getCharacteristic(Characteristic.On)!.on(CharacteristicEventTypes.SET, handleLightSet);
 
-fanService
-  .getCharacteristic(Characteristic.Active)!
-  .on(CharacteristicEventTypes.SET, handleFanSet);
+fanService.getCharacteristic(Characteristic.Active)!.on(CharacteristicEventTypes.SET, handleFanSet);
 ```
 
 ## Testing
@@ -592,20 +566,20 @@ fanService
 ### Unit Tests
 
 ```typescript
-import { describe, it, expect } from 'vitest';
-import { Accessory, Service, Characteristic, uuid } from 'hap-nodejs';
+import { describe, it, expect } from "vitest";
+import { Accessory, Service, Characteristic, uuid } from "hap-nodejs";
 
-describe('HAP Accessory', () => {
-  it('should create lightbulb accessory', () => {
-    const accessory = new Accessory('Test Light', uuid.generate('test'));
+describe("HAP Accessory", () => {
+  it("should create lightbulb accessory", () => {
+    const accessory = new Accessory("Test Light", uuid.generate("test"));
     const service = accessory.addService(Service.Lightbulb);
 
     expect(service).toBeDefined();
     expect(service.getCharacteristic(Characteristic.On)).toBeDefined();
   });
 
-  it('should handle On characteristic', (done) => {
-    const accessory = new Accessory('Test Light', uuid.generate('test'));
+  it("should handle On characteristic", (done) => {
+    const accessory = new Accessory("Test Light", uuid.generate("test"));
     const service = accessory.addService(Service.Lightbulb);
 
     service
@@ -640,17 +614,20 @@ DEBUG=HAP-NodeJS:Accessory node dist/index.js
 ### Common Issues
 
 **Accessory not appearing in Home app**:
+
 - Check pincode is correct
 - Verify network connectivity
 - Ensure Bonjour/mDNS is working
 - Check firewall settings
 
 **State not updating**:
+
 - Call `updateValue()` to notify HomeKit
 - Verify characteristic is configured with `NOTIFY` permission
 - Check internal state is being updated
 
 **Pairing fails**:
+
 - Delete cached pairing data
 - Verify MAC address is valid
 - Check port is not already in use
@@ -658,6 +635,7 @@ DEBUG=HAP-NodeJS:Accessory node dist/index.js
 ## Service & Characteristic Reference
 
 ### Common Services
+
 - `Service.AccessoryInformation` - Required on all accessories
 - `Service.Lightbulb` - Light bulbs
 - `Service.Switch` - Switches
@@ -674,6 +652,7 @@ DEBUG=HAP-NodeJS:Accessory node dist/index.js
 - `Service.Battery` - Battery status
 
 ### Common Characteristics
+
 - `Characteristic.On` - On/off state (bool)
 - `Characteristic.Brightness` - Brightness (0-100)
 - `Characteristic.Hue` - Color hue (0-360)

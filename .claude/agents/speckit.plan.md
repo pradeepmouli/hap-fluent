@@ -18,6 +18,7 @@ Create a plan for the bugfix. I am fixing...
 This subagent is created to handle handoffs from spec-kit-extensions workflows.
 
 When invoked:
+
 1. Check if spec-kit's `/speckit.plan` command exists
 2. If yes, invoke it with the user's context
 3. If no, provide guidance on what the plan workflow should accomplish

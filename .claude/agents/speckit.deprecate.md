@@ -16,12 +16,12 @@ The user wants to incorporate the document at: {document_path}
 Based on analysis above, create a new deprecation workflow using this document as the primary source.
 Identify the feature to deprecate, reason for deprecation, and migration path for users. Please save this as research in the appropriate workflow directory.
 
-
 ## Instructions
 
 This subagent is created to handle handoffs from spec-kit-extensions workflows.
 
 When invoked:
+
 1. Check if spec-kit's `/speckit.deprecate` command exists
 2. If yes, invoke it with the user's context
 3. If no, provide guidance on what the deprecate workflow should accomplish

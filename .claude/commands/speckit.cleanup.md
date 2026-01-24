@@ -12,6 +12,7 @@ $ARGUMENTS
 ## Purpose
 
 This workflow validates the organization of all spec-kit artifacts in the `specs/` directory, checking for:
+
 - Sequential numbering (001, 002, 003, etc.)
 - Proper directory structure based on workflow type
 - Required files presence
@@ -29,16 +30,19 @@ This workflow validates the organization of all spec-kit artifacts in the `specs
 2. **Run the cleanup script** from the repo root:
 
    **For validation only (dry-run):**
+
    ```bash
    .specify/scripts/bash/create-cleanup.sh --json --dry-run "$ARGUMENTS"
    ```
 
    **For validation with auto-fix:**
+
    ```bash
    .specify/scripts/bash/create-cleanup.sh --json --auto-fix "$ARGUMENTS"
    ```
 
    **For validation only:**
+
    ```bash
    .specify/scripts/bash/create-cleanup.sh --json "$ARGUMENTS"
    ```
@@ -52,6 +56,7 @@ This workflow validates the organization of all spec-kit artifacts in the `specs
 4. **Present the results** to the user:
 
    If status is "success":
+
    ```
    ✅ Spec structure validation complete
 
@@ -59,6 +64,7 @@ This workflow validates the organization of all spec-kit artifacts in the `specs
    ```
 
    If status is "issues_found":
+
    ```
    ⚠️ Spec structure validation found issues
 
@@ -76,7 +82,6 @@ This workflow validates the organization of all spec-kit artifacts in the `specs
    ```
 
 5. **Provide guidance based on issues (automatic vs. agent-driven fixes)**:
-
    - **Misplaced workflow directories (ERROR, automatic)**: Workflow-prefixed dirs at the wrong level (e.g., `bugfix-001-*` under `specs/` instead of `specs/bugfix/001-*`). The agent should: inspect contents, propose the target path, ask for confirmation, then move.
    - **Duplicate numbers within a workflow (ERROR, agent-driven)**: Same numeric prefix reused inside a workflow directory. The agent should inspect both dirs, propose a renumbering plan, ask for confirmation, then apply.
    - **Invalid directory names (ERROR, agent-driven)**: Entries inside workflow folders that do not start with a 3-digit prefix. The agent should suggest a compliant `NNN-description` rename, ask for confirmation, then apply.
@@ -87,16 +92,19 @@ This workflow validates the organization of all spec-kit artifacts in the `specs
 ## Example Usage
 
 **Validation before release:**
+
 ```
 /speckit.cleanup "validate before v2.0 release"
 ```
 
 **Fix numbering after merge:**
+
 ```
 /speckit.cleanup --auto-fix "fix numbering after merge"
 ```
 
 **Dry-run to see what would change:**
+
 ```
 /speckit.cleanup --dry-run --auto-fix "check organization"
 ```
@@ -104,6 +112,7 @@ This workflow validates the organization of all spec-kit artifacts in the `specs
 ## Safety Notes
 
 Remind users that:
+
 - ✅ Only affects documentation in `specs/` directory
 - ✅ Code files are never touched
 - ✅ Changes are reversible (git history preserved)
@@ -122,4 +131,4 @@ Remind users that:
 
 ---
 
-*Remember: This workflow is about organization and validation, not content. It ensures specs are numbered and located correctly but doesn't change what's written in them.*
+_Remember: This workflow is about organization and validation, not content. It ensures specs are numbered and located correctly but doesn't change what's written in them._

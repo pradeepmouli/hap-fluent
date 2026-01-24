@@ -1,9 +1,8 @@
 // Re-export all the types from the interface files
-export * from './hap-interfaces.js';
-export * from './hap-enums.js';
-import {InterfaceMap, ServiceMap } from './hap-interfaces.js';
-import type { Service } from 'homebridge';
-
+export * from "./hap-interfaces.js";
+export * from "./hap-enums.js";
+import { InterfaceMap, ServiceMap } from "./hap-interfaces.js";
+import type { Service } from "homebridge";
 
 // Re-export with explicit names to resolve ambiguity
 
@@ -13,17 +12,19 @@ import type { Service } from 'homebridge';
  * with the new generic type mapping approach
  */
 export interface WithTypedUUID<T extends string> {
-	UUID: T;
+  UUID: T;
 }
 
 export type InterfaceForService<T extends typeof Service> = T extends {
-	interface: infer I;
+  interface: infer I;
 }
-	? I
-	: never;
+  ? I
+  : never;
 
 export type Services = ServiceMap[keyof ServiceMap];
 
 export type Interfaces = InterfaceMap[keyof InterfaceMap];
 
-export type ServiceForInterface<T extends Interfaces> = T['serviceName'] extends keyof ServiceMap ? ServiceMap[T['serviceName']] : never;
+export type ServiceForInterface<T extends Interfaces> = T["serviceName"] extends keyof ServiceMap
+  ? ServiceMap[T["serviceName"]]
+  : never;

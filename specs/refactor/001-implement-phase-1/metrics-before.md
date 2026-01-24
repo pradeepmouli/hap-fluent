@@ -9,14 +9,17 @@
 ## Code Complexity
 
 ### Lines of Code
+
 - **Total Lines in hap-fluent/src**: 2,338 lines
 
 ### Type Safety Violations
+
 - **`as any` casts**: 14 instances
 - **Type suppressions** (`@ts-ignore` | `@ts-expect-error`): 3 instances
 - **Total violations**: 17 (exceeds spec estimate of 11+)
 
 ### File Sizes
+
 ```
 packages/hap-fluent/src/
   - FluentCharacteristic.ts
@@ -29,6 +32,7 @@ packages/hap-fluent/src/
 ## Test Coverage
 
 ### Test Suite Statistics
+
 - **Test Files**: 4 files
   - FluentCharacteristic.test.ts
   - FluentService.test.ts
@@ -36,12 +40,14 @@ packages/hap-fluent/src/
   - integration.test.ts
 
 ### Test Results (BASELINE - FAILING TESTS)
+
 - **Total Tests**: 100 tests
 - **Passing**: 60 tests (60%)
 - **Failing**: 40 tests (40%)
 - **Test Duration**: 452ms
 
 ### Failing Test Categories
+
 1. **FluentService.test.ts**: 15 failed / 24 total
    - Characteristic property access issues
    - onGet/onSet/update method failures
@@ -65,20 +71,25 @@ Coverage data not available (need to run with coverage flag)
 ## Performance
 
 ### Build Time
+
 - **Build Time**: 2 seconds
 
 ### Bundle Size
+
 - **Bundle Size**: Build directory not found (need to run build first)
 
 ## Dependencies
 
 ### Package Dependencies
+
 - **Direct Dependencies**: 1 (camelcase)
 - **Dev Dependencies**: 16
 - **Total Installed**: 210 packages
 
 ### Dependency Configuration Issues (CONFIRMED)
+
 From package.json:
+
 - ❌ `homebridge`: Currently in devDependencies, should be peerDependencies
 - ❌ `hap-nodejs`: Currently in devDependencies, should be peerDependencies
 - ✓ Missing modern `exports` field
@@ -93,18 +104,21 @@ From package.json:
 **Pre-Refactoring State Assessment:**
 
 ✅ **Strengths:**
+
 - 60% of tests passing
 - Build completes successfully
 - Fast build time (2s)
 - Reasonable codebase size (2,338 lines)
 
 ❌ **Critical Issues Confirmed:**
+
 1. **Type Safety**: 17 violations (14 `as any` + 3 suppressions)
 2. **Test Failures**: 40 tests failing (40% failure rate)
 3. **Dependency Configuration**: homebridge/hap-nodejs in wrong section
 4. **Mock Issues**: Test mocks not fully compatible with real HAP-NodeJS
 
 🎯 **Refactoring Priorities:**
+
 1. Fix failing tests (may expose real bugs or mock issues)
 2. Remove all 17 type safety violations
 3. Correct dependency configuration
@@ -114,8 +128,9 @@ From package.json:
 ---
 
 **Next Steps:**
+
 1. Investigate test failures - determine if bugs or mock issues
 2. Create behavioral snapshot based on passing tests
 3. Begin Phase 1 implementation with type safety fixes
 
-*Metrics captured using measure-metrics.sh + manual analysis*
+_Metrics captured using measure-metrics.sh + manual analysis_

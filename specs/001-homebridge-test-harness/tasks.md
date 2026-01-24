@@ -8,6 +8,7 @@
 This document breaks down the implementation of the Homebridge Test Harness into actionable, dependency-ordered tasks following Test-First Development principles. Tasks are organized by implementation phases that correspond to user-facing capabilities.
 
 **Implementation Strategy**:
+
 - **MVP First**: Phase 1 (Setup) + Phase 2 (Foundational) = Minimal viable test harness
 - **Incremental Delivery**: Each phase after Foundational adds complete, independently testable features
 - **Parallel Execution**: Tasks marked with `[P]` can run in parallel within their phase
@@ -21,6 +22,7 @@ This document breaks down the implementation of the Homebridge Test Harness into
 **Objective**: Create package structure, configure tooling, establish baseline
 
 **Success Criteria**:
+
 - Package builds successfully with TypeScript
 - Vitest runs (even with no tests)
 - ESLint and Prettier configured and passing
@@ -28,18 +30,18 @@ This document breaks down the implementation of the Homebridge Test Harness into
 
 ### Tasks
 
-- [X] T001 Create package directory structure at `packages/hap-test/`
-- [X] T002 [P] Create `packages/hap-test/package.json` with metadata, peer dependencies (homebridge, hap-nodejs, hap-fluent, vitest), and exports configuration
-- [X] T003 [P] Create `packages/hap-test/tsconfig.json` with strict mode enabled, targeting ES2020
-- [X] T004 [P] Create `packages/hap-test/vitest.config.ts` with coverage configuration
-- [X] T005 [P] Create `packages/hap-test/README.md` with placeholder content
-- [X] T006 [P] Create source directory structure: `src/`, `src/types/`, `src/errors/`, `src/matchers/`, `src/utils/`
-- [X] T007 [P] Create test directory structure: `test/unit/`, `test/integration/`, `test/examples/`
-- [X] T008 [P] Create examples directory: `examples/`
-- [X] T009 Create `packages/hap-test/src/index.ts` as main entry point (empty exports for now)
-- [X] T010 Configure workspace to include new package in root `pnpm-workspace.yaml`
-- [X] T011 Run `pnpm install` to link workspace dependencies
-- [X] T012 Verify build succeeds with `pnpm --filter hap-test build`
+- [x] T001 Create package directory structure at `packages/hap-test/`
+- [x] T002 [P] Create `packages/hap-test/package.json` with metadata, peer dependencies (homebridge, hap-nodejs, hap-fluent, vitest), and exports configuration
+- [x] T003 [P] Create `packages/hap-test/tsconfig.json` with strict mode enabled, targeting ES2020
+- [x] T004 [P] Create `packages/hap-test/vitest.config.ts` with coverage configuration
+- [x] T005 [P] Create `packages/hap-test/README.md` with placeholder content
+- [x] T006 [P] Create source directory structure: `src/`, `src/types/`, `src/errors/`, `src/matchers/`, `src/utils/`
+- [x] T007 [P] Create test directory structure: `test/unit/`, `test/integration/`, `test/examples/`
+- [x] T008 [P] Create examples directory: `examples/`
+- [x] T009 Create `packages/hap-test/src/index.ts` as main entry point (empty exports for now)
+- [x] T010 Configure workspace to include new package in root `pnpm-workspace.yaml`
+- [x] T011 Run `pnpm install` to link workspace dependencies
+- [x] T012 Verify build succeeds with `pnpm --filter hap-test build`
 
 **Phase Gate**: ✅ Package builds, lints, and is ready for development
 
@@ -50,6 +52,7 @@ This document breaks down the implementation of the Homebridge Test Harness into
 **Objective**: Implement foundational test harness components (TestHarness, MockHomebridgeAPI, MockHomeKit, TimeController)
 
 **Success Criteria**:
+
 - Can initialize a platform through TestHarness
 - Can register and retrieve accessories
 - Can perform basic get/set operations on characteristics
@@ -156,6 +159,7 @@ This document breaks down the implementation of the Homebridge Test Harness into
 **Objective**: Implement comprehensive characteristic validation to ensure HAP protocol compliance
 
 **Success Criteria**:
+
 - All characteristic constraints validated (min/max/step/validValues)
 - Format validation for all HAP types (bool, int, float, string, uint8, etc.)
 - Permission checking enforced (read/write/notify)
@@ -204,6 +208,7 @@ This document breaks down the implementation of the Homebridge Test Harness into
 **Objective**: Implement event subscription, notification, and asynchronous waiting
 
 **Success Criteria**:
+
 - Can subscribe to characteristic value changes
 - Events propagate from platform to controller
 - Can wait for next event with timeout
@@ -252,6 +257,7 @@ This document breaks down the implementation of the Homebridge Test Harness into
 **Objective**: Add network simulation, cached accessory flows, and multi-user support
 
 **Success Criteria**:
+
 - Network conditions (latency, packet loss, disconnection) can be simulated
 - Cached accessory restoration works
 - Multiple HomeKit controllers supported
@@ -310,6 +316,7 @@ This document breaks down the implementation of the Homebridge Test Harness into
 **Objective**: Polish API, create custom matchers, improve error messages
 
 **Success Criteria**:
+
 - Custom Vitest matchers available (toHaveCharacteristic, toHaveValue, etc.)
 - Error messages include context and suggestions
 - Debug mode with detailed logging
@@ -366,6 +373,7 @@ This document breaks down the implementation of the Homebridge Test Harness into
 **Objective**: Create comprehensive documentation for adoption
 
 **Success Criteria**:
+
 - API reference generated from JSDoc
 - Getting Started guide allows first test in <10 minutes
 - Advanced guide covers all features
@@ -420,6 +428,7 @@ This document breaks down the implementation of the Homebridge Test Harness into
 **Objective**: Polish, integrate CI/CD, benchmark, and publish v1.0.0
 
 **Success Criteria**:
+
 - All tests passing in CI
 - Package published to npm
 - Performance benchmarks meet targets
@@ -472,17 +481,17 @@ This document breaks down the implementation of the Homebridge Test Harness into
 
 ### By Phase
 
-| Phase | Task Count | Parallel Tasks | Key Deliverable |
-|-------|------------|----------------|-----------------|
-| 1: Setup | 12 | 7 | Package structure and tooling |
-| 2: Foundational | 27 | 10 | Core test harness functional |
-| 3: HAP Protocol | 12 | 2 | Validation enforced |
-| 4: Event System | 11 | 0 | Event subscriptions working |
-| 5: Advanced | 16 | 2 | Network sim, multi-user |
-| 6: Developer UX | 18 | 5 | Matchers, errors, examples |
-| 7: Documentation | 11 | 0 | Guides and API docs |
-| 8: Release | 16 | 0 | v1.0.0 published |
-| **TOTAL** | **123** | **26** | Production-ready test harness |
+| Phase            | Task Count | Parallel Tasks | Key Deliverable               |
+| ---------------- | ---------- | -------------- | ----------------------------- |
+| 1: Setup         | 12         | 7              | Package structure and tooling |
+| 2: Foundational  | 27         | 10             | Core test harness functional  |
+| 3: HAP Protocol  | 12         | 2              | Validation enforced           |
+| 4: Event System  | 11         | 0              | Event subscriptions working   |
+| 5: Advanced      | 16         | 2              | Network sim, multi-user       |
+| 6: Developer UX  | 18         | 5              | Matchers, errors, examples    |
+| 7: Documentation | 11         | 0              | Guides and API docs           |
+| 8: Release       | 16         | 0              | v1.0.0 published              |
+| **TOTAL**        | **123**    | **26**         | Production-ready test harness |
 
 ### Dependency Graph (Phases)
 
@@ -505,6 +514,7 @@ Phase 8 (Release)  ← Depends on all previous phases
 ### MVP Scope (Minimum Viable Product)
 
 **Phases 1 + 2 = MVP** (39 tasks, ~2 weeks)
+
 - Package structure and configuration
 - Core TestHarness, MockHomebridgeAPI, MockHomeKit
 - Basic get/set operations
@@ -529,17 +539,20 @@ Phase 8 (Release)  ← Depends on all previous phases
 ## Implementation Notes
 
 **Test-First Discipline**:
+
 - Every component has tests written FIRST (red)
 - Implement minimum code to pass tests (green)
 - Refactor with test safety (tests stay green)
 - Target: 80%+ line coverage, 90%+ for critical paths
 
 **Incremental Validation**:
+
 - Each phase gate must pass before proceeding
 - Integration tests validate cross-component behavior
 - Example files serve as acceptance tests
 
 **Constitutional Compliance**:
+
 - Type safety: All public APIs have explicit types
 - Library-first: Package is standalone and independently testable
 - Fluent API: Method chaining and builder patterns throughout

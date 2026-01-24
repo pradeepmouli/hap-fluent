@@ -19,12 +19,12 @@
 
 **Purpose**: Ensure baseline is captured and environment is ready
 
-- [X] T001 Run baseline metrics capture: `.specify/extensions/workflows/refactor/measure-metrics.sh --before`
-- [X] T002 Verify all existing tests pass: `pnpm run test` (must be 100% pass rate) - 60/100 passing baseline
-- [X] T003 Create git tag for baseline: `git tag pre-refactor-001 -m "Baseline before comprehensive refactor"`
-- [X] T004 Install pino dependency: `pnpm add pino`
-- [X] T005 Install @fast-check/vitest dev dependency: `pnpm add -D @fast-check/vitest`
-- [X] T006 Update build tooling to use tsgo, oxlint, oxfmt per plan.md requirements
+- [x] T001 Run baseline metrics capture: `.specify/extensions/workflows/refactor/measure-metrics.sh --before`
+- [x] T002 Verify all existing tests pass: `pnpm run test` (must be 100% pass rate) - 60/100 passing baseline
+- [x] T003 Create git tag for baseline: `git tag pre-refactor-001 -m "Baseline before comprehensive refactor"`
+- [x] T004 Install pino dependency: `pnpm add pino`
+- [x] T005 Install @fast-check/vitest dev dependency: `pnpm add -D @fast-check/vitest`
+- [x] T006 Update build tooling to use tsgo, oxlint, oxfmt per plan.md requirements
 
 ---
 
@@ -36,59 +36,59 @@
 
 ### Error Infrastructure
 
-- [X] T007 [P] [Phase1] Create error infrastructure in packages/hap-fluent/src/errors.ts with FluentCharacteristicError, ValidationError, ConfigurationError classes
-- [X] T008 [P] [Phase1] Create type guard utilities in packages/hap-fluent/src/type-guards.ts with isCharacteristicValue, isService, isCharacteristic functions
-- [X] T009 [Phase1] Add unit tests for error classes in packages/hap-fluent/test/unit/errors.test.ts
-- [X] T010 [Phase1] Add unit tests for type guards in packages/hap-fluent/test/unit/type-guards.test.ts
+- [x] T007 [P] [Phase1] Create error infrastructure in packages/hap-fluent/src/errors.ts with FluentCharacteristicError, ValidationError, ConfigurationError classes
+- [x] T008 [P] [Phase1] Create type guard utilities in packages/hap-fluent/src/type-guards.ts with isCharacteristicValue, isService, isCharacteristic functions
+- [x] T009 [Phase1] Add unit tests for error classes in packages/hap-fluent/test/unit/errors.test.ts
+- [x] T010 [Phase1] Add unit tests for type guards in packages/hap-fluent/test/unit/type-guards.test.ts
 
 ### Fix FluentCharacteristic.ts
 
-- [X] T011 [Phase1] Remove type violations in packages/hap-fluent/src/FluentCharacteristic.ts (lines with unsafe casts)
-- [X] T012 [Phase1] Add error handling to async set() method in FluentCharacteristic.ts using try-catch
-- [X] T013 [Phase1] Add error handling to async get() method in FluentCharacteristic.ts using try-catch
-- [X] T014 [Phase1] Add error handling to updateValue() method in FluentCharacteristic.ts using try-catch
-- [X] T015 [Phase1] Add input validation using type guards in FluentCharacteristic.ts set/get methods
+- [x] T011 [Phase1] Remove type violations in packages/hap-fluent/src/FluentCharacteristic.ts (lines with unsafe casts)
+- [x] T012 [Phase1] Add error handling to async set() method in FluentCharacteristic.ts using try-catch
+- [x] T013 [Phase1] Add error handling to async get() method in FluentCharacteristic.ts using try-catch
+- [x] T014 [Phase1] Add error handling to updateValue() method in FluentCharacteristic.ts using try-catch
+- [x] T015 [Phase1] Add input validation using type guards in FluentCharacteristic.ts set/get methods
 - [ ] T016 [Phase1] Update tests in packages/hap-fluent/test/FluentCharacteristic.test.ts to verify error handling paths
 
 ### Fix FluentService.ts
 
-- [X] T017 [Phase1] Replace `as any` cast at line 73 in packages/hap-fluent/src/FluentService.ts with proper type guard
-- [X] T018 [Phase1] Replace `as any` cast at line 83 in packages/hap-fluent/src/FluentService.ts with proper type guard
-- [X] T019 [Phase1] Replace `as any` cast at line 89 in packages/hap-fluent/src/FluentService.ts with proper type guard
-- [X] T020 [Phase1] Replace `as any` cast at line 92 in packages/hap-fluent/src/FluentService.ts with proper type guard
-- [X] T021 [Phase1] Add consistent validation to wrapService() in FluentService.ts (match getOrAddService validation)
-- [X] T022 [Phase1] Add error handling to service creation methods in FluentService.ts
+- [x] T017 [Phase1] Replace `as any` cast at line 73 in packages/hap-fluent/src/FluentService.ts with proper type guard
+- [x] T018 [Phase1] Replace `as any` cast at line 83 in packages/hap-fluent/src/FluentService.ts with proper type guard
+- [x] T019 [Phase1] Replace `as any` cast at line 89 in packages/hap-fluent/src/FluentService.ts with proper type guard
+- [x] T020 [Phase1] Replace `as any` cast at line 92 in packages/hap-fluent/src/FluentService.ts with proper type guard
+- [x] T021 [Phase1] Add consistent validation to wrapService() in FluentService.ts (match getOrAddService validation)
+- [x] T022 [Phase1] Add error handling to service creation methods in FluentService.ts
 - [ ] T023 [Phase1] Update tests in packages/hap-fluent/test/FluentService.test.ts to verify new validation and error handling
 
 ### Fix AccessoryHandler.ts
 
-- [X] T024 [Phase1] Remove @ts-ignore directive at line 66 in packages/hap-fluent/src/AccessoryHandler.ts with proper type handling
-- [X] T025 [Phase1] Remove @ts-expect-error directive at line 69 in packages/hap-fluent/src/AccessoryHandler.ts with proper type handling
-- [X] T026 [Phase1] Remove @ts-expect-error directive at line 150 in packages/hap-fluent/src/AccessoryHandler.ts with proper type handling
-- [X] T027 [Phase1] Delete commented-out code block lines 102-113 in packages/hap-fluent/src/AccessoryHandler.ts
-- [X] T028 [Phase1] Delete commented-out code block lines 240-294 in packages/hap-fluent/src/AccessoryHandler.ts
+- [x] T024 [Phase1] Remove @ts-ignore directive at line 66 in packages/hap-fluent/src/AccessoryHandler.ts with proper type handling
+- [x] T025 [Phase1] Remove @ts-expect-error directive at line 69 in packages/hap-fluent/src/AccessoryHandler.ts with proper type handling
+- [x] T026 [Phase1] Remove @ts-expect-error directive at line 150 in packages/hap-fluent/src/AccessoryHandler.ts with proper type handling
+- [x] T027 [Phase1] Delete commented-out code block lines 102-113 in packages/hap-fluent/src/AccessoryHandler.ts
+- [x] T028 [Phase1] Delete commented-out code block lines 240-294 in packages/hap-fluent/src/AccessoryHandler.ts
 - [ ] T029 [Phase1] Update tests in packages/hap-fluent/test/FluentAccessory.test.ts to verify type safety improvements
 
 ### Fix Package Configuration
 
-- [X] T030 [Phase1] Move homebridge from devDependencies to peerDependencies in packages/hap-fluent/package.json
-- [X] T031 [Phase1] Move hap-nodejs from devDependencies to peerDependencies in packages/hap-fluent/package.json
-- [X] T032 [Phase1] Add modern exports field to packages/hap-fluent/package.json with subpath exports
+- [x] T030 [Phase1] Move homebridge from devDependencies to peerDependencies in packages/hap-fluent/package.json
+- [x] T031 [Phase1] Move hap-nodejs from devDependencies to peerDependencies in packages/hap-fluent/package.json
+- [x] T032 [Phase1] Add modern exports field to packages/hap-fluent/package.json with subpath exports
 
 ### Fix Examples
 
-- [X] T033 [Phase1] Fix syntax error at line 25 in packages/hap-fluent/examples/usage-examples.ts
-- [X] T034 [Phase1] Verify all examples compile: run tsgo build on examples directory
-- [X] T035 [Phase1] Test examples run without errors
+- [x] T033 [Phase1] Fix syntax error at line 25 in packages/hap-fluent/examples/usage-examples.ts
+- [x] T034 [Phase1] Verify all examples compile: run tsgo build on examples directory
+- [x] T035 [Phase1] Test examples run without errors
 
 ### Phase 1 Validation
 
 - [ ] T036 [Phase1] Run full test suite: `pnpm run test` (must be 100% pass rate)
 - [ ] T037 [Phase1] Verify behavioral snapshot unchanged by comparing current behavior with packages/hap-fluent/test output
-- [X] T038 [Phase1] Run type check: `pnpm run type-check` (must pass with 0 errors)
-- [X] T039 [Phase1] Verify no type violations remain: `grep -r "as any\|@ts-ignore\|@ts-expect-error" packages/hap-fluent/src/` (must return 0 results - 4 remain but documented)
-- [X] T040 [Phase1] Create git tag: `git tag refactor-001-phase-1 -m "Phase 1: Code Quality Complete"`
-- [X] T041 [Phase1] Update packages/hap-fluent/src/index.ts to export new error classes and type guards
+- [x] T038 [Phase1] Run type check: `pnpm run type-check` (must pass with 0 errors)
+- [x] T039 [Phase1] Verify no type violations remain: `grep -r "as any\|@ts-ignore\|@ts-expect-error" packages/hap-fluent/src/` (must return 0 results - 4 remain but documented)
+- [x] T040 [Phase1] Create git tag: `git tag refactor-001-phase-1 -m "Phase 1: Code Quality Complete"`
+- [x] T041 [Phase1] Update packages/hap-fluent/src/index.ts to export new error classes and type guards
 
 **Checkpoint**: Type safety greatly improved (17 → 4 violations, all documented), error handling comprehensive, dead code removed, examples working. Tests: 128 passing (100% pass rate), up from 60 baseline.
 
@@ -102,42 +102,42 @@
 
 ### Documentation
 
-- [X] T042 [P] [Phase2] Create comprehensive README.md in packages/hap-fluent/ with installation, quickstart, API overview (500+ lines)
-- [X] T043 [P] [Phase2] Create CHANGELOG.md in packages/hap-fluent/ following keepachangelog.com format
-- [X] T044 [Phase2] Add JSDoc comments to all public methods in packages/hap-fluent/src/FluentCharacteristic.ts
-- [X] T045 [Phase2] Add JSDoc comments to all public methods in packages/hap-fluent/src/FluentService.ts
-- [X] T046 [Phase2] Add JSDoc comments to all public methods in packages/hap-fluent/src/AccessoryHandler.ts
-- [X] T047 [Phase2] Add usage examples to README.md covering common patterns (service creation, characteristic access, error handling)
+- [x] T042 [P] [Phase2] Create comprehensive README.md in packages/hap-fluent/ with installation, quickstart, API overview (500+ lines)
+- [x] T043 [P] [Phase2] Create CHANGELOG.md in packages/hap-fluent/ following keepachangelog.com format
+- [x] T044 [Phase2] Add JSDoc comments to all public methods in packages/hap-fluent/src/FluentCharacteristic.ts
+- [x] T045 [Phase2] Add JSDoc comments to all public methods in packages/hap-fluent/src/FluentService.ts
+- [x] T046 [Phase2] Add JSDoc comments to all public methods in packages/hap-fluent/src/AccessoryHandler.ts
+- [x] T047 [Phase2] Add usage examples to README.md covering common patterns (service creation, characteristic access, error handling)
 
 ### Improve Error Messages
 
-- [X] T048 [Phase2] Update all error messages in packages/hap-fluent/src/errors.ts to be actionable with context
-- [X] T049 [Phase2] Add error context (characteristic name, value, operation) to FluentCharacteristicError throws
-- [X] T050 [Phase2] Add error handling documentation section to README.md
-- [X] T051 [Phase2] Add examples of error handling in packages/hap-fluent/examples/error-handling-examples.ts
+- [x] T048 [Phase2] Update all error messages in packages/hap-fluent/src/errors.ts to be actionable with context
+- [x] T049 [Phase2] Add error context (characteristic name, value, operation) to FluentCharacteristicError throws
+- [x] T050 [Phase2] Add error handling documentation section to README.md
+- [x] T051 [Phase2] Add examples of error handling in packages/hap-fluent/examples/error-handling-examples.ts
 
 ### Add Structured Logging
 
-- [X] T052 [Phase2] Configure pino logger in packages/hap-fluent/src/logger.ts with configurable log levels
-- [X] T053 [Phase2] Add logging to FluentCharacteristic.ts critical operations (set, get, updateValue)
-- [X] T054 [Phase2] Add logging to FluentService.ts service creation and characteristic access
-- [X] T055 [Phase2] Add logging to AccessoryHandler.ts accessory initialization
-- [X] T056 [Phase2] Document pino configuration and log levels in README.md
-- [X] T057 [Phase2] Add example of debug logging usage in packages/hap-fluent/examples/logging-examples.ts
+- [x] T052 [Phase2] Configure pino logger in packages/hap-fluent/src/logger.ts with configurable log levels
+- [x] T053 [Phase2] Add logging to FluentCharacteristic.ts critical operations (set, get, updateValue)
+- [x] T054 [Phase2] Add logging to FluentService.ts service creation and characteristic access
+- [x] T055 [Phase2] Add logging to AccessoryHandler.ts accessory initialization
+- [x] T056 [Phase2] Document pino configuration and log levels in README.md
+- [x] T057 [Phase2] Add example of debug logging usage in packages/hap-fluent/examples/logging-examples.ts
 
 ### Type Utilities for DX
 
-- [X] T058 [P] [Phase2] Create type utilities in packages/hap-fluent/src/type-utils.ts with CharacteristicType, ServiceState, CharacteristicValue helpers
-- [X] T059 [Phase2] Export type utilities from packages/hap-fluent/src/index.ts
-- [X] T060 [Phase2] Add examples of type utility usage in packages/hap-fluent/examples/type-utilities-examples.ts
-- [X] T061 [Phase2] Add type utilities documentation section to README.md
+- [x] T058 [P] [Phase2] Create type utilities in packages/hap-fluent/src/type-utils.ts with CharacteristicType, ServiceState, CharacteristicValue helpers
+- [x] T059 [Phase2] Export type utilities from packages/hap-fluent/src/index.ts
+- [x] T060 [Phase2] Add examples of type utility usage in packages/hap-fluent/examples/type-utilities-examples.ts
+- [x] T061 [Phase2] Add type utilities documentation section to README.md
 
 ### Phase 2 Validation
 
-- [X] T062 [Phase2] Verify README.md renders correctly on GitHub
-- [X] T063 [Phase2] Test pino logging works in example application
-- [X] T064 [Phase2] Verify type utilities provide correct IntelliSense in TypeScript
-- [X] T065 [Phase2] Create git tag: `git tag refactor-001-phase-2 -m "Phase 2: Developer Experience Complete"`
+- [x] T062 [Phase2] Verify README.md renders correctly on GitHub
+- [x] T063 [Phase2] Test pino logging works in example application
+- [x] T064 [Phase2] Verify type utilities provide correct IntelliSense in TypeScript
+- [x] T065 [Phase2] Create git tag: `git tag refactor-001-phase-2 -m "Phase 2: Developer Experience Complete"`
 
 **Checkpoint**: Comprehensive documentation (700+ lines README), actionable error messages, structured logging with pino, type utilities for DX. All 128 tests passing. Git tag: refactor-001-phase-2
 
@@ -151,41 +151,41 @@
 
 ### Configure Test Coverage
 
-- [X] T066 [Phase3] Update packages/hap-fluent/vitest.config.ts with coverage thresholds (80% line, 70% branch)
-- [X] T067 [Phase3] Add coverage script to packages/hap-fluent/package.json: `"test:coverage": "vitest run --coverage"`
-- [X] T068 [Phase3] Run baseline coverage report and document current coverage percentage
-- [X] T069 [Phase3] Create .gitignore entry for coverage/ directory
+- [x] T066 [Phase3] Update packages/hap-fluent/vitest.config.ts with coverage thresholds (80% line, 70% branch)
+- [x] T067 [Phase3] Add coverage script to packages/hap-fluent/package.json: `"test:coverage": "vitest run --coverage"`
+- [x] T068 [Phase3] Run baseline coverage report and document current coverage percentage
+- [x] T069 [Phase3] Create .gitignore entry for coverage/ directory
 
 Baseline coverage (2025-12-25): lines 86.39%, branches 76.69%, functions 87.50%, statements 86.30% (current unit + existing integration tests)
 
 ### Add Integration Tests
 
-- [X] T070 [Phase3] Create packages/hap-fluent/test/integration/ directory structure ✅
-- [X] T071 [P] [Phase3] Add integration test for FluentService with real HAP-NodeJS service in test/integration/service.integration.test.ts ✅ (17 tests in integration.test.ts)
-- [X] T072 [P] [Phase3] Add integration test for FluentCharacteristic with real HAP-NodeJS characteristic in test/integration/characteristic.integration.test.ts ✅
-- [X] T073 [P] [Phase3] Add integration test for AccessoryHandler with real HAP accessory in test/integration/accessory.integration.test.ts ✅
-- [X] T074 [P] [Phase3] Add end-to-end test for complete accessory lifecycle in test/integration/lifecycle.integration.test.ts ✅
-- [X] T075 [Phase3] Update packages/hap-fluent/vitest.config.ts to include integration test pattern ✅
+- [x] T070 [Phase3] Create packages/hap-fluent/test/integration/ directory structure ✅
+- [x] T071 [P] [Phase3] Add integration test for FluentService with real HAP-NodeJS service in test/integration/service.integration.test.ts ✅ (17 tests in integration.test.ts)
+- [x] T072 [P] [Phase3] Add integration test for FluentCharacteristic with real HAP-NodeJS characteristic in test/integration/characteristic.integration.test.ts ✅
+- [x] T073 [P] [Phase3] Add integration test for AccessoryHandler with real HAP accessory in test/integration/accessory.integration.test.ts ✅
+- [x] T074 [P] [Phase3] Add end-to-end test for complete accessory lifecycle in test/integration/lifecycle.integration.test.ts ✅
+- [x] T075 [Phase3] Update packages/hap-fluent/vitest.config.ts to include integration test pattern ✅
 
 ### Add Property-Based Tests
 
-- [X] T076 [Phase3] Create packages/hap-fluent/test/property-based/ directory structure ✅
-- [X] T077 [P] [Phase3] Add property-based tests for characteristic value types in test/property-based/characteristic-values.property.test.ts ✅
-- [X] T078 [P] [Phase3] Add property-based tests for service characteristic access in test/property-based/service-operations.property.test.ts ✅
-- [X] T079 [Phase3] Configure fast-check generators for HAP types ✅
+- [x] T076 [Phase3] Create packages/hap-fluent/test/property-based/ directory structure ✅
+- [x] T077 [P] [Phase3] Add property-based tests for characteristic value types in test/property-based/characteristic-values.property.test.ts ✅
+- [x] T078 [P] [Phase3] Add property-based tests for service characteristic access in test/property-based/service-operations.property.test.ts ✅
+- [x] T079 [Phase3] Configure fast-check generators for HAP types ✅
 
 ### Reorganize Existing Tests
 
-- [X] T080 [Phase3] Move existing tests to packages/hap-fluent/test/unit/ directory ✅
-- [X] T081 [Phase3] Update import paths in moved test files ✅
-- [X] T082 [Phase3] Update vitest.config.ts test file patterns to include unit/, integration/, property-based/ ✅
+- [x] T080 [Phase3] Move existing tests to packages/hap-fluent/test/unit/ directory ✅
+- [x] T081 [Phase3] Update import paths in moved test files ✅
+- [x] T082 [Phase3] Update vitest.config.ts test file patterns to include unit/, integration/, property-based/ ✅
 
 ### Phase 3 Validation
 
-- [X] T083 [Phase3] Run coverage: `pnpm run test:coverage` and verify thresholds met (>80% line, >70% branch) ✅
-- [X] T084 [Phase3] Verify all tests passing: `pnpm run test` (unit + integration + property-based) ✅
-- [X] T085 [Phase3] Document test strategy in README.md (unit vs integration vs property-based) ✅
-- [X] T086 [Phase3] Create git tag: `git tag refactor-001-phase-3 -m "Phase 3: Testability Complete"` ✅
+- [x] T083 [Phase3] Run coverage: `pnpm run test:coverage` and verify thresholds met (>80% line, >70% branch) ✅
+- [x] T084 [Phase3] Verify all tests passing: `pnpm run test` (unit + integration + property-based) ✅
+- [x] T085 [Phase3] Document test strategy in README.md (unit vs integration vs property-based) ✅
+- [x] T086 [Phase3] Create git tag: `git tag refactor-001-phase-3 -m "Phase 3: Testability Complete"` ✅
 
 **Checkpoint**: Comprehensive test coverage 86.39% lines/76.69% branches (exceeds targets), integration tests with real HAP (17 tests), property-based testing with fast-check (8 generative tests), robust test infrastructure. Total: 153 tests passing. Git tag: refactor-001-phase-3
 
@@ -199,13 +199,13 @@ Baseline coverage (2025-12-25): lines 86.39%, branches 76.69%, functions 87.50%,
 
 ### Validation Framework
 
-- [X] T087 [P] [Phase4] Create validation framework in packages/hap-fluent/src/validation.ts with Validator interface ✅
-- [X] T088 [P] [Phase4] Implement RangeValidator in packages/hap-fluent/src/validation.ts ✅
-- [X] T089 [P] [Phase4] Implement EnumValidator in packages/hap-fluent/src/validation.ts ✅
-- [X] T090 [P] [Phase4] Implement CompositeValidator in packages/hap-fluent/src/validation.ts ✅
-- [X] T091 [Phase4] Integrate validation into FluentCharacteristic.ts addValidator() method ✅
-- [X] T092 [Phase4] Add validation tests in packages/hap-fluent/test/unit/validation.test.ts (24 tests) ✅
-- [X] T093 [Phase4] Add validation examples in packages/hap-fluent/examples/validation-examples.ts (8 examples) ✅
+- [x] T087 [P] [Phase4] Create validation framework in packages/hap-fluent/src/validation.ts with Validator interface ✅
+- [x] T088 [P] [Phase4] Implement RangeValidator in packages/hap-fluent/src/validation.ts ✅
+- [x] T089 [P] [Phase4] Implement EnumValidator in packages/hap-fluent/src/validation.ts ✅
+- [x] T090 [P] [Phase4] Implement CompositeValidator in packages/hap-fluent/src/validation.ts ✅
+- [x] T091 [Phase4] Integrate validation into FluentCharacteristic.ts addValidator() method ✅
+- [x] T092 [Phase4] Add validation tests in packages/hap-fluent/test/unit/validation.test.ts (24 tests) ✅
+- [x] T093 [Phase4] Add validation examples in packages/hap-fluent/examples/validation-examples.ts (8 examples) ✅
 
 ### Event System (SKIPPED)
 
@@ -220,22 +220,22 @@ Baseline coverage (2025-12-25): lines 86.39%, branches 76.69%, functions 87.50%,
 
 ### Standard Interceptor API (fluent methods replacing middleware)
 
-- [X] T100 [P] [Phase4] Add standard .log() method to FluentCharacteristic.ts for logging all operations
-- [X] T101 [P] [Phase4] Add standard .limit(maxCalls, windowMs) method to FluentCharacteristic.ts for rate-limiting
-- [X] T102 [P] [Phase4] Add standard .clamp(min, max) method to FluentCharacteristic.ts for value clamping
-- [X] T103 [Phase4] Add standard .transform(fn) method to FluentCharacteristic.ts for value transformation
-- [X] T104 [Phase4] Add standard .audit() method to FluentCharacteristic.ts for audit trail tracking
-- [X] T105 [Phase4] Add interceptor tests in packages/hap-fluent/test/unit/interceptors.test.ts (19 tests)
-- [X] T106 [Phase4] Add interceptor examples in packages/hap-fluent/examples/interceptor-examples.ts (7 examples)
+- [x] T100 [P] [Phase4] Add standard .log() method to FluentCharacteristic.ts for logging all operations
+- [x] T101 [P] [Phase4] Add standard .limit(maxCalls, windowMs) method to FluentCharacteristic.ts for rate-limiting
+- [x] T102 [P] [Phase4] Add standard .clamp(min, max) method to FluentCharacteristic.ts for value clamping
+- [x] T103 [Phase4] Add standard .transform(fn) method to FluentCharacteristic.ts for value transformation
+- [x] T104 [Phase4] Add standard .audit() method to FluentCharacteristic.ts for audit trail tracking
+- [x] T105 [Phase4] Add interceptor tests in packages/hap-fluent/test/unit/interceptors.test.ts (19 tests)
+- [x] T106 [Phase4] Add interceptor examples in packages/hap-fluent/examples/interceptor-examples.ts (7 examples)
 
 ### Phase 4 Validation
 
-- [X] T107 [Phase4] Test validation framework works independently with various validators ✅
+- [x] T107 [Phase4] Test validation framework works independently with various validators ✅
 - [ ] T108 [Phase4] Test event system emits events correctly and handlers execute (SKIPPED - interceptors cover this use case)
-- [X] T109 [Phase4] Test interceptors execute in correct order and wrap onSet/onGet handlers ✅
-- [X] T110 [Phase4] Verify opt-in nature: default behavior unchanged when features not used ✅
-- [X] T111 [Phase4] Update packages/hap-fluent/src/index.ts to export validation utilities ✅
-- [X] T112 [Phase4] Create git tag: `git tag refactor-001-phase-4 -m "Phase 4: Advanced Features Complete"` ✅
+- [x] T109 [Phase4] Test interceptors execute in correct order and wrap onSet/onGet handlers ✅
+- [x] T110 [Phase4] Verify opt-in nature: default behavior unchanged when features not used ✅
+- [x] T111 [Phase4] Update packages/hap-fluent/src/index.ts to export validation utilities ✅
+- [x] T112 [Phase4] Create git tag: `git tag refactor-001-phase-4 -m "Phase 4: Advanced Features Complete"` ✅
 
 **Checkpoint**: Validation framework with 5+ validators (24 tests), standard interceptor API with 5 methods (log, limit, clamp, transform, audit) wrapping onSet/onGet handlers (19 tests). Event system skipped as interceptors provide equivalent functionality. Total: 196 tests passing (+43 from Phase 3 baseline).
 
@@ -374,6 +374,7 @@ Baseline coverage (2025-12-25): lines 86.39%, branches 76.69%, functions 87.50%,
 ### Phase Independence
 
 After Phase 1 completes, phases 2-3 can proceed in parallel if desired:
+
 - Phase 2 (documentation) and Phase 3 (tests) are independent
 - Phase 4-6 have dependencies and should proceed sequentially
 
@@ -386,6 +387,7 @@ After Phase 1 completes, phases 2-3 can proceed in parallel if desired:
 ### Critical Path
 
 The minimum viable refactor is **Phase 1-2**:
+
 1. Phase 1 fixes critical type safety violations (NON-NEGOTIABLE per constitution)
 2. Phase 2 adds essential documentation for 1.0.0 release
 3. Phases 3-6 are enhancements that can be done in future releases
@@ -395,12 +397,14 @@ The minimum viable refactor is **Phase 1-2**:
 **Setup Phase**: T001-T006 mostly sequential (need baseline before proceeding)
 
 **Phase 1**:
+
 - T007-T010 (error infrastructure) in parallel
 - T017-T020 (FluentService type casts) in parallel
 - T024-T026 (AccessoryHandler suppressions) in parallel
 - T030-T032 (package.json) in parallel
 
 **Phase 2**:
+
 - T042-T043 (documentation files) in parallel
 - T044-T046 (JSDoc additions) in parallel
 - T048-T051 (error messages) can proceed while docs are written
@@ -408,18 +412,22 @@ The minimum viable refactor is **Phase 1-2**:
 - T058-T061 (type utilities) independent track
 
 **Phase 3**:
+
 - T071-T074 (integration tests) in parallel
 - T077-T078 (property tests) in parallel
 
 **Phase 4**:
+
 - T087-T090 (validation implementations) in parallel
 - T100-T102 (middleware implementations) in parallel
 
 **Phase 5**:
+
 - T120-T121 (batch operations) in parallel
 - Caching (T113-T119) independent track
 
 **Phase 6**:
+
 - T141-T142 (CI workflow) in parallel
 - T145-T147 (tooling migration) in parallel
 
@@ -430,13 +438,16 @@ The minimum viable refactor is **Phase 1-2**:
 ### MVP Scope (Minimum for 1.0.0)
 
 **MUST HAVE**:
+
 - Phase 1: Code Quality & Robustness (constitutional compliance)
 - Phase 2: Developer Experience (documentation for public release)
 
 **RECOMMENDED**:
+
 - Phase 3: Testability (confidence in stability)
 
 **OPTIONAL** (can defer to 1.1.0+):
+
 - Phase 4: Advanced Features
 - Phase 5: Performance
 - Phase 6: Build Tooling
@@ -444,6 +455,7 @@ The minimum viable refactor is **Phase 1-2**:
 ### Incremental Delivery
 
 Each phase is independently deliverable:
+
 - Can stop at any phase boundary
 - Can release intermediate versions (0.9.0 after Phase 1, 0.10.0 after Phase 2, etc.)
 - Each phase leaves codebase in working, tested state
@@ -458,22 +470,26 @@ Each phase is independently deliverable:
 ### Success Metrics
 
 **After Phase 1**:
+
 - ✅ 0 type safety violations (from 17)
 - ✅ 0 dead code lines (from 65+)
 - ✅ 100% tests passing
 - ✅ All examples working
 
 **After Phase 2**:
+
 - ✅ README.md >500 lines
 - ✅ All public APIs documented
 - ✅ Structured logging implemented
 
 **After Phase 3**:
+
 - ✅ >80% line coverage
 - ✅ Integration tests with real HAP
 - ✅ Property-based tests
 
 **Final (All Phases)**:
+
 - ✅ All constitutional violations resolved
 - ✅ Production-ready 1.0.0 release
 - ✅ No performance regression
@@ -496,6 +512,7 @@ Each phase is independently deliverable:
 **Parallel Task Count**: 47 tasks marked [P] can run in parallel within their phases
 
 **Estimated Effort**:
+
 - Phase 1: 3-5 days (critical path)
 - Phase 2: 2-3 days (documentation heavy)
 - Phase 3: 3-4 days (test infrastructure)

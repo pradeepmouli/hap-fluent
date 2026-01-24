@@ -1,17 +1,12 @@
 {
-  "name": "@company/ts-template",
+  "name": "@hap-fluent/monorepo",
   "version": "1.0.0",
-  "description": "TypeScript monorepo for HAP-Fluent - Type-safe wrapper for Homebridge HAP-NodeJS",
   "private": true,
-  "type": "module",
+  "description": "TypeScript monorepo for HAP-Fluent - Type-safe wrapper for Homebridge HAP-NodeJS",
   "workspaces": [
     "packages/*"
   ],
-  "packageManager": "pnpm@8.15.0",
-  "engines": {
-    "node": ">=18.0.0",
-    "pnpm": ">=8.0.0"
-  },
+  "type": "module",
   "scripts": {
     "build": "pnpm -r run build",
     "test": "pnpm -r run test",
@@ -47,11 +42,6 @@
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
   },
-  "pnpm": {
-    "overrides": {
-      "glob": "^11.0.0"
-    }
-  },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
       "eslint --fix",
@@ -61,7 +51,14 @@
       "prettier --write"
     ]
   },
-  "dependencies": {
-    "homebridge-lib": "^7.3.0"
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0",
+  "pnpm": {
+    "overrides": {
+      "glob": "^11.0.0"
+    }
   }
 }

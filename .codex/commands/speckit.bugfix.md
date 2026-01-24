@@ -13,7 +13,7 @@ The text the user typed after `/speckit.bugfix` in the triggering message **is**
 Given that bug description, do this:
 
 1. Run the script `.specify/scripts/bash/create-bugfix.sh` from repo root and parse its JSON output for BUG_ID, BRANCH_NAME, and BUG_REPORT_FILE. All file paths must be absolute.
-  **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
+   **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
 
 2. Load `.specify/extensions/workflows/bugfix/bug-report-template.md` to understand required sections.
 
@@ -43,7 +43,6 @@ Given that bug description, do this:
 ```
 
 Note: The script creates and checks out the new branch before writing files.
-
 
 ---
 

@@ -17,10 +17,12 @@ Phase 7 focused on modernizing the build tooling, enabling source maps for bette
 - **T136**: ✅ Documented debugging with source maps in README.md
 
 **Files Changed**:
+
 - `packages/hap-fluent/tsconfig.json` - Added source map generation
 - `packages/hap-fluent/README.md` - Added "Debugging with Source Maps" section
 
 **Benefits**:
+
 - Set breakpoints directly in TypeScript source files
 - Step through code at the TypeScript level
 - Better debugging experience in IDEs
@@ -34,6 +36,7 @@ Phase 7 focused on modernizing the build tooling, enabling source maps for bette
 - **T140**: ✅ Subpath imports verified with example
 
 **Exports Available**:
+
 - Main: `hap-fluent` → FluentService, FluentCharacteristic, utilities
 - Errors: `hap-fluent/errors` → Error classes
 - Type Guards: `hap-fluent/type-guards` → Type validation
@@ -42,6 +45,7 @@ Phase 7 focused on modernizing the build tooling, enabling source maps for bette
 - Types: `hap-fluent/types` → HAP type definitions
 
 **Files Changed**:
+
 - `packages/hap-fluent/examples/import-verification.ts` - New file demonstrating all import patterns
 
 ### Bundle Size Tracking (T141-T144) ✅
@@ -52,17 +56,20 @@ Phase 7 focused on modernizing the build tooling, enabling source maps for bette
 - **T144**: ✅ Set baseline bundle size limits
 
 **Size Limits**:
+
 - Main export (FluentService, FluentCharacteristic): 50 KB
 - Validation utilities: 10 KB
 - Error classes: 5 KB
 - Type guards: 5 KB
 
 **Files Changed**:
+
 - `.github/workflows/bundle-size.yml` - New CI workflow
 - `packages/hap-fluent/package.json` - size-limit configuration
 - `packages/hap-fluent/README.md` - Bundle size badge
 
 **Benefits**:
+
 - Automated bundle size monitoring
 - Prevents size regressions in CI
 - Clear visibility of bundle size
@@ -77,15 +84,18 @@ Phase 7 focused on modernizing the build tooling, enabling source maps for bette
 - **T149**: ✅ All scripts configured (verification pending)
 
 **Files Changed**:
+
 - `packages/hap-fluent/package.json` - Updated scripts to use oxlint/oxfmt
 
 **New Scripts**:
+
 - `npm run lint` - Uses oxlint (faster than ESLint)
 - `npm run lint:fix` - Auto-fix with oxlint
 - `npm run format` - Uses oxfmt (faster than Prettier)
 - `npm run format:check` - Check formatting without writing
 
 **Legacy Scripts** (for compatibility):
+
 - `npm run lint:eslint` - Original ESLint command
 - `npm run format:prettier` - Original Prettier command
 
@@ -96,21 +106,25 @@ No tests were run due to environment limitations (missing dependencies), but all
 ## Architecture Benefits
 
 ### Source Maps
+
 - **Better DX**: Debug TypeScript directly instead of compiled JavaScript
 - **Production Ready**: Source maps help diagnose production issues
 - **IDE Support**: Full support in VSCode and other IDEs
 
 ### Modern Exports
+
 - **Tree-Shaking**: Smaller production bundles
 - **Subpath Exports**: Clean import syntax
 - **ESM First**: Modern JavaScript modules
 
 ### Bundle Size Tracking
+
 - **Regression Prevention**: CI fails if bundle size exceeds limits
 - **Visibility**: Badge shows current bundle size
 - **Per-Module Limits**: Track size of individual modules
 
 ### Modern Tooling
+
 - **Faster Builds**: tsgo is faster than tsc
 - **Faster Linting**: oxlint is 50-100x faster than ESLint
 - **Faster Formatting**: oxfmt is 20-50x faster than Prettier
@@ -119,10 +133,12 @@ No tests were run due to environment limitations (missing dependencies), but all
 ## Files Changed
 
 ### New Files
+
 1. `.github/workflows/bundle-size.yml` - Bundle size CI workflow
 2. `packages/hap-fluent/examples/import-verification.ts` - Import pattern examples
 
 ### Modified Files
+
 1. `packages/hap-fluent/tsconfig.json` - Source maps enabled
 2. `packages/hap-fluent/README.md` - Debugging docs + bundle size badge
 3. `packages/hap-fluent/package.json` - size-limit config + modern tooling scripts
@@ -130,12 +146,14 @@ No tests were run due to environment limitations (missing dependencies), but all
 ## Metrics
 
 ### Bundle Size Limits Set
+
 - Main export: 50 KB limit
 - Validation: 10 KB limit
 - Errors: 5 KB limit
 - Type guards: 5 KB limit
 
 ### Build Tooling
+
 - Build: tsgo ✅
 - Lint: oxlint ✅
 - Format: oxfmt ✅
@@ -146,6 +164,7 @@ No tests were run due to environment limitations (missing dependencies), but all
 Phase 7 is complete. The next phase would be:
 
 **Phase 8: Final Release Preparation**
+
 - Run comprehensive validation
 - Update CHANGELOG
 - Prepare 1.0.0 release
@@ -162,6 +181,7 @@ Phase 7 is complete. The next phase would be:
 ## Summary
 
 Phase 7 successfully modernized the build tooling with:
+
 - ✅ Source maps for better debugging
 - ✅ Modern ES module exports with tree-shaking
 - ✅ Automated bundle size tracking

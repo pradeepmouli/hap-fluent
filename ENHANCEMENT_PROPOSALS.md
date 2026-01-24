@@ -17,6 +17,7 @@ This is a well-conceived TypeScript wrapper for HAP-NodeJS that provides type-sa
 ## Key Findings
 
 ### Strengths
+
 - Strong TypeScript typing with generated interfaces
 - Fluent API design improves developer experience
 - Good test coverage structure with Vitest
@@ -27,6 +28,7 @@ This is a well-conceived TypeScript wrapper for HAP-NodeJS that provides type-sa
 ### Critical Issues Found
 
 #### 1. **Type Safety Violations**
+
 - Multiple `as any` casts throughout codebase (FluentService.ts:73, 83, 89, 92)
 - `//@ts-ignore` and `//@ts-expect-error` directives masking type issues
 - Type assertions without runtime validation
@@ -34,6 +36,7 @@ This is a well-conceived TypeScript wrapper for HAP-NodeJS that provides type-sa
 - **Location**: `packages/hap-fluent/src/AccessoryHandler.ts:66, 69, 150`
 
 #### 2. **Missing Error Handling**
+
 - No try-catch blocks in async operations
 - No validation of characteristic values before setting
 - No error recovery mechanisms
@@ -41,18 +44,21 @@ This is a well-conceived TypeScript wrapper for HAP-NodeJS that provides type-sa
 - **Impact**: Runtime errors can crash the application
 
 #### 3. **Code Quality Issues**
+
 - Large blocks of commented-out code (AccessoryHandler.ts:102-113, 240-294)
 - Incomplete/broken example files (usage-examples.ts:25 has syntax error)
 - Inconsistent validation (getOrAddService validates, wrapService doesn't)
 - Dead code that should be removed
 
 #### 4. **Package Configuration**
+
 - homebridge/hap-nodejs should be peerDependencies, not devDependencies
 - Missing modern package.json "exports" field
 - No source maps for debugging
 - **Impact**: Incorrect dependency resolution in consumer projects
 
 #### 5. **Documentation Gaps**
+
 - No package-level README for hap-fluent
 - No migration guide or changelog
 - Examples have syntax errors and don't run
@@ -60,6 +66,7 @@ This is a well-conceived TypeScript wrapper for HAP-NodeJS that provides type-sa
 - Missing contributing guidelines
 
 #### 6. **Limited Testability**
+
 - No integration tests with real HAP-NodeJS services
 - No test coverage reporting configured
 - Edge cases not covered in tests
@@ -180,10 +187,10 @@ export class FluentServiceError extends Error {
       characteristic?: string;
       operation?: string;
       originalError?: Error;
-    }
+    },
   ) {
     super(message);
-    this.name = 'FluentServiceError';
+    this.name = "FluentServiceError";
   }
 }
 
@@ -191,27 +198,21 @@ export function getOrAddService<T extends typeof Service>(
   platformAccessory: PlatformAccessory,
   serviceClass: WithUUID<T>,
   displayName?: string,
-  subType?: string
+  subType?: string,
 ): FluentService<T> {
   // Enhanced validation
-  if (typeof serviceClass !== 'function') {
-    throw new FluentServiceError(
-      'Service class must be a constructor function',
-      {
-        operation: 'getOrAddService',
-        service: serviceClass?.toString()
-      }
-    );
+  if (typeof serviceClass !== "function") {
+    throw new FluentServiceError("Service class must be a constructor function", {
+      operation: "getOrAddService",
+      service: serviceClass?.toString(),
+    });
   }
 
-  if (!('UUID' in serviceClass)) {
-    throw new FluentServiceError(
-      'Service class must have a UUID property',
-      {
-        operation: 'getOrAddService',
-        service: serviceClass.name
-      }
-    );
+  if (!("UUID" in serviceClass)) {
+    throw new FluentServiceError("Service class must have a UUID property", {
+      operation: "getOrAddService",
+      service: serviceClass.name,
+    });
   }
 
   try {
@@ -222,19 +223,16 @@ export function getOrAddService<T extends typeof Service>(
     if (existingService) {
       return wrapService(existingService as InstanceType<T>);
     } else {
-      const newService = new serviceClass(displayName ?? '', subType ?? '') as InstanceType<T>;
+      const newService = new serviceClass(displayName ?? "", subType ?? "") as InstanceType<T>;
       platformAccessory.addService(newService);
       return wrapService(newService);
     }
   } catch (error) {
-    throw new FluentServiceError(
-      `Failed to get or add service: ${error.message}`,
-      {
-        service: serviceClass.name,
-        operation: 'getOrAddService',
-        originalError: error instanceof Error ? error : undefined
-      }
-    );
+    throw new FluentServiceError(`Failed to get or add service: ${error.message}`, {
+      service: serviceClass.name,
+      operation: "getOrAddService",
+      originalError: error instanceof Error ? error : undefined,
+    });
   }
 }
 ```
@@ -244,6 +242,7 @@ export function getOrAddService<T extends typeof Service>(
 **Task**: Eliminate all `as any` casts with proper type guards
 
 **Files to modify**:
+
 - `packages/hap-fluent/src/FluentService.ts`
 - `packages/hap-fluent/src/AccessoryHandler.ts`
 
@@ -253,10 +252,10 @@ const obj = {
   ...e,
   onGet: <K extends keyof InterfaceForService<T>>(
     key: K,
-    callback: () => Promise<InterfaceForService<T>[K]>
+    callback: () => Promise<InterfaceForService<T>[K]>,
   ) => {
     return e.characteristics[key].onGet(callback as any); // BAD
-  }
+  },
 };
 
 // Use type guards:
@@ -264,21 +263,22 @@ const obj = {
   ...e,
   onGet: <K extends keyof InterfaceForService<T>>(
     key: K,
-    callback: () => Promise<InterfaceForService<T>[K]>
+    callback: () => Promise<InterfaceForService<T>[K]>,
   ) => {
     const char = e.characteristics[key];
     if (!char) {
-      throw new FluentServiceError(
-        `Characteristic '${String(key)}' not found`,
-        { characteristic: String(key), operation: 'onGet' }
-      );
+      throw new FluentServiceError(`Characteristic '${String(key)}' not found`, {
+        characteristic: String(key),
+        operation: "onGet",
+      });
     }
     return char.onGet(callback as () => Promise<CharacteristicValue>);
-  }
+  },
 };
 ```
 
 **Action Items**:
+
 1. Add runtime type checking where TypeScript types can't guarantee safety
 2. Remove all `//@ts-ignore` and `//@ts-expect-error` directives
 3. Fix underlying type issues instead of suppressing them
@@ -287,18 +287,22 @@ const obj = {
 #### 1.3 Clean Up Codebase
 
 **Files to modify**:
+
 - `packages/hap-fluent/src/AccessoryHandler.ts` (lines 102-113, 240-294)
 - `packages/hap-fluent/examples/usage-examples.ts` (line 25)
 
 **Tasks**:
+
 1. Remove all commented-out code blocks
 2. Fix syntax errors in examples:
+
    ```typescript
    // Line 25 - Fix this:
    createFluentServic()) // BROKEN
 
    // Should be removed or completed properly
    ```
+
 3. Add consistent input validation across all public methods
 4. Remove duplicate code between `initializeAccessory` and `AccessoryHandler.initialize`
 
@@ -352,7 +356,7 @@ const obj = {
 
 **File to create**: `packages/hap-fluent/README.md`
 
-```markdown
+````markdown
 # HAP Fluent
 
 Type-safe, fluent wrapper for HAP-NodeJS services and characteristics.
@@ -364,38 +368,35 @@ npm install hap-fluent
 # or
 pnpm add hap-fluent
 ```
+````
 
 ## Quick Start
 
 ```typescript
-import { getOrAddService, FluentService } from 'hap-fluent';
-import { Service } from 'homebridge';
+import { getOrAddService, FluentService } from "hap-fluent";
+import { Service } from "homebridge";
 
 // Get or add a service to your accessory
-const lightbulb = getOrAddService(
-  platformAccessory,
-  Service.Lightbulb,
-  'Living Room Light'
-);
+const lightbulb = getOrAddService(platformAccessory, Service.Lightbulb, "Living Room Light");
 
 // Set up handlers with full type safety
 lightbulb
-  .onGet('On', async () => {
+  .onGet("On", async () => {
     return await device.getPowerState();
   })
-  .onSet('On', async (value) => {
+  .onSet("On", async (value) => {
     await device.setPowerState(value);
   })
-  .onGet('Brightness', async () => {
+  .onGet("Brightness", async () => {
     return await device.getBrightness();
   })
-  .onSet('Brightness', async (value) => {
+  .onSet("Brightness", async (value) => {
     await device.setBrightness(value);
   });
 
 // Update values
-lightbulb.update('On', true);
-lightbulb.update('Brightness', 75);
+lightbulb.update("On", true);
+lightbulb.update("Brightness", 75);
 ```
 
 ## Features
@@ -413,6 +414,7 @@ lightbulb.update('Brightness', 75);
 Get an existing service or add a new one to an accessory.
 
 **Parameters**:
+
 - `accessory: PlatformAccessory` - The Homebridge platform accessory
 - `serviceClass: typeof Service` - The HAP service class
 - `displayName?: string` - Optional display name for the service
@@ -425,11 +427,13 @@ Get an existing service or add a new one to an accessory.
 A type-safe wrapper around a HAP service.
 
 **Methods**:
+
 - `onGet<K>(key, handler)` - Register an async getter for a characteristic
 - `onSet<K>(key, handler)` - Register an async setter for a characteristic
 - `update<K>(key, value)` - Update a characteristic value without triggering SET handlers
 
 **Properties**:
+
 - `characteristics` - Object containing all FluentCharacteristic wrappers
 
 ### `FluentCharacteristic<T>`
@@ -437,6 +441,7 @@ A type-safe wrapper around a HAP service.
 A type-safe wrapper around a HAP characteristic.
 
 **Methods**:
+
 - `get()` - Get the current value
 - `set(value)` - Set the value (triggers SET handlers)
 - `update(value)` - Update the value (skips SET handlers)
@@ -451,7 +456,8 @@ See the [examples](./examples) directory for more usage patterns.
 ## License
 
 Apache-2.0
-```
+
+````
 
 #### 2.2 Improve Error Messages
 
@@ -521,7 +527,7 @@ export class ValidationError extends FluentCharacteristicError {
     this.name = 'ValidationError';
   }
 }
-```
+````
 
 #### 2.3 Add Debug Logging
 
@@ -582,6 +588,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 ```
 
 **Usage**:
+
 ```bash
 # Enable debug logging
 DEBUG=hap-fluent:* homebridge
@@ -592,28 +599,30 @@ DEBUG=hap-fluent:* homebridge
 **File to create**: `packages/hap-fluent/src/type-utils.ts`
 
 ```typescript
-import type { Service } from 'homebridge';
-import type { InterfaceForService } from './types/index.js';
+import type { Service } from "homebridge";
+import type { InterfaceForService } from "./types/index.js";
 
 /**
  * Extract characteristic names from a service type
  */
-export type CharacteristicType<S extends typeof Service> =
-  keyof Omit<InterfaceForService<S>, 'UUID' | 'serviceName'>;
+export type CharacteristicType<S extends typeof Service> = keyof Omit<
+  InterfaceForService<S>,
+  "UUID" | "serviceName"
+>;
 
 /**
  * Extract the value type of a specific characteristic
  */
 export type CharacteristicValue<
   S extends typeof Service,
-  K extends CharacteristicType<S>
+  K extends CharacteristicType<S>,
 > = InterfaceForService<S>[K];
 
 /**
  * Create a partial state object for a service
  */
 export type ServiceState<S extends typeof Service> = Partial<
-  Omit<InterfaceForService<S>, 'UUID' | 'serviceName'>
+  Omit<InterfaceForService<S>, "UUID" | "serviceName">
 >;
 
 /**
@@ -621,9 +630,9 @@ export type ServiceState<S extends typeof Service> = Partial<
  */
 export function isCharacteristicValue(value: unknown): value is CharacteristicValue {
   return (
-    typeof value === 'string' ||
-    typeof value === 'number' ||
-    typeof value === 'boolean' ||
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean" ||
     value === null
   );
 }
@@ -633,17 +642,18 @@ export function isCharacteristicValue(value: unknown): value is CharacteristicVa
  */
 export function isCharacteristicKey<S extends typeof Service>(
   service: S,
-  key: string
+  key: string,
 ): key is CharacteristicType<S> {
   // Runtime check implementation
-  return typeof key === 'string' && key !== 'UUID' && key !== 'serviceName';
+  return typeof key === "string" && key !== "UUID" && key !== "serviceName";
 }
 ```
 
 **Export from index**:
+
 ```typescript
 // packages/hap-fluent/src/index.ts
-export * from './type-utils.js';
+export * from "./type-utils.js";
 ```
 
 ---
@@ -657,31 +667,31 @@ export * from './type-utils.js';
 **File to modify**: `packages/hap-fluent/vitest.config.ts`
 
 ```typescript
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
     globals: true,
-    environment: 'node',
+    environment: "node",
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html', 'lcov'],
+      provider: "v8",
+      reporter: ["text", "json", "html", "lcov"],
       exclude: [
-        '**/*.test.ts',
-        '**/*.mock.ts',
-        '**/examples/**',
-        '**/dist/**',
-        '**/node_modules/**'
+        "**/*.test.ts",
+        "**/*.mock.ts",
+        "**/examples/**",
+        "**/dist/**",
+        "**/node_modules/**",
       ],
       thresholds: {
         lines: 80,
         functions: 80,
         branches: 75,
-        statements: 80
+        statements: 80,
       },
-      all: true
-    }
-  }
+      all: true,
+    },
+  },
 });
 ```
 
@@ -706,34 +716,30 @@ export default defineConfig({
 **File to create**: `packages/hap-fluent/test/integration/real-service.test.ts`
 
 ```typescript
-import { describe, it, expect, beforeEach } from 'vitest';
-import { Service, Characteristic, PlatformAccessory } from 'homebridge';
-import { getOrAddService, wrapService } from '../../src/index.js';
+import { describe, it, expect, beforeEach } from "vitest";
+import { Service, Characteristic, PlatformAccessory } from "homebridge";
+import { getOrAddService, wrapService } from "../../src/index.js";
 
-describe('Integration Tests - Real HAP Services', () => {
+describe("Integration Tests - Real HAP Services", () => {
   let accessory: PlatformAccessory;
 
   beforeEach(() => {
-    accessory = new PlatformAccessory('Test', 'test-uuid');
+    accessory = new PlatformAccessory("Test", "test-uuid");
   });
 
-  describe('Real Lightbulb Service', () => {
-    it('should create and interact with real lightbulb service', async () => {
-      const lightbulb = getOrAddService(
-        accessory,
-        Service.Lightbulb,
-        'Test Light'
-      );
+  describe("Real Lightbulb Service", () => {
+    it("should create and interact with real lightbulb service", async () => {
+      const lightbulb = getOrAddService(accessory, Service.Lightbulb, "Test Light");
 
       let deviceState = { on: false, brightness: 0 };
 
       lightbulb
-        .onGet('On', async () => deviceState.on)
-        .onSet('On', async (value) => {
+        .onGet("On", async () => deviceState.on)
+        .onSet("On", async (value) => {
           deviceState.on = value;
         })
-        .onGet('Brightness', async () => deviceState.brightness)
-        .onSet('Brightness', async (value) => {
+        .onGet("Brightness", async () => deviceState.brightness)
+        .onSet("Brightness", async (value) => {
           deviceState.brightness = value;
         });
 
@@ -746,65 +752,51 @@ describe('Integration Tests - Real HAP Services', () => {
       expect(brightness).toBe(0);
 
       // Test UPDATE
-      lightbulb.update('Brightness', 75);
+      lightbulb.update("Brightness", 75);
       expect(lightbulb.characteristics.Brightness.get()).toBe(75);
     });
   });
 
-  describe('Multi-Service Accessory', () => {
-    it('should handle multiple services correctly', () => {
+  describe("Multi-Service Accessory", () => {
+    it("should handle multiple services correctly", () => {
       const info = getOrAddService(accessory, Service.AccessoryInformation);
       const lightbulb = getOrAddService(accessory, Service.Lightbulb);
-      const switch1 = getOrAddService(
-        accessory,
-        Service.Switch,
-        'Switch 1',
-        'switch-1'
-      );
-      const switch2 = getOrAddService(
-        accessory,
-        Service.Switch,
-        'Switch 2',
-        'switch-2'
-      );
+      const switch1 = getOrAddService(accessory, Service.Switch, "Switch 1", "switch-1");
+      const switch2 = getOrAddService(accessory, Service.Switch, "Switch 2", "switch-2");
 
       expect(accessory.services).toHaveLength(4);
 
-      info.update('Manufacturer', 'Test Manufacturer');
-      lightbulb.update('On', true);
-      switch1.update('On', false);
-      switch2.update('On', true);
+      info.update("Manufacturer", "Test Manufacturer");
+      lightbulb.update("On", true);
+      switch1.update("On", false);
+      switch2.update("On", true);
 
-      expect(info.characteristics.Manufacturer.get()).toBe('Test Manufacturer');
+      expect(info.characteristics.Manufacturer.get()).toBe("Test Manufacturer");
       expect(lightbulb.characteristics.On.get()).toBe(true);
       expect(switch1.characteristics.On.get()).toBe(false);
       expect(switch2.characteristics.On.get()).toBe(true);
     });
   });
 
-  describe('Error Scenarios', () => {
-    it('should handle SET errors gracefully', async () => {
+  describe("Error Scenarios", () => {
+    it("should handle SET errors gracefully", async () => {
       const lightbulb = getOrAddService(accessory, Service.Lightbulb);
 
-      lightbulb.onSet('On', async (value) => {
-        throw new Error('Device unreachable');
+      lightbulb.onSet("On", async (value) => {
+        throw new Error("Device unreachable");
       });
 
-      await expect(
-        lightbulb.characteristics.On.onSet(true)
-      ).rejects.toThrow('Device unreachable');
+      await expect(lightbulb.characteristics.On.onSet(true)).rejects.toThrow("Device unreachable");
     });
 
-    it('should handle GET errors gracefully', async () => {
+    it("should handle GET errors gracefully", async () => {
       const lightbulb = getOrAddService(accessory, Service.Lightbulb);
 
-      lightbulb.onGet('On', async () => {
-        throw new Error('Device unreachable');
+      lightbulb.onGet("On", async () => {
+        throw new Error("Device unreachable");
       });
 
-      await expect(
-        lightbulb.characteristics.On.onGet()
-      ).rejects.toThrow('Device unreachable');
+      await expect(lightbulb.characteristics.On.onGet()).rejects.toThrow("Device unreachable");
     });
   });
 });
@@ -826,14 +818,14 @@ describe('Integration Tests - Real HAP Services', () => {
 **File to create**: `packages/hap-fluent/test/property-based/characteristic.test.ts`
 
 ```typescript
-import { describe, it, expect, beforeEach } from 'vitest';
-import { fc, test } from '@fast-check/vitest';
-import { FluentCharacteristic } from '../../src/FluentCharacteristic.js';
-import { MockCharacteristic } from '../mocks/homebridge.mock.js';
+import { describe, it, expect, beforeEach } from "vitest";
+import { fc, test } from "@fast-check/vitest";
+import { FluentCharacteristic } from "../../src/FluentCharacteristic.js";
+import { MockCharacteristic } from "../mocks/homebridge.mock.js";
 
-describe('Property-Based Tests - FluentCharacteristic', () => {
-  test.prop([fc.boolean()])('should handle any boolean value', (value) => {
-    const char = new MockCharacteristic('On', 'on-uuid');
+describe("Property-Based Tests - FluentCharacteristic", () => {
+  test.prop([fc.boolean()])("should handle any boolean value", (value) => {
+    const char = new MockCharacteristic("On", "on-uuid");
     const fluent = new FluentCharacteristic<boolean>(char as any);
 
     fluent.set(value);
@@ -841,40 +833,41 @@ describe('Property-Based Tests - FluentCharacteristic', () => {
   });
 
   test.prop([fc.integer({ min: 0, max: 100 })])(
-    'should handle brightness values in valid range',
+    "should handle brightness values in valid range",
     (value) => {
-      const char = new MockCharacteristic('Brightness', 'brightness-uuid');
+      const char = new MockCharacteristic("Brightness", "brightness-uuid");
       char.props = { minValue: 0, maxValue: 100 };
       const fluent = new FluentCharacteristic<number>(char as any);
 
       fluent.set(value);
       expect(fluent.get()).toBe(value);
-    }
+    },
   );
 
   test.prop([fc.string({ minLength: 1, maxLength: 64 })])(
-    'should handle string values',
+    "should handle string values",
     (value) => {
-      const char = new MockCharacteristic('Name', 'name-uuid');
+      const char = new MockCharacteristic("Name", "name-uuid");
       const fluent = new FluentCharacteristic<string>(char as any);
 
       fluent.set(value);
       expect(fluent.get()).toBe(value);
-    }
+    },
   );
 
-  test.prop([
-    fc.array(fc.integer({ min: 0, max: 100 }), { minLength: 1, maxLength: 10 })
-  ])('should handle multiple sequential updates', (values) => {
-    const char = new MockCharacteristic('Value', 'value-uuid');
-    const fluent = new FluentCharacteristic<number>(char as any);
+  test.prop([fc.array(fc.integer({ min: 0, max: 100 }), { minLength: 1, maxLength: 10 })])(
+    "should handle multiple sequential updates",
+    (values) => {
+      const char = new MockCharacteristic("Value", "value-uuid");
+      const fluent = new FluentCharacteristic<number>(char as any);
 
-    for (const value of values) {
-      fluent.set(value);
-    }
+      for (const value of values) {
+        fluent.set(value);
+      }
 
-    expect(fluent.get()).toBe(values[values.length - 1]);
-  });
+      expect(fluent.get()).toBe(values[values.length - 1]);
+    },
+  );
 });
 ```
 
@@ -902,7 +895,7 @@ export class RangeValidator<T extends number> implements CharacteristicValidator
   constructor(
     private min: number,
     private max: number,
-    private options?: { inclusive?: boolean }
+    private options?: { inclusive?: boolean },
   ) {}
 
   validate(value: T): ValidationResult {
@@ -912,14 +905,14 @@ export class RangeValidator<T extends number> implements CharacteristicValidator
       if (value < this.min || value > this.max) {
         return {
           valid: false,
-          message: `Value ${value} must be between ${this.min} and ${this.max} (inclusive)`
+          message: `Value ${value} must be between ${this.min} and ${this.max} (inclusive)`,
         };
       }
     } else {
       if (value <= this.min || value >= this.max) {
         return {
           valid: false,
-          message: `Value ${value} must be between ${this.min} and ${this.max} (exclusive)`
+          message: `Value ${value} must be between ${this.min} and ${this.max} (exclusive)`,
         };
       }
     }
@@ -935,7 +928,7 @@ export class EnumValidator<T> implements CharacteristicValidator<T> {
     if (!this.allowedValues.includes(value)) {
       return {
         valid: false,
-        message: `Value ${value} must be one of: ${this.allowedValues.join(', ')}`
+        message: `Value ${value} must be one of: ${this.allowedValues.join(", ")}`,
       };
     }
     return { valid: true };
@@ -949,7 +942,7 @@ export class TypeValidator implements CharacteristicValidator<unknown> {
     if (typeof value !== this.expectedType) {
       return {
         valid: false,
-        message: `Expected ${this.expectedType}, got ${typeof value}`
+        message: `Expected ${this.expectedType}, got ${typeof value}`,
       };
     }
     return { valid: true };
@@ -959,22 +952,22 @@ export class TypeValidator implements CharacteristicValidator<unknown> {
 export class CustomValidator<T> implements CharacteristicValidator<T> {
   constructor(
     private validationFn: (value: T) => boolean | string,
-    private errorMessage?: string
+    private errorMessage?: string,
   ) {}
 
   validate(value: T): ValidationResult {
     const result = this.validationFn(value);
 
-    if (typeof result === 'boolean') {
+    if (typeof result === "boolean") {
       return {
         valid: result,
-        message: result ? undefined : this.errorMessage || 'Validation failed'
+        message: result ? undefined : this.errorMessage || "Validation failed",
       };
     }
 
     return {
       valid: false,
-      message: result
+      message: result,
     };
   }
 }
@@ -983,7 +976,7 @@ export class CustomValidator<T> implements CharacteristicValidator<T> {
 **File to modify**: `packages/hap-fluent/src/FluentCharacteristic.ts`
 
 ```typescript
-import type { CharacteristicValidator, ValidationResult } from './validation.js';
+import type { CharacteristicValidator, ValidationResult } from "./validation.js";
 
 export class FluentCharacteristic<T extends CharacteristicValue> {
   private validators: CharacteristicValidator<T>[] = [];
@@ -1002,14 +995,11 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
     for (const validator of this.validators) {
       const result = validator.validate(value);
       if (!result.valid) {
-        throw new ValidationError(
-          result.message || 'Validation failed',
-          {
-            characteristic: this.characteristic.displayName,
-            value,
-            operation: 'validate'
-          }
-        );
+        throw new ValidationError(result.message || "Validation failed", {
+          characteristic: this.characteristic.displayName,
+          value,
+          operation: "validate",
+        });
       }
     }
   }
@@ -1023,23 +1013,22 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 ```
 
 **Usage Example**:
+
 ```typescript
-import { RangeValidator, EnumValidator } from 'hap-fluent';
+import { RangeValidator, EnumValidator } from "hap-fluent";
 
 const lightbulb = getOrAddService(accessory, Service.Lightbulb);
 
-lightbulb.characteristics.Brightness
-  .addValidator(new RangeValidator(0, 100))
-  .onSet(async (value) => {
+lightbulb.characteristics.Brightness.addValidator(new RangeValidator(0, 100)).onSet(
+  async (value) => {
     // Value is guaranteed to be 0-100
     await device.setBrightness(value);
-  });
+  },
+);
 
-lightbulb.characteristics.On
-  .addValidator(new EnumValidator([true, false]))
-  .onSet(async (value) => {
-    await device.setPower(value);
-  });
+lightbulb.characteristics.On.addValidator(new EnumValidator([true, false])).onSet(async (value) => {
+  await device.setPower(value);
+});
 ```
 
 #### 4.2 Add Event System
@@ -1047,7 +1036,7 @@ lightbulb.characteristics.On
 **File to modify**: `packages/hap-fluent/src/FluentCharacteristic.ts`
 
 ```typescript
-import { EventEmitter } from 'events';
+import { EventEmitter } from "events";
 
 export interface CharacteristicEvents<T> {
   change: (newValue: T, oldValue: T | undefined) => void;
@@ -1060,7 +1049,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 
   on<E extends keyof CharacteristicEvents<T>>(
     event: E,
-    listener: CharacteristicEvents<T>[E]
+    listener: CharacteristicEvents<T>[E],
   ): this {
     this.events.on(event, listener);
     return this;
@@ -1068,7 +1057,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 
   off<E extends keyof CharacteristicEvents<T>>(
     event: E,
-    listener: CharacteristicEvents<T>[E]
+    listener: CharacteristicEvents<T>[E],
   ): this {
     this.events.off(event, listener);
     return this;
@@ -1076,7 +1065,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 
   once<E extends keyof CharacteristicEvents<T>>(
     event: E,
-    listener: CharacteristicEvents<T>[E]
+    listener: CharacteristicEvents<T>[E],
   ): this {
     this.events.once(event, listener);
     return this;
@@ -1085,9 +1074,9 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
   set(value: T): this {
     const oldValue = this.get();
     this.characteristic.setValue(value);
-    this.events.emit('set', value);
+    this.events.emit("set", value);
     if (oldValue !== value) {
-      this.events.emit('change', value, oldValue);
+      this.events.emit("change", value, oldValue);
     }
     return this;
   }
@@ -1096,7 +1085,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
     const oldValue = this.get();
     this.characteristic.updateValue(value);
     if (oldValue !== value) {
-      this.events.emit('change', value, oldValue);
+      this.events.emit("change", value, oldValue);
     }
     return this;
   }
@@ -1104,7 +1093,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
   onGet(handler: () => Promise<T>): this {
     this.characteristic.onGet(async () => {
       const value = await handler();
-      this.events.emit('get', value);
+      this.events.emit("get", value);
       return value;
     });
     return this;
@@ -1113,21 +1102,22 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 ```
 
 **Usage Example**:
+
 ```typescript
 const lightbulb = getOrAddService(accessory, Service.Lightbulb);
 
 // Listen for changes
-lightbulb.characteristics.On.on('change', (newValue, oldValue) => {
+lightbulb.characteristics.On.on("change", (newValue, oldValue) => {
   console.log(`Light changed from ${oldValue} to ${newValue}`);
 
   // Update other characteristics based on state
   if (newValue) {
-    lightbulb.update('Brightness', 100);
+    lightbulb.update("Brightness", 100);
   }
 });
 
 // Listen for SET operations
-lightbulb.characteristics.Brightness.on('set', (value) => {
+lightbulb.characteristics.Brightness.on("set", (value) => {
   console.log(`Brightness set to ${value} via HomeKit`);
 });
 ```
@@ -1176,7 +1166,7 @@ export class CachingMiddleware<T> implements CharacteristicMiddleware<T> {
   afterGet(value: T, char: FluentCharacteristic<T>): T {
     this.cache.set(char.displayName, {
       value,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
     return value;
   }
@@ -1198,8 +1188,7 @@ export class RateLimitMiddleware<T> implements CharacteristicMiddleware<T> {
     const lastTime = this.lastCall.get(char.displayName);
     if (lastTime && Date.now() - lastTime < this.minInterval) {
       throw new Error(
-        `Rate limit exceeded for ${char.displayName}. ` +
-        `Minimum interval: ${this.minInterval}ms`
+        `Rate limit exceeded for ${char.displayName}. ` + `Minimum interval: ${this.minInterval}ms`,
       );
     }
     this.lastCall.set(char.displayName, Date.now());
@@ -1270,13 +1259,13 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 ```
 
 **Usage Example**:
+
 ```typescript
-import { LoggingMiddleware, RateLimitMiddleware } from 'hap-fluent';
+import { LoggingMiddleware, RateLimitMiddleware } from "hap-fluent";
 
 const lightbulb = getOrAddService(accessory, Service.Lightbulb);
 
-lightbulb.characteristics.On
-  .use(new LoggingMiddleware())
+lightbulb.characteristics.On.use(new LoggingMiddleware())
   .use(new RateLimitMiddleware(500))
   .onSet(async (value) => {
     await device.setPower(value);
@@ -1348,7 +1337,7 @@ export class CharacteristicCache<T> {
 **File to modify**: `packages/hap-fluent/src/FluentCharacteristic.ts`
 
 ```typescript
-import { CharacteristicCache } from './cache.js';
+import { CharacteristicCache } from "./cache.js";
 
 export class FluentCharacteristic<T extends CharacteristicValue> {
   private cache?: CharacteristicCache<T>;
@@ -1408,13 +1397,11 @@ export type FluentService<T extends typeof Service> = {
 
   updateBatch(updates: Partial<InterfaceForService<T>>): void;
   getBatch<K extends CharacteristicNamesOf<T>[]>(
-    keys: K
+    keys: K,
   ): { [P in K[number]]: InterfaceForService<T>[P] | undefined };
 };
 
-export function wrapService<T extends typeof Service>(
-  service: InstanceType<T>
-): FluentService<T> {
+export function wrapService<T extends typeof Service>(service: InstanceType<T>): FluentService<T> {
   // ... existing code
 
   const obj = {
@@ -1439,7 +1426,7 @@ export function wrapService<T extends typeof Service>(
         }
       }
       return result;
-    }
+    },
   };
 
   // ... rest of the code
@@ -1447,6 +1434,7 @@ export function wrapService<T extends typeof Service>(
 ```
 
 **Usage Example**:
+
 ```typescript
 const lightbulb = getOrAddService(accessory, Service.Lightbulb);
 
@@ -1455,11 +1443,11 @@ lightbulb.updateBatch({
   On: true,
   Brightness: 75,
   Hue: 180,
-  Saturation: 50
+  Saturation: 50,
 });
 
 // Get multiple values at once
-const state = lightbulb.getBatch(['On', 'Brightness', 'Hue']);
+const state = lightbulb.getBatch(["On", "Brightness", "Hue"]);
 console.log(state); // { On: true, Brightness: 75, Hue: 180 }
 ```
 
@@ -1497,6 +1485,7 @@ console.log(state); // { On: true, Brightness: 75, Hue: 180 }
 ```
 
 **Benefits**:
+
 - Better debugging in production
 - Stack traces point to original source
 - IDE support for jump-to-definition
@@ -1545,6 +1534,7 @@ console.log(state); // { On: true, Brightness: 75, Hue: 180 }
 ```
 
 **Benefits**:
+
 - Better tree-shaking
 - Explicit module boundaries
 - Prevents importing internal modules
@@ -1602,7 +1592,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'pnpm'
+          cache: "pnpm"
       - run: pnpm install
       - run: pnpm run build
       - uses: andresz1/size-limit-action@v1
@@ -1616,6 +1606,7 @@ jobs:
 ## Implementation Priority
 
 ### Immediate (Week 1)
+
 **Goal**: Fix critical issues and make library safe to use
 
 - [ ] Fix package dependencies (move to peerDependencies)
@@ -1628,6 +1619,7 @@ jobs:
 **Deliverable**: Version 0.4.0 - "Stability Release"
 
 ### Short-term (Weeks 2-4)
+
 **Goal**: Production readiness
 
 - [ ] Add comprehensive error handling across all modules
@@ -1642,6 +1634,7 @@ jobs:
 **Deliverable**: Version 1.0.0 - "Production Ready"
 
 ### Medium-term (Months 2-3)
+
 **Goal**: Enhanced developer experience
 
 - [ ] Add event system for characteristic changes
@@ -1655,6 +1648,7 @@ jobs:
 **Deliverable**: Version 1.1.0 - "Enhanced DX"
 
 ### Long-term (Months 3-6)
+
 **Goal**: Performance and scalability
 
 - [ ] Implement caching layer
@@ -1672,11 +1666,13 @@ jobs:
 ## Recommended Next Steps
 
 ### 1. Start with Phase 1
+
 Focus on robustness and code quality first. A stable foundation is essential before adding advanced features.
 
 ### 2. Create Project Governance Files
 
 **CHANGELOG.md**
+
 ```markdown
 # Changelog
 
@@ -1688,23 +1684,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+
 - Moved homebridge and hap-nodejs to peerDependencies
 
 ### Removed
+
 - Removed commented-out code blocks
 - Removed syntax errors in examples
 
 ### Fixed
+
 - Fixed type safety violations
 - Fixed missing error handling
 
 ## [0.3.0] - 2024-XX-XX
 
 ### Added
+
 - Initial release with fluent API
 ```
 
 **CONTRIBUTING.md**
+
 ```markdown
 # Contributing to HAP Fluent
 
@@ -1759,7 +1760,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+          cache: "pnpm"
       - run: pnpm install
       - run: pnpm run lint
       - run: pnpm run type-check
@@ -1792,6 +1793,7 @@ The library has strong foundations - with these enhancements, it will become a b
 ---
 
 **Next Actions**:
+
 1. Review and prioritize enhancements
 2. Create GitHub issues for each task
 3. Begin Phase 1 implementation

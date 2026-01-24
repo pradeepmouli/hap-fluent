@@ -18,7 +18,7 @@ The text the user typed after `/speckit.enhance` in the triggering message **is*
 Given that enhancement description, do this:
 
 1. Run the script `.specify/scripts/bash/create-enhance.sh` from repo root and parse its JSON output for ENHANCE_ID, BRANCH_NAME, and ENHANCEMENT_FILE. All file paths must be absolute.
-  **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
+   **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
 
 2. Load `.specify/extensions/workflows/enhance/enhancement-template.md` to understand required sections.
 

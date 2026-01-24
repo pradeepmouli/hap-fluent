@@ -42,18 +42,19 @@ Phase 4 implemented advanced opt-in features for hap-fluent: a comprehensive val
 ### Example Usage
 
 ```typescript
-import { RangeValidator, EnumValidator } from 'hap-fluent/validation';
+import { RangeValidator, EnumValidator } from "hap-fluent/validation";
 
 // Brightness validation
-characteristic.addValidator(new RangeValidator(0, 100, 'Brightness'));
+characteristic.addValidator(new RangeValidator(0, 100, "Brightness"));
 
 // Thermostat state validation with labels
 characteristic.addValidator(
-  new EnumValidator(
-    [0, 1, 2, 3],
-    'HeatingCoolingState',
-    { 0: 'OFF', 1: 'HEAT', 2: 'COOL', 3: 'AUTO' }
-  )
+  new EnumValidator([0, 1, 2, 3], "HeatingCoolingState", {
+    0: "OFF",
+    1: "HEAT",
+    2: "COOL",
+    3: "AUTO",
+  }),
 );
 ```
 
@@ -62,14 +63,16 @@ characteristic.addValidator(
 ### Design Evolution
 
 **Initial Approach**: Complex custom interceptor system with factory functions:
+
 ```typescript
-import { createLoggingInterceptor } from 'hap-fluent/interceptors';
+import { createLoggingInterceptor } from "hap-fluent/interceptors";
 characteristic.intercept(createLoggingInterceptor()).onSet(handler);
 ```
 
 **User Feedback**: Requested simpler standard methods instead of custom interceptors
 
 **Final Design**: Standard fluent methods directly on FluentCharacteristic:
+
 ```typescript
 characteristic.log().limit(5, 1000).onSet(handler);
 ```
@@ -86,13 +89,15 @@ characteristic.log().limit(5, 1000).onSet(handler);
 
 **Key Design Decision**: Interceptors wrap **onSet/onGet handlers** (listening side), not direct `set()` calls.
 
-**Rationale**: 
+**Rationale**:
+
 - HAP-nodejs already handles validation/rate-limiting for its own operations
 - Our interceptors apply when **HomeKit initiates changes** (via onSet/onGet)
 - Programmatic `set()` calls remain clean and fast (no interceptor overhead)
 - Aligns with HAP-nodejs architecture
 
 **Execution Flow**:
+
 1. HomeKit calls onSet with new value
 2. **beforeSet interceptors** run (transformation, rate limit check)
 3. **Validators** run (if any)
@@ -122,7 +127,7 @@ characteristic.log().onSet(handler);
 // Multiple interceptors chained
 characteristic
   .log()
-  .transform(v => Math.round(v as number))
+  .transform((v) => Math.round(v as number))
   .clamp(0, 100)
   .limit(5, 1000)
   .onSet(handler);
@@ -219,6 +224,7 @@ test/
 **Decision**: Implement 5 standard methods directly on FluentCharacteristic class.
 
 **Rationale**:
+
 - More discoverable (autocomplete shows methods)
 - Less boilerplate (no imports, no factory functions)
 - More readable (`characteristic.log().limit(5, 1000)`)
@@ -236,6 +242,7 @@ test/
 **Decision**: Interceptors wrap onSet/onGet handlers, not the set() method.
 
 **Rationale**:
+
 - Aligns with HAP-nodejs architecture
 - Avoids redundant validation/rate-limiting with HAP-nodejs
 - Applies interceptors to HomeKit-initiated changes (the interesting cases)
@@ -251,6 +258,7 @@ test/
 **Decision**: Skip event system implementation.
 
 **Rationale**:
+
 - Interceptors with hooks (beforeSet, afterSet, beforeGet, afterGet, onError) provide equivalent functionality
 - Event system would add API surface area with limited additional value
 - Simpler API is better - one pattern (interceptors) vs two (interceptors + events)
@@ -288,6 +296,7 @@ Phase 4 is complete. Remaining phases are:
 - **Phase 6 (Build & Tooling)**: Source maps, modern exports, bundle size tracking
 
 These phases are **LOW PRIORITY** and optional. The library is now production-ready with:
+
 - ✅ Type safety (Phase 1)
 - ✅ Developer experience (Phase 2)
 - ✅ Comprehensive testing (Phase 3)

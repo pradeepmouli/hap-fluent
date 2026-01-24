@@ -54,45 +54,45 @@ specify-extend --all --github-integration
 
 ### Feature Development (spec-kit core)
 
-| Command | Description |
-|---------|-------------|
-| `/speckit.constitution` | Create project governing principles |
-| `/speckit.specify "desc"` | Define requirements (what + why, not how) |
-| `/speckit.clarify` | Clarify underspecified areas (before plan) |
-| `/speckit.plan "tech"` | Create technical implementation plan |
-| `/speckit.tasks` | Generate actionable task breakdown |
-| `/speckit.implement` | Execute all tasks |
-| `/speckit.analyze` | Cross-artifact consistency check |
-| `/speckit.checklist` | Generate quality checklists |
+| Command                   | Description                                |
+| ------------------------- | ------------------------------------------ |
+| `/speckit.constitution`   | Create project governing principles        |
+| `/speckit.specify "desc"` | Define requirements (what + why, not how)  |
+| `/speckit.clarify`        | Clarify underspecified areas (before plan) |
+| `/speckit.plan "tech"`    | Create technical implementation plan       |
+| `/speckit.tasks`          | Generate actionable task breakdown         |
+| `/speckit.implement`      | Execute all tasks                          |
+| `/speckit.analyze`        | Cross-artifact consistency check           |
+| `/speckit.checklist`      | Generate quality checklists                |
 
 ### Extended Workflows (spec-kit-extensions)
 
-| Command | Description | Branch Pattern |
-|---------|-------------|----------------|
-| `/speckit.baseline` | Establish project baseline | `baseline/001-name` |
-| `/speckit.bugfix "desc"` | Bug fix (regression-test-first) | `bugfix/001-name` |
-| `/speckit.enhance "desc"` | Minor enhancement (streamlined) | `enhance/001-name` |
-| `/speckit.modify 014 "desc"` | Modify feature (impact analysis) | `modify/014^002-name` |
-| `/speckit.refactor "desc"` | Code quality (metrics tracked) | `refactor/001-name` |
-| `/speckit.hotfix "desc"` | Production emergency (post-mortem) | `hotfix/001-name` |
-| `/speckit.deprecate 014 "desc"` | Feature sunset (3-phase) | `deprecate/014-name` |
-| `/speckit.cleanup` | Codebase cleanup (automated) | `cleanup/001-name` |
-| `/speckit.review [id]` | Review completed work | N/A |
-| `/speckit.incorporate` | Integrate documents | N/A |
+| Command                         | Description                        | Branch Pattern        |
+| ------------------------------- | ---------------------------------- | --------------------- |
+| `/speckit.baseline`             | Establish project baseline         | `baseline/001-name`   |
+| `/speckit.bugfix "desc"`        | Bug fix (regression-test-first)    | `bugfix/001-name`     |
+| `/speckit.enhance "desc"`       | Minor enhancement (streamlined)    | `enhance/001-name`    |
+| `/speckit.modify 014 "desc"`    | Modify feature (impact analysis)   | `modify/014^002-name` |
+| `/speckit.refactor "desc"`      | Code quality (metrics tracked)     | `refactor/001-name`   |
+| `/speckit.hotfix "desc"`        | Production emergency (post-mortem) | `hotfix/001-name`     |
+| `/speckit.deprecate 014 "desc"` | Feature sunset (3-phase)           | `deprecate/014-name`  |
+| `/speckit.cleanup`              | Codebase cleanup (automated)       | `cleanup/001-name`    |
+| `/speckit.review [id]`          | Review completed work              | N/A                   |
+| `/speckit.incorporate`          | Integrate documents                | N/A                   |
 
 ## Workflow Cheat Sheet
 
-| Workflow | Key Feature | Test Strategy |
-|----------|-------------|---------------|
-| `/speckit.specify` | Full spec + design | TDD |
-| `/speckit.baseline` | Context tracking | No tests |
-| `/speckit.bugfix` | Regression test | **Test before fix** |
-| `/speckit.enhance` | Single-doc workflow | Tests for new behavior |
-| `/speckit.modify 014` | Impact analysis | Update affected tests |
-| `/speckit.refactor` | Metrics tracking | Tests unchanged |
-| `/speckit.hotfix` | Post-mortem | Test after (exception) |
-| `/speckit.deprecate 014` | 3-phase sunset | Remove tests last |
-| `/speckit.review` | Structured feedback | Verify tests |
+| Workflow                 | Key Feature         | Test Strategy          |
+| ------------------------ | ------------------- | ---------------------- |
+| `/speckit.specify`       | Full spec + design  | TDD                    |
+| `/speckit.baseline`      | Context tracking    | No tests               |
+| `/speckit.bugfix`        | Regression test     | **Test before fix**    |
+| `/speckit.enhance`       | Single-doc workflow | Tests for new behavior |
+| `/speckit.modify 014`    | Impact analysis     | Update affected tests  |
+| `/speckit.refactor`      | Metrics tracking    | Tests unchanged        |
+| `/speckit.hotfix`        | Post-mortem         | Test after (exception) |
+| `/speckit.deprecate 014` | 3-phase sunset      | Remove tests last      |
+| `/speckit.review`        | Structured feedback | Verify tests           |
 
 ## Standard Feature Workflow
 
@@ -255,11 +255,11 @@ cleanup=disabled
 
 ### 3. Pick the Right Workflow
 
-| Situation | DON'T use | DO use |
-|-----------|-----------|--------|
-| Simple bug | `/speckit.specify` | `/speckit.bugfix` |
-| Minor tweak | `/speckit.specify` | `/speckit.enhance` |
-| Code cleanup | `/speckit.modify` | `/speckit.refactor` |
+| Situation    | DON'T use          | DO use              |
+| ------------ | ------------------ | ------------------- |
+| Simple bug   | `/speckit.specify` | `/speckit.bugfix`   |
+| Minor tweak  | `/speckit.specify` | `/speckit.enhance`  |
+| Code cleanup | `/speckit.modify`  | `/speckit.refactor` |
 
 ### 4. Review Before PRs
 
@@ -271,6 +271,7 @@ cleanup=disabled
 ### 5. Use Impact Analysis
 
 For modifications, always review impact before planning:
+
 ```bash
 /speckit.modify 014 "description"
 # Review impact-analysis.md BEFORE /speckit.plan
@@ -294,8 +295,8 @@ specify-extend --llm-enhance        # AI-assisted constitution merge
 
 ## Environment Variables
 
-| Variable | Description |
-|----------|-------------|
+| Variable          | Description                                  |
+| ----------------- | -------------------------------------------- |
 | `SPECIFY_FEATURE` | Override feature detection for non-Git repos |
 
 ## Resources

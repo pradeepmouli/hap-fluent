@@ -3,12 +3,14 @@
 CRITICAL: Complete this assessment BEFORE trusting baseline metrics.
 
 ## Affected Areas (to be refactored)
+
 - Accessory wrapper: `wrapAccessory(accessory)` → returns `AccessoryHandler`
 - Initialization: `initializeAccessory(accessory)` → `AccessoryHandler.initialize()`
 - Service management: `getOrAddService(...)` → `AccessoryHandler.addService(...)`
 - Exports and call sites: align `index.ts`, examples, and tests to the instance API
 
 ## Files/Functions/Classes to Review
+
 - packages/hap-fluent/src/AccessoryHandler.ts
   - `wrapAccessory()`
   - `initializeAccessory()` (legacy wrapper to be delegated)
@@ -17,10 +19,11 @@ CRITICAL: Complete this assessment BEFORE trusting baseline metrics.
   - `AccessoryHandler.addService()` (renamed instance method)
 - packages/hap-fluent/src/index.ts (export surface)
 - packages/hap-fluent/src/FluentService.ts (service interactions, if any)
-- packages/hap-fluent/examples/*.ts (usage)
-- packages/hap-fluent/test/**/* (unit, property-based, integration)
+- packages/hap-fluent/examples/\*.ts (usage)
+- packages/hap-fluent/test/\*_/_ (unit, property-based, integration)
 
 ## Coverage Assessment Guidance
+
 Identify whether adequate tests exist for each behavior below. If gaps exist, add tests BEFORE baseline:
 
 1. Handler Creation
@@ -46,6 +49,7 @@ Identify whether adequate tests exist for each behavior below. If gaps exist, ad
      - packages/hap-fluent/test/integration/integration.test.ts
 
 ## Action Items (Pre-Baseline)
+
 - [ ] Enumerate existing tests covering the above behaviors.
 - [ ] Add missing tests for handler creation, initialization side effects, and idempotent service addition.
 - [ ] Ensure examples still compile using the instance API pattern.
@@ -53,8 +57,10 @@ Identify whether adequate tests exist for each behavior below. If gaps exist, ad
 - [ ] Mark this assessment complete and proceed to baseline capture.
 
 ## Notes
+
 - Legacy free functions will remain as thin wrappers delegating to instance methods for behavior preservation during the refactor.
 - External behavior MUST remain unchanged; any test changes must only remove implementation-detail coupling, not weaken assertions.
+
 # Testing Gaps Assessment
 
 **Purpose**: Identify and address test coverage gaps BEFORE establishing baseline metrics.
@@ -76,6 +82,7 @@ Refactoring requires **behavior preservation validation**. If the code being ref
 ### Step 1: Identify Affected Functionality
 
 **Code areas that will be modified during refactoring**:
+
 - [ ] File: `[path/to/file.ts]`
   - Functions: `[functionName1, functionName2]`
   - Classes: `[ClassName]`
@@ -86,6 +93,7 @@ Refactoring requires **behavior preservation validation**. If the code being ref
   - Classes: `[AnotherClass]`
 
 **Downstream dependencies** (code that calls the above):
+
 - [ ] `[consumer-file.ts]` → calls `functionName1()`
 - [ ] `[other-consumer.ts]` → uses `ClassName`
 
@@ -94,38 +102,46 @@ Refactoring requires **behavior preservation validation**. If the code being ref
 For each affected area, document current test coverage:
 
 #### Coverage Area 1: `[FunctionName or ClassName]`
+
 **Location**: `[file.ts:lines XX-YY]`
 
 **Current Test Coverage**:
+
 - Test file: `[test-file.spec.ts]` or ❌ No test file exists
 - Coverage: [X%] or ❌ Not tested
 - Test types: [ ] Unit [ ] Integration [ ] E2E
 
 **Coverage Assessment**:
+
 - [ ] ✅ Adequate - covers all critical paths
 - [ ] ⚠️ Partial - missing edge cases or error handling
 - [ ] ❌ Insufficient - missing critical functionality
 
 **Specific Gaps Identified**:
+
 1. ❌ Happy path: `[scenario]` - NOT TESTED
 2. ❌ Edge case: `[scenario]` - NOT TESTED
 3. ❌ Error handling: `[error scenario]` - NOT TESTED
 4. ⚠️ Input validation: `[scenario]` - PARTIALLY TESTED (missing [X])
 
 #### Coverage Area 2: `[Another FunctionName or ClassName]`
+
 **Location**: `[file.ts:lines XX-YY]`
 
 **Current Test Coverage**:
+
 - Test file: `[test-file.spec.ts]` or ❌ No test file exists
 - Coverage: [X%] or ❌ Not tested
 - Test types: [ ] Unit [ ] Integration [ ] E2E
 
 **Coverage Assessment**:
+
 - [ ] ✅ Adequate
 - [ ] ⚠️ Partial
 - [ ] ❌ Insufficient
 
 **Specific Gaps Identified**:
+
 1. [List specific untested scenarios]
 
 ---
@@ -133,6 +149,7 @@ For each affected area, document current test coverage:
 ## Testing Gaps Summary
 
 ### Critical Gaps (MUST fix before baseline)
+
 These gaps prevent us from validating behavior preservation:
 
 1. **Gap 1**: `[FunctionName]` has no tests for [critical behavior]
@@ -146,6 +163,7 @@ These gaps prevent us from validating behavior preservation:
    - **Estimated effort**: [X hours/days]
 
 ### Important Gaps (SHOULD fix before baseline)
+
 These gaps reduce confidence but don't block refactoring:
 
 1. **Gap 3**: Edge case [scenario] not tested
@@ -154,6 +172,7 @@ These gaps reduce confidence but don't block refactoring:
    - **Estimated effort**: [X hours/days]
 
 ### Nice-to-Have Gaps (CAN be deferred)
+
 These can be addressed later:
 
 1. **Gap 4**: Integration test for [scenario]
@@ -170,9 +189,11 @@ These can be addressed later:
 **Total Estimated Effort**: [X hours/days]
 
 #### Test Suite 1: `[test-file.spec.ts]`
+
 **Purpose**: Cover critical functionality in `[target-file.ts]`
 
 **New Test Cases**:
+
 1. ✅ Test: `[test name]` - covers happy path for `functionName()`
    - Input: `[specific input]`
    - Expected: `[specific output/behavior]`
@@ -189,9 +210,11 @@ These can be addressed later:
    - Status: [ ] Not Started [ ] In Progress [ ] Complete
 
 #### Test Suite 2: `[another-test-file.spec.ts]`
+
 **Purpose**: Cover integration between components
 
 **New Test Cases**:
+
 1. ✅ Test: `[integration test name]`
    - Scenario: `[describe interaction]`
    - Expected: `[expected outcome]`
@@ -202,11 +225,13 @@ These can be addressed later:
 ## Test Implementation Checklist
 
 ### Pre-Work
+
 - [ ] Review existing test infrastructure
 - [ ] Identify test frameworks and patterns in use
 - [ ] Set up test environment if needed
 
 ### Test Writing
+
 - [ ] Write tests for Critical Gap 1
 - [ ] Write tests for Critical Gap 2
 - [ ] Write tests for Important Gaps (if time permits)
@@ -214,12 +239,14 @@ These can be addressed later:
 - [ ] Verify tests actually test behavior (not implementation)
 
 ### Validation
+
 - [ ] Run full test suite - all tests pass
 - [ ] Verify coverage increased in affected areas
 - [ ] Review tests with team/peer
 - [ ] Commit tests separately from refactoring
 
 ### Ready for Baseline
+
 - [ ] All critical gaps addressed
 - [ ] All new tests passing
 - [ ] Coverage metrics show improvement
@@ -230,11 +257,13 @@ These can be addressed later:
 ## Decision: Proceed or Delay Refactoring?
 
 ### If Critical Gaps Found
+
 - [ ] **STOP**: Do NOT proceed with refactoring until tests are added
 - [ ] Add tests first, THEN return to refactor workflow
 - [ ] Update this document as tests are added
 
 ### If No Critical Gaps or All Gaps Addressed
+
 - [ ] **PROCEED**: Ready to capture baseline metrics
 - [ ] Mark status as "Ready for Baseline"
 - [ ] Continue to Phase 1: Baseline Capture
@@ -253,4 +282,4 @@ These can be addressed later:
 
 ---
 
-*This testing gaps assessment is part of the enhanced refactor workflow. Complete this BEFORE running `measure-metrics.sh --before`.*
+_This testing gaps assessment is part of the enhanced refactor workflow. Complete this BEFORE running `measure-metrics.sh --before`._

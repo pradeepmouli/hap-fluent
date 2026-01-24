@@ -9,6 +9,7 @@ user-invocable: true
 ## Workflow Basics
 
 ### File Location
+
 ```
 .github/workflows/
 ├── ci.yml          # Main CI pipeline
@@ -18,6 +19,7 @@ user-invocable: true
 ```
 
 ### Workflow Structure
+
 ```yaml
 name: CI
 
@@ -26,7 +28,7 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main]
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch: # Manual trigger
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -40,7 +42,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
       - run: npm ci
       - run: npm test
 ```
@@ -48,27 +50,28 @@ jobs:
 ## Triggers
 
 ### Common Triggers
+
 ```yaml
 on:
   # Branch events
   push:
-    branches: [main, 'release/*']
-    paths-ignore: ['**.md', 'docs/**']
+    branches: [main, "release/*"]
+    paths-ignore: ["**.md", "docs/**"]
 
   pull_request:
     types: [opened, synchronize, reopened]
 
   # Scheduled
   schedule:
-    - cron: '0 0 * * *'  # Daily at midnight UTC
+    - cron: "0 0 * * *" # Daily at midnight UTC
 
   # Manual
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Deploy environment'
+        description: "Deploy environment"
         required: true
-        default: 'staging'
+        default: "staging"
         type: choice
         options: [staging, production]
 
@@ -81,12 +84,13 @@ on:
     inputs:
       node-version:
         type: string
-        default: '20'
+        default: "20"
 ```
 
 ## Caching
 
 ### Node.js with pnpm
+
 ```yaml
 - uses: pnpm/action-setup@v3
   with:
@@ -94,23 +98,25 @@ on:
 
 - uses: actions/setup-node@v4
   with:
-    node-version: '20'
-    cache: 'pnpm'
+    node-version: "20"
+    cache: "pnpm"
 
 - run: pnpm install --frozen-lockfile
 ```
 
 ### Node.js with npm
+
 ```yaml
 - uses: actions/setup-node@v4
   with:
-    node-version: '20'
-    cache: 'npm'
+    node-version: "20"
+    cache: "npm"
 
 - run: npm ci
 ```
 
 ### Custom Caching
+
 ```yaml
 - uses: actions/cache@v4
   with:
@@ -123,6 +129,7 @@ on:
 ```
 
 ### Turborepo Caching
+
 ```yaml
 - uses: actions/cache@v4
   with:
@@ -135,6 +142,7 @@ on:
 ## Matrix Builds
 
 ### Multi-Version Testing
+
 ```yaml
 jobs:
   test:
@@ -157,6 +165,7 @@ jobs:
 ```
 
 ### Dynamic Matrix
+
 ```yaml
 jobs:
   prepare:
@@ -183,6 +192,7 @@ jobs:
 ## Common Patterns
 
 ### TypeScript/Node.js CI
+
 ```yaml
 name: CI
 
@@ -201,8 +211,8 @@ jobs:
           version: 9
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          node-version: "20"
+          cache: "pnpm"
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm format:check
@@ -216,8 +226,8 @@ jobs:
           version: 9
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          node-version: "20"
+          cache: "pnpm"
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
 
@@ -230,8 +240,8 @@ jobs:
           version: 9
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          node-version: "20"
+          cache: "pnpm"
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
       - uses: codecov/codecov-action@v4
@@ -249,13 +259,14 @@ jobs:
           version: 9
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          node-version: "20"
+          cache: "pnpm"
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
 ```
 
 ### Reusable Workflow
+
 ```yaml
 # .github/workflows/reusable-test.yml
 name: Reusable Test
@@ -265,7 +276,7 @@ on:
     inputs:
       node-version:
         type: string
-        default: '20'
+        default: "20"
     secrets:
       npm-token:
         required: false
@@ -291,7 +302,7 @@ jobs:
   test:
     uses: ./.github/workflows/reusable-test.yml
     with:
-      node-version: '20'
+      node-version: "20"
     secrets:
       npm-token: ${{ secrets.NPM_TOKEN }}
 ```
@@ -299,6 +310,7 @@ jobs:
 ## Secrets and Environments
 
 ### Using Secrets
+
 ```yaml
 env:
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -308,6 +320,7 @@ steps:
 ```
 
 ### Environment Protection
+
 ```yaml
 jobs:
   deploy:
@@ -320,6 +333,7 @@ jobs:
 ```
 
 ### GITHUB_TOKEN Permissions
+
 ```yaml
 permissions:
   contents: read
@@ -344,6 +358,7 @@ jobs:
 ## Artifacts and Outputs
 
 ### Upload/Download Artifacts
+
 ```yaml
 jobs:
   build:
@@ -368,6 +383,7 @@ jobs:
 ```
 
 ### Job Outputs
+
 ```yaml
 jobs:
   version:
@@ -393,6 +409,7 @@ jobs:
 Trusted Publishers use OpenID Connect to authenticate with npm without storing tokens. This is the **recommended approach** for publishing.
 
 #### Step 1: Configure npm Trusted Publisher
+
 1. Go to npmjs.com → Package Settings → Publishing access
 2. Add trusted publisher:
    - Provider: GitHub Actions
@@ -401,6 +418,7 @@ Trusted Publishers use OpenID Connect to authenticate with npm without storing t
    - Environment: `npm` (optional but recommended)
 
 #### Step 2: Workflow with Trusted Publisher
+
 ```yaml
 name: Publish
 
@@ -411,17 +429,17 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    environment: npm  # Optional: for environment protection rules
+    environment: npm # Optional: for environment protection rules
     permissions:
       contents: read
-      id-token: write  # Required for OIDC token
+      id-token: write # Required for OIDC token
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
 
       - run: npm ci
       - run: npm run build
@@ -431,26 +449,29 @@ jobs:
 ```
 
 #### Trusted Publisher Benefits
+
 - **No secrets to rotate** - OIDC tokens are short-lived
 - **Provenance attestation** - Verifiable build origin
 - **Environment protection** - Optional approval workflows
 - **Audit trail** - Clear link between package and source
 
 ### npm Publish with Token (Legacy)
+
 For registries that don't support OIDC:
+
 ```yaml
 jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write  # For provenance
+      id-token: write # For provenance
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
       - run: npm ci
       - run: npm publish --provenance --access public
         env:
@@ -458,6 +479,7 @@ jobs:
 ```
 
 ### Changesets with Trusted Publishers
+
 ```yaml
 name: Release
 
@@ -472,7 +494,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      id-token: write  # For OIDC
+      id-token: write # For OIDC
     steps:
       - uses: actions/checkout@v4
 
@@ -482,9 +504,9 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "20"
+          cache: "pnpm"
+          registry-url: "https://registry.npmjs.org"
 
       - run: pnpm install --frozen-lockfile
 
@@ -493,15 +515,17 @@ jobs:
         with:
           publish: pnpm changeset publish
           version: pnpm changeset version
-          title: 'chore: version packages'
-          commit: 'chore: version packages'
+          title: "chore: version packages"
+          commit: "chore: version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # No NPM_TOKEN needed with trusted publishers!
 ```
 
 ### PyPI Trusted Publishers
+
 Python packages also support OIDC:
+
 ```yaml
 jobs:
   publish:
@@ -513,7 +537,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
       - run: pip install build
       - run: python -m build
       - uses: pypa/gh-action-pypi-publish@release/v1
@@ -533,8 +557,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'package.json'
-      - 'packages/*/package.json'
+      - "package.json"
+      - "packages/*/package.json"
 
 jobs:
   tag-release:
@@ -653,17 +677,21 @@ jobs:
 ```
 
 ### Provenance Attestation
+
 Provenance links published packages to their source:
+
 ```yaml
 - run: npm publish --provenance --access public
 ```
 
 Users can verify with:
+
 ```bash
 npm audit signatures
 ```
 
 Shows:
+
 ```
 @myorg/package@1.0.0 has a valid Sigstore attestation
   - Signed by: https://github.com/owner/repo/.github/workflows/release.yml@refs/tags/v1.0.0
@@ -672,15 +700,17 @@ Shows:
 ## Conditional Execution
 
 ### Path Filters
+
 ```yaml
 on:
   push:
     paths:
-      - 'packages/core/**'
-      - '!packages/core/**/*.md'
+      - "packages/core/**"
+      - "!packages/core/**/*.md"
 ```
 
 ### Job Conditions
+
 ```yaml
 jobs:
   deploy:
@@ -698,6 +728,7 @@ jobs:
 ```
 
 ### Step Conditions
+
 ```yaml
 steps:
   - run: npm test
@@ -716,6 +747,7 @@ steps:
 ## Monorepo Patterns
 
 ### Affected Packages Only
+
 ```yaml
 jobs:
   changes:
@@ -748,6 +780,7 @@ jobs:
 ```
 
 ### Turborepo with Remote Cache
+
 ```yaml
 jobs:
   build:
@@ -762,8 +795,8 @@ jobs:
           version: 9
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          node-version: "20"
+          cache: "pnpm"
       - run: pnpm install --frozen-lockfile
       - run: pnpm turbo build test lint
 ```
@@ -771,6 +804,7 @@ jobs:
 ## Debugging
 
 ### Debug Logging
+
 ```yaml
 steps:
   - run: echo "Event: ${{ github.event_name }}"
@@ -782,6 +816,7 @@ steps:
 ```
 
 ### SSH Debug Session
+
 ```yaml
 steps:
   - uses: mxschmitt/action-tmate@v3
@@ -790,7 +825,9 @@ steps:
 ```
 
 ### Re-run with Debug
+
 Enable debug logging by setting secrets:
+
 - `ACTIONS_RUNNER_DEBUG: true`
 - `ACTIONS_STEP_DEBUG: true`
 

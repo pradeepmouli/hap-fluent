@@ -1,79 +1,80 @@
 {
-	"name": "hap-test",
-	"version": "0.1.0",
-	"description": "Test harness for Homebridge plugin development - write integration tests without physical HomeKit controllers",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"type": "module",
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js"
-		},
-		"./errors": {
-			"types": "./dist/errors/index.d.ts",
-			"import": "./dist/errors/index.js"
-		},
-		"./types": {
-			"types": "./dist/types/index.d.ts",
-			"import": "./dist/types/index.js"
-		},
-		"./matchers": {
-			"types": "./dist/matchers/index.d.ts",
-			"import": "./dist/matchers/index.js"
-		}
-	},
-	"scripts": {
-		"prepublishOnly": "npm run build",
-		"build": "tsc",
-		"lint": "oxlint src/",
-		"lint:eslint": "eslint 'src/**/*.{ts,tsx}'",
-		"lint:fix": "oxlint --fix src/",
-		"format": "oxfmt src/",
-		"format:prettier": "prettier --write src/",
-		"format:check": "oxfmt --check src/",
-		"test": "vitest run",
-		"test:watch": "vitest",
-		"test:ui": "vitest --ui",
-		"test:coverage": "vitest run --coverage",
-		"type-check": "tsc --noEmit"
-	},
-	"keywords": [
-		"homebridge",
-		"testing",
-		"test-harness",
-		"hap-nodejs",
-		"homekit",
-		"integration-testing",
-		"vitest"
-	],
-	"author": "HAP Fluent Monorepo Contributors",
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/pradeepmouli/hap-fluent.git",
-		"directory": "packages/hap-test"
-	},
-	"peerDependencies": {
-		"hap-nodejs": "^0.11.0 || ^0.12.0",
-		"homebridge": "^1.6.0 || ^2.0.0",
-		"vitest": "^1.0.0 || ^2.0.0"
-	},
-	"peerDependenciesMeta": {
-		"hap-fluent": {
-			"optional": true
-		}
-	},
-	"devDependencies": {
-		"@types/node": "^25.0.10",
-		"typescript": "^5.9.3"
-	},
-	"files": [
-		"dist",
-		"README.md",
-		"LICENSE"
-	],
-	"engines": {
-		"node": ">=18.0.0"
-	}
+  "name": "hap-test",
+  "version": "0.1.0",
+  "description": "Test harness for Homebridge plugin development - write integration tests without physical HomeKit controllers",
+  "keywords": [
+    "hap-nodejs",
+    "homebridge",
+    "homekit",
+    "integration-testing",
+    "test-harness",
+    "testing",
+    "vitest"
+  ],
+  "license": "MIT",
+  "author": "HAP Fluent Monorepo Contributors",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pradeepmouli/hap-fluent.git",
+    "directory": "packages/hap-test"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./errors": {
+      "types": "./dist/errors/index.d.ts",
+      "import": "./dist/errors/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.js"
+    },
+    "./matchers": {
+      "types": "./dist/matchers/index.d.ts",
+      "import": "./dist/matchers/index.js"
+    }
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "build": "tsc",
+    "lint": "oxlint src/",
+    "lint:eslint": "eslint 'src/**/*.{ts,tsx}'",
+    "lint:fix": "oxlint --fix src/",
+    "format": "oxfmt src/",
+    "format:prettier": "prettier --write src/",
+    "format:check": "oxfmt --check src/",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.10",
+    "hap-nodejs": "0.14",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "hap-nodejs": "^0.11.0 || ^0.12.0 || ^0.13.0 || ^0.14.0",
+    "homebridge": "^1.6.0 || ^2.0.0",
+    "vitest": "^1.0.0 || ^2.0.0 || ^3.0.0 || ^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "hap-fluent": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }

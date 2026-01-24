@@ -16,12 +16,12 @@ The user wants to incorporate the document at: {document_path}
 Based on analysis above, create a new baseline workflow using this document as the primary source.
 Extract project context, architecture overview, and current state documentation. Please save this as research in the appropriate workflow directory.
 
-
 ## Instructions
 
 This subagent is created to handle handoffs from spec-kit-extensions workflows.
 
 When invoked:
+
 1. Check if spec-kit's `/speckit.baseline` command exists
 2. If yes, invoke it with the user's context
 3. If no, provide guidance on what the baseline workflow should accomplish

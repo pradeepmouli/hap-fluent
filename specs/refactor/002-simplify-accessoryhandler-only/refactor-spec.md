@@ -8,12 +8,15 @@
 **Status**: [x] Planning | [ ] Baseline Captured | [ ] In Progress | [ ] Validation | [ ] Complete
 
 ## Input
+
 User description: "simplify accessoryhandler/to only have one surface - wrapAccessory, returning accessoryHandler, and accessoryHandler.initialize instead of directly calling initializeAccessory, accessoryHandler.addService instead of getOrAddService"
 
 ## Motivation
 
 ### Current State Problems
+
 **Code Smell(s)**:
+
 - [ ] Duplication (DRY violation)
 - [ ] God Object/Class (too many responsibilities)
 - [ ] Long Method (too complex)
@@ -25,11 +28,14 @@ User description: "simplify accessoryhandler/to only have one surface - wrapAcce
 - [x] Other: Inconsistent API surface leading to misuse and confusion
 
 **Concrete Examples**:
+
 - Multiple public entry points in Accessory handling: `wrapAccessory`, `initializeAccessory`, and `getOrAddService` encourage mixed usage patterns rather than a cohesive handler instance.
 - Consumers can directly call `initializeAccessory(accessory)` or `getOrAddService(...)` instead of working through a single `AccessoryHandler`, making lifecycle harder to reason about.
 
 ### Business/Technical Justification
+
 [Why is this refactoring needed NOW?]
+
 - [x] Developer velocity impact (simpler, consistent usage pattern)
 - [x] Technical debt accumulation (split API surface increases maintenance)
 - [ ] Blocking new features
@@ -40,17 +46,19 @@ User description: "simplify accessoryhandler/to only have one surface - wrapAcce
 ## Proposed Improvement
 
 ### Refactoring Pattern/Technique
+
 **Primary Technique**: Encapsulate by introducing a cohesive instance API (Facade); Rename Method; Deprecate free functions with thin wrappers
 
 **High-Level Approach**:
 Consolidate Accessory operations behind a single `wrapAccessory(accessory)` entry that returns an `AccessoryHandler` instance. Move/alias `initializeAccessory(accessory)` to `AccessoryHandler.initialize()`, and rename `getOrAddService(...)` to `AccessoryHandler.addService(...)` while preserving idempotent semantics. Maintain behavior by keeping the legacy free functions as thin wrappers delegating to the instance methods until deprecation.
 
 **Files Affected**:
+
 - **Modified**:
   - packages/hap-fluent/src/AccessoryHandler.ts
   - packages/hap-fluent/src/index.ts (exports and re-exports)
   - packages/hap-fluent/src/FluentService.ts (call sites if any)
-  - packages/hap-fluent/examples/*.ts (usage examples alignment)
+  - packages/hap-fluent/examples/\*.ts (usage examples alignment)
   - packages/hap-fluent/test/unit/FluentAccessory.test.ts
   - packages/hap-fluent/test/unit/FluentService.test.ts
   - packages/hap-fluent/test/property-based/service-operations.property.test.ts
@@ -60,7 +68,9 @@ Consolidate Accessory operations behind a single `wrapAccessory(accessory)` entr
 - **Moved**: None
 
 ### Design Improvements
+
 **Before**:
+
 ```
 wrapAccessory(accessory?)
 initializeAccessory(accessory)
@@ -68,6 +78,7 @@ getOrAddService(accessory, serviceType, subtype?)
 ```
 
 **After**:
+
 ```
 wrapAccessory(accessory) → AccessoryHandler
 AccessoryHandler.initialize()
@@ -79,9 +90,11 @@ getOrAddService(accessory, ...) → wrapAccessory(accessory).addService(...)
 ```
 
 ## Phase 0: Testing Gap Assessment
-*CRITICAL: Complete BEFORE capturing baseline metrics - see testing-gaps.md*
+
+_CRITICAL: Complete BEFORE capturing baseline metrics - see testing-gaps.md_
 
 ### Pre-Baseline Testing Requirement
+
 - [ ] **Testing gaps assessment completed** (see `testing-gaps.md`)
 - [ ] **Critical gaps identified and addressed**
 - [ ] **All affected functionality has adequate test coverage**
@@ -90,12 +103,15 @@ getOrAddService(accessory, ...) → wrapAccessory(accessory).addService(...)
 **Rationale**: Refactoring requires behavior preservation validation. If code lacks test coverage, we cannot verify behavior is preserved. All impacted functionality MUST be tested BEFORE establishing the baseline.
 
 ### Testing Coverage Status
+
 **Affected Code Areas**:
+
 - Accessory lifecycle init: `AccessoryHandler.initialize()` (formerly `initializeAccessory`) - Coverage [unknown] - [ ] ✅ Adequate [x] ❌ Needs Tests
 - Service management: `AccessoryHandler.addService()` (formerly `getOrAddService`) - Coverage [unknown] - [ ] ✅ Adequate [x] ❌ Needs Tests
 - Wrapper contract: `wrapAccessory()` returning a handler bound to the given accessory - Coverage [unknown] - [ ] ✅ Adequate [x] ❌ Needs Tests
 
 **Action Taken**:
+
 - [ ] No gaps found - proceeded to baseline
 - [ ] Gaps found - added [N] tests before baseline
 - [ ] Gaps documented but deferred (with justification)
@@ -103,9 +119,11 @@ getOrAddService(accessory, ...) → wrapAccessory(accessory).addService(...)
 ---
 
 ## Baseline Metrics
-*Captured AFTER testing gaps are addressed - see metrics-before.md*
+
+_Captured AFTER testing gaps are addressed - see metrics-before.md_
 
 ### Code Complexity
+
 - **Cyclomatic Complexity**: not measured
 - **Cognitive Complexity**: not measured
 - **Lines of Code**: [number]
@@ -114,26 +132,31 @@ getOrAddService(accessory, ...) → wrapAccessory(accessory).addService(...)
 - **Duplication**: [X% or "Y instances"]
 
 ### Test Coverage
+
 - **Overall Coverage**: [X%]
 - **Lines Covered**: [X/Y]
 - **Branches Covered**: [X/Y]
 - **Functions Covered**: [X/Y]
 
 ### Performance
+
 - **Build Time**: [X seconds]
 - **Bundle Size**: [X KB]
 - **Runtime Performance**: [X ms for key operations]
 - **Memory Usage**: [X MB]
 
 ### Dependencies
+
 - **Direct Dependencies**: [count]
 - **Total Dependencies**: [count including transitive]
 - **Outdated Dependencies**: [count]
 
 ## Target Metrics
-*Goals to achieve - measurable success criteria*
+
+_Goals to achieve - measurable success criteria_
 
 ### Code Quality Goals
+
 - **Cyclomatic Complexity**: Reduce or maintain (no increase due to consolidation)
 - **Lines of Code**: Accept small increases for clarity; reduce scattered helpers
 - **Duplication**: Eliminate duplicate entry points
@@ -141,18 +164,22 @@ getOrAddService(accessory, ...) → wrapAccessory(accessory).addService(...)
 - **Test Coverage**: Maintain or increase; add coverage for handler methods
 
 ### Performance Goals
+
 - **Build Time**: Maintain or improve (no regression)
 - **Bundle Size**: Maintain (renaming should not impact size materially)
 - **Runtime Performance**: Maintain or improve (no regression > 5%)
 - **Memory Usage**: Maintain or reduce
 
 ### Success Threshold
+
 **Minimum acceptable improvement**: Consolidated API usage in examples/tests; maintain test coverage; no performance regression
 
 ## Behavior Preservation Guarantee
-*CRITICAL: Refactoring MUST NOT change external behavior*
+
+_CRITICAL: Refactoring MUST NOT change external behavior_
 
 ### External Contracts Unchanged
+
 - [ ] API endpoints return same responses
 - [x] Function signatures unchanged (or properly deprecated via wrappers)
 - [ ] Component props unchanged
@@ -161,12 +188,15 @@ getOrAddService(accessory, ...) → wrapAccessory(accessory).addService(...)
 - [ ] File formats unchanged
 
 ### Test Suite Validation
+
 - [ ] **All existing tests MUST pass WITHOUT modification**
 - [ ] If test needs changing, verify it was testing implementation detail, not behavior
 - [ ] Do NOT weaken assertions to make tests pass
 
 ### Behavioral Snapshot
+
 **Key behaviors to preserve**:
+
 1. `wrapAccessory(accessory)` returns a handler bound to the provided accessory; instance methods operate on that accessory.
 2. `initialize()` performs the same initialization side effects as `initializeAccessory(accessory)` today (registration, event wiring, interceptors).
 3. `addService()` is idempotent: returns existing service if present; otherwise creates, registers, and returns new service (matching `getOrAddService`).
@@ -176,10 +206,12 @@ getOrAddService(accessory, ...) → wrapAccessory(accessory).addService(...)
 ## Risk Assessment
 
 ### Risk Level Justification
+
 **Why Medium Risk**:
 Touches core Accessory handling APIs and updates call sites. Behavior is preserved via wrappers, but incorrect renames or missed call sites could cause runtime errors. Blast radius includes examples and tests.
 
 ### Potential Issues
+
 - **Risk 1**: Breaking consumers if legacy functions are removed too early
   - **Mitigation**: Keep legacy wrappers delegating to instance methods; mark for deprecation separately
   - **Rollback**: Revert commit or re-introduce wrappers
@@ -189,6 +221,7 @@ Touches core Accessory handling APIs and updates call sites. Behavior is preserv
   - **Rollback**: Revert incremental commits
 
 ### Safety Measures
+
 - [ ] Feature flag available for gradual rollout
 - [ ] Monitoring in place for key metrics
 - [ ] Rollback plan tested
@@ -199,12 +232,15 @@ Touches core Accessory handling APIs and updates call sites. Behavior is preserv
 ## Rollback Plan
 
 ### How to Undo
+
 1. [Step 1: revert commit range]
 2. [Step 2: any manual cleanup needed]
 3. [Step 3: verification steps]
 
 ### Rollback Triggers
+
 Revert if any of these occur within 24-48 hours:
+
 - [ ] Test suite failure
 - [ ] Performance regression > 10%
 - [ ] Production error rate increase
@@ -212,11 +248,13 @@ Revert if any of these occur within 24-48 hours:
 - [ ] Monitoring alerts
 
 ### Recovery Time Objective
+
 **RTO**: [How fast can we rollback? e.g., "< 30 minutes"]
 
 ## Implementation Plan
 
 ### Phase 0: Testing Gap Assessment (Pre-Baseline)
+
 **CRITICAL FIRST STEP**: Assess and address testing gaps BEFORE baseline
 
 1. Review `testing-gaps.md` template
@@ -230,12 +268,14 @@ Revert if any of these occur within 24-48 hours:
 **Checkpoint**: Only proceed to Phase 1 when adequate test coverage exists
 
 ### Phase 1: Baseline (Before Refactoring)
+
 1. Capture all baseline metrics (run `.specify/extensions/workflows/refactor/measure-metrics.sh --before`)
 2. Create behavioral snapshot (document current outputs)
 3. Ensure 100% test pass rate (including newly added tests)
 4. Tag current state in git: `git tag pre-refactor-### -m "Baseline before refactor-###"`
 
 ### Phase 2: Refactoring (Incremental)
+
 1. [Step 1: small, atomic change]
 2. [Step 2: another small change]
 3. [Step 3: continue incrementally]
@@ -243,6 +283,7 @@ Revert if any of these occur within 24-48 hours:
 **Principle**: Each step should compile and pass tests
 
 ### Phase 3: Validation
+
 1. Run full test suite (MUST pass 100%)
 2. Re-measure all metrics
 3. Compare behavioral snapshot (MUST be identical)
@@ -250,6 +291,7 @@ Revert if any of these occur within 24-48 hours:
 5. Manual testing of critical paths
 
 ### Phase 4: Deployment
+
 1. Code review focused on behavior preservation
 2. Deploy to staging
 3. Monitor for 24 hours
@@ -260,6 +302,7 @@ Revert if any of these occur within 24-48 hours:
 ## Verification Checklist
 
 ### Phase 0: Testing Gap Assessment
+
 - [ ] Testing gaps assessment completed (testing-gaps.md)
 - [ ] All affected code areas identified
 - [ ] Test coverage assessed for each area
@@ -269,6 +312,7 @@ Revert if any of these occur within 24-48 hours:
 - [ ] Ready to proceed to baseline capture
 
 ### Pre-Refactoring (Phase 1)
+
 - [ ] Baseline metrics captured and documented
 - [ ] All tests passing (100% pass rate)
 - [ ] Behavioral snapshot created
@@ -276,6 +320,7 @@ Revert if any of these occur within 24-48 hours:
 - [ ] Rollback plan prepared
 
 ### During Refactoring
+
 - [ ] Incremental commits (each one compiles and tests pass)
 - [ ] External behavior unchanged
 - [ ] No new dependencies added (unless justified)
@@ -283,6 +328,7 @@ Revert if any of these occur within 24-48 hours:
 - [ ] Dead code removed
 
 ### Post-Refactoring
+
 - [ ] All tests still passing (100% pass rate)
 - [ ] Target metrics achieved or improvement demonstrated
 - [ ] Behavioral snapshot matches (behavior unchanged)
@@ -291,6 +337,7 @@ Revert if any of these occur within 24-48 hours:
 - [ ] Documentation updated
 
 ### Post-Deployment
+
 - [ ] Monitoring shows stable performance
 - [ ] No error rate increase
 - [ ] No user reports related to refactored area
@@ -299,13 +346,17 @@ Revert if any of these occur within 24-48 hours:
 ## Related Work
 
 ### Blocks
+
 [List features blocked by current technical debt that this refactoring unblocks]
 
 ### Enables
+
 [List future refactorings or features this enables]
 
 ### Dependencies
+
 [List other refactorings that should happen first]
 
 ---
-*Refactor spec created using `/refactor` workflow - See .specify/extensions/workflows/refactor/*
+
+_Refactor spec created using `/refactor` workflow - See .specify/extensions/workflows/refactor/_
