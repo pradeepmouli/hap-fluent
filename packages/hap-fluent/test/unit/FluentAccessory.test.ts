@@ -4,7 +4,7 @@ import {
   AccessoryHandler,
   createServicesObject,
   isMultiService,
-} from "../../src/AccessoryHandler.js";
+} from "../../src/FluentAccessory.js";
 import { MockPlatformAccessory } from "../mocks/homebridge.mock.js";
 
 describe("FluentAccessory", () => {

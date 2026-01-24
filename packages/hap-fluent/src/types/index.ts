@@ -2,7 +2,8 @@
 export * from "./hap-interfaces.js";
 export * from "./hap-enums.js";
 import { InterfaceMap, ServiceMap } from "./hap-interfaces.js";
-import type { Service } from "homebridge";
+
+import type { Service } from "hap-nodejs";
 
 // Re-export with explicit names to resolve ambiguity
 
@@ -20,6 +21,8 @@ export type InterfaceForService<T extends typeof Service> = T extends {
 }
   ? I
   : never;
+
+
 
 export type Services = ServiceMap[keyof ServiceMap];
 

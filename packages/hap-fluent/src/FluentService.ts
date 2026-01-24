@@ -1,12 +1,9 @@
 import {
-  type Service,
-  type Characteristic,
   type WithUUID,
   type CharacteristicValue,
-  type PrimitiveTypes,
   type PlatformAccessory,
+  type Service,
 } from "homebridge";
-import camelcase from "camelcase";
 import type { InterfaceForService } from "./types/index.js";
 import { PascalCase, type CamelCase } from "type-fest";
 import { FluentCharacteristic } from "./FluentCharacteristic.js";

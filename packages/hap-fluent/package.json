@@ -1,6 +1,6 @@
 {
   "name": "hap-fluent",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Fluent, strongly-typed wrapper for HAP-NodeJS services and characteristics.",
   "license": "Apache-2.0",
   "author": "Pradeep Mouli",
@@ -67,7 +67,7 @@
     "@vitest/ui": "^4.0.18",
     "eslint": "^9.39.2",
     "glob": "^13.0.0",
-    "hap-nodejs": "^0.14.0",
+    "hap-nodejs": "0.14.0",
     "homebridge": "^1.11.1",
     "prettier": "^3.8.1",
     "size-limit": "^12.0.0",
@@ -75,10 +75,6 @@
     "type-fest": "^5.4.1",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
-  },
-  "peerDependencies": {
-    "hap-nodejs": "=0.14.0",
-    "homebridge": ">=1.11.1"
   },
   "size-limit": [
     {

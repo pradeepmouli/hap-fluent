@@ -9,7 +9,7 @@ export * from "./FluentCharacteristic.js";
 export * from "./FluentService.js";
 
 // Export AccessoryHandler and the primary single-surface API: wrapAccessory
-export * from "./AccessoryHandler.js";
+export * from "./FluentAccessory.js";
 
 export * from "./types/index.js";
 

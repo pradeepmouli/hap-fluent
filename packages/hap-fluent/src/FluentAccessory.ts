@@ -32,27 +32,30 @@
 import {
   type API,
   type DynamicPlatformPlugin,
+  type Logger,
   type PlatformAccessory,
+
   type UnknownContext,
   type WithUUID,
 } from "homebridge";
-import { type Service } from "hap-nodejs";
 
-import { TupleToUnion } from "type-fest";
+
+import type { Service } from "hap-nodejs";
+
 
 import { getOrAddService, wrapService, FluentService } from "./FluentService.js";
 import type { AccessoryInformation } from "./types/hap-interfaces.js";
-import type { CamelCase, SimplifyDeep } from "type-fest";
+
 import camelcase from "camelcase";
 import type {
-  ServiceForInterface,
-  Interfaces,
+	InterfaceForService,
   InterfaceMap,
+  Interfaces,
   ServiceMap,
-  InterfaceForService,
 } from "./types/index.js";
-import type { Logger } from "./logger.js";
+
 import { camelCase, PascalCase } from "./utils.js";
+import type { CamelCase, TupleToUnion, SimplifyDeep } from 'type-fest';
 
 /**
  * Determine if the provided state object represents multiple service instances.
@@ -69,7 +72,7 @@ export function isMultiService<T extends InterfaceMap[keyof InterfaceMap]>(
 
 type InternalServicesObject<T> = T extends [infer U, ...infer Rest]
   ? U extends InterfaceMap[keyof InterfaceMap] & { serviceName: infer I extends keyof ServiceMap }
-    ? { [K in I as CamelCase<K>]: FluentService<ServiceMap[I]> } & InternalServicesObject<Rest>
+    ? { [K in I]: FluentService<ServiceMap[I]> } & InternalServicesObject<Rest>
     : U extends {
           [key: string]: InterfaceMap[keyof InterfaceMap] & {
             serviceName: infer I extends keyof ServiceMap;
@@ -106,8 +109,8 @@ function hasSubTypes<T extends ServiceMap[keyof ServiceMap]>(
  * @returns Object keyed by camel-cased service names.
  */
 export function createServicesObject<T extends Interfaces[]>(
-  ...services: InstanceType<ServiceForInterface<T[number]>>[]
-): InternalServicesObject<T>;
+  ...services: any[]
+): any;
 
 /**
  * Create a strongly-typed service map from a list of service instances with context.
@@ -117,31 +120,31 @@ export function createServicesObject<T extends Interfaces[]>(
   plugin: DynamicPlatformPlugin,
   api: API,
   logger: Logger,
-  ...services: InstanceType<ServiceForInterface<T[number]>>[]
-): InternalServicesObject<T>;
+  ...services: any[]
+): any;
 
 export function createServicesObject<T extends Interfaces[]>(
   ...args: unknown[]
-): InternalServicesObject<T> {
+): any {
   // Overload resolution
   let plugin: DynamicPlatformPlugin | undefined;
   let api: API | undefined;
   let logger: Logger | undefined;
-  let services: InstanceType<ServiceForInterface<T[number]>>[];
+  let services: any[];
 
   if (args.length >= 3 && typeof args[0] === "object" && typeof args[1] === "object") {
     // Called with context (plugin, api, logger, ...services)
     plugin = args[0] as DynamicPlatformPlugin;
     api = args[1] as API;
     logger = args[2] as Logger | undefined;
-    services = args.slice(3) as InstanceType<ServiceForInterface<T[number]>>[];
+    services = args.slice(3) as any[];
   } else {
     // Called without context (...services)
-    services = args as InstanceType<ServiceForInterface<T[number]>>[];
+    services = args as any[];
   }
 
-  return services.reduce<ServicesObject<T>>(
-    (acc: ServicesObject<T>, service): ServicesObject<T> => {
+  return services.reduce(
+    (acc: any, service): any => {
       // Create both PascalCase (e.g., "Lightbulb") and camelCase (e.g., "lightbulb") names
       const pascalName = camelcase(service.constructor.name /* get service name */, {
         pascalCase: true,
@@ -178,11 +181,11 @@ export function createServicesObject<T extends Interfaces[]>(
           configurable: true,
         });
       } else {
-        acc[serviceName] = serviceObject as ServicesObject<T>[keyof ServicesObject<T>];
+        acc[serviceName] = serviceObject;
       }
       return acc;
     },
-    {} as ServicesObject<T>,
+    {},
   );
 }
 
@@ -213,33 +216,29 @@ export type FluentAccessory<
   context: TContext;
   services: ServicesObject<Services>;
   // Without subtype
-  with<S extends typeof Service, I extends Interfaces = InterfaceForService<S> & Interfaces>(
+  with<S extends typeof Service>(
     serviceClass: WithUUID<S>,
     displayName?: string,
-  ): With<FluentAccessory<TContext, Services>, I>;
+  ): With<FluentAccessory<TContext, Services>, InterfaceForService<S>>;
   // With subtype
   with<
     S extends typeof Service,
     SubType extends string,
-    I extends Interfaces = InterfaceForService<S> & Interfaces,
   >(
     serviceClass: WithUUID<S>,
     displayName: string,
     subType: SubType,
-  ): With<FluentAccessory<TContext, Services>, { [K in SubType]: I }>;
+  ): With<FluentAccessory<TContext, Services>, { [K in SubType]: InterfaceForService<S> }>;
+
   initialize<T extends [...Services, ...N], N extends ServiceOrSubtype[]>(
     initialState?: InternalServicesStateObject<T>,
-  ): FluentAccessory<TContext, T>;
+  ): void;
 };
 
 /**
  * Helper type to check if a type is already in a tuple
  */
-type Contains<T extends readonly unknown[], U> = T extends [infer First, ...infer Rest]
-  ? First extends U
-    ? true
-    : Contains<Rest, U>
-  : false;
+type Contains<T extends readonly unknown[], U> = U extends T[number] ? true : false;
 
 /**
  * Helper type to add a service to the services array only if it's not already present
@@ -284,7 +283,7 @@ export class AccessoryHandler<
       api,
       logger,
       ...(accessory.services as unknown[]),
-    ) as ServicesObject<Services>;
+    ) as any;
   }
 
   /**
@@ -333,7 +332,7 @@ export class AccessoryHandler<
     (this.services as Record<string, unknown>)[serviceKey] = fluentService;
 
     // Return this instance cast to the new accumulated type
-    return this as unknown as With<FluentAccessory<TContext, Services>, I>;
+    return this as any;
   }
 
   /**
