@@ -210,7 +210,7 @@ export type FluentAccessory<
   >(
     serviceClass: WithUUID<S>,
     displayName: string,
-    subType?: SubType,
+    subType: SubType,
   ): With<FluentAccessory<TContext, Services>, { [K in SubType]: I }>;
 
   // With subtype
