@@ -1,102 +1,97 @@
 {
-	"name": "hap-fluent",
-	"version": "0.3.0",
-	"description": "Fluent, strongly-typed wrapper for HAP-NodeJS services and characteristics.",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"type": "module",
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js"
-		},
-		"./errors": {
-			"types": "./dist/errors.d.ts",
-			"import": "./dist/errors.js"
-		},
-		"./interceptors": {
-			"types": "./dist/interceptors.d.ts",
-			"import": "./dist/interceptors.js"
-		},
-		"./type-guards": {
-			"types": "./dist/type-guards.d.ts",
-			"import": "./dist/type-guards.js"
-		},
-		"./type-utils": {
-			"types": "./dist/type-utils.d.ts",
-			"import": "./dist/type-utils.js"
-		},
-		"./logger": {
-			"types": "./dist/logger.d.ts",
-			"import": "./dist/logger.js"
-		},
-		"./types": {
-			"types": "./dist/types/index.d.ts",
-			"import": "./dist/types/index.js"
-		}
-	},
-	"scripts": {
-		"prepublishOnly": "npm run build",
-		"build": "tsgo --build",
-		"build:tsc": "tsc",
-		"lint": "oxlint src/",
-		"lint:eslint": "eslint 'src/**/*.{ts,tsx}'",
-		"lint:fix": "oxlint --fix src/",
-		"format": "oxfmt src/",
-		"format:prettier": "prettier --write src/",
-		"format:check": "oxfmt --check src/",
-		"test": "vitest run",
-		"test:watch": "vitest",
-		"test:ui": "vitest --ui",
-		"test:coverage": "vitest run --coverage",
-		"type-check": "tsgo --noEmit",
-		"type-check:tsc": "tsc --noEmit",
-		"clean": "rimraf dist",
-		"size": "size-limit",
-		"size:why": "size-limit --why"
-	},
-	"size-limit": [
-		{
-			"name": "Main export (FluentService, FluentCharacteristic)",
-			"path": "dist/index.js",
-			"limit": "50 KB",
-			"import": "{ FluentService, FluentCharacteristic }"
-		},
-		{
-			"name": "Error classes",
-			"path": "dist/errors.js",
-			"limit": "5 KB"
-		},
-		{
-			"name": "Type guards",
-			"path": "dist/type-guards.js",
-			"limit": "5 KB"
-		}
-	],
-	"author": "Pradeep Mouli",
-	"license": "Apache-2.0",
-	"peerDependencies": {
-		"hap-nodejs": ">=0.13.0",
-		"homebridge": ">=1.11.0"
-	},
-	"devDependencies": {
-		"@fast-check/vitest": "^0.2.4",
-		"@size-limit/preset-small-lib": "^12.0.0",
-		"@vitest/coverage-v8": "^4.0.16",
-		"@vitest/ui": "^4.0.0",
-		"eslint": "^9.38.0",
-		"glob": "^11.0.3",
-		"hap-nodejs": "0.13.1",
-		"homebridge": "^1.11.0",
-		"prettier": "^3.6.2",
-		"size-limit": "^12.0.0",
-		"ts-node": "^10.9.2",
-		"type-fest": "^4.41.0",
-		"typescript": "^5.9.3",
-		"vitest": "^4.0.16"
-	},
-	"dependencies": {
-		"camelcase": "^8.0.0",
-		"pino": "^10.1.0"
-	}
+  "name": "hap-fluent",
+  "version": "0.5.0",
+  "description": "Fluent, strongly-typed wrapper for HAP-NodeJS services and characteristics.",
+  "license": "Apache-2.0",
+  "author": "Pradeep Mouli",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./errors": {
+      "types": "./dist/errors.d.ts",
+      "import": "./dist/errors.js"
+    },
+    "./interceptors": {
+      "types": "./dist/interceptors.d.ts",
+      "import": "./dist/interceptors.js"
+    },
+    "./type-guards": {
+      "types": "./dist/type-guards.d.ts",
+      "import": "./dist/type-guards.js"
+    },
+    "./type-utils": {
+      "types": "./dist/type-utils.d.ts",
+      "import": "./dist/type-utils.js"
+    },
+    "./logger": {
+      "types": "./dist/logger.d.ts",
+      "import": "./dist/logger.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.js"
+    }
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "build": "tsgo --build",
+    "build:tsc": "tsc",
+    "lint": "oxlint src/",
+    "lint:eslint": "eslint 'src/**/*.{ts,tsx}'",
+    "lint:fix": "oxlint --fix src/",
+    "format": "oxfmt src/",
+    "format:prettier": "prettier --write src/",
+    "format:check": "oxfmt --check src/",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "type-check": "tsgo --noEmit",
+    "type-check:tsc": "tsc --noEmit",
+    "clean": "rimraf dist",
+    "size": "size-limit",
+    "size:why": "size-limit --why"
+  },
+  "dependencies": {
+    "camelcase": "^9.0.0"
+  },
+  "devDependencies": {
+    "@fast-check/vitest": "^0.2.4",
+    "@size-limit/preset-small-lib": "^12.0.0",
+    "@vitest/coverage-v8": "^4.0.18",
+    "@vitest/ui": "^4.0.18",
+    "eslint": "^9.39.2",
+    "glob": "^13.0.0",
+    "hap-nodejs": "^0.14.0",
+    "homebridge": "^1.11.1",
+    "prettier": "^3.8.1",
+    "size-limit": "^12.0.0",
+    "ts-node": "^10.9.2",
+    "type-fest": "^5.4.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  },
+  "size-limit": [
+    {
+      "name": "Main export (FluentService, FluentCharacteristic)",
+      "path": "dist/index.js",
+      "limit": "50 KB",
+      "import": "{ FluentService, FluentCharacteristic }"
+    },
+    {
+      "name": "Error classes",
+      "path": "dist/errors.js",
+      "limit": "5 KB"
+    },
+    {
+      "name": "Type guards",
+      "path": "dist/type-guards.js",
+      "limit": "5 KB"
+    }
+  ]
 }

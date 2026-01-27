@@ -7,11 +7,13 @@ Homebridge is a lightweight NodeJS server that emulates the iOS HomeKit API, all
 ## Plugin Types
 
 ### 1. Accessory Plugins
+
 - Expose a single accessory device (simplest form)
 - Use `registerAccessory` method
 - Good for simple devices with minimal configuration
 
 ### 2. Platform Plugins
+
 - Manage multiple accessories (most flexible)
 - Use `registerPlatform` method
 - Three types:
@@ -22,28 +24,35 @@ Homebridge is a lightweight NodeJS server that emulates the iOS HomeKit API, all
 ## Key Components
 
 ### DynamicPlatformPlugin Interface
+
 The main interface for dynamic platform plugins that allows runtime accessory management.
 
 **Required Methods:**
+
 - `constructor(log, config, api)` - Initialize plugin
 - `configureAccessory(accessory)` - Restore cached accessories on startup
 
 **Lifecycle Events:**
+
 - `api.on('didFinishLaunching', callback)` - Called after Homebridge startup
 
 ### PlatformAccessory Class
+
 Represents a HomeKit accessory with services and characteristics.
 
 **Key Methods:**
+
 - `new PlatformAccessory(displayName, uuid)` - Create new accessory
 - `addService(service, name?)` - Add a HomeKit service
 - `getService(service)` - Get existing service
 - `removeService(service)` - Remove a service
 
 ### Service
+
 Represents a HomeKit service (e.g., Switch, Lightbulb, TemperatureSensor).
 
 **Common Services:**
+
 - `hap.Service.Switch` - On/Off switch
 - `hap.Service.Lightbulb` - Light with brightness, color
 - `hap.Service.Thermostat` - Temperature control
@@ -51,9 +60,11 @@ Represents a HomeKit service (e.g., Switch, Lightbulb, TemperatureSensor).
 - `hap.Service.AccessoryInformation` - Device metadata (required)
 
 ### Characteristic
+
 Represents a property of a service (e.g., On, Brightness, CurrentTemperature).
 
 **Event Handlers:**
+
 - `.on('get', callback)` - HomeKit reads value
 - `.on('set', callback)` - HomeKit writes value
 - `.updateValue(value)` - Push value to HomeKit
@@ -74,10 +85,10 @@ homebridge-plugin-name/
 ## Registration Pattern
 
 ```typescript
-import { API } from 'homebridge';
+import { API } from "homebridge";
 
 export = (api: API) => {
-  api.registerPlatform('PlatformName', MyPlatformClass);
+  api.registerPlatform("PlatformName", MyPlatformClass);
 };
 ```
 
@@ -120,12 +131,14 @@ api.unregisterPlatformAccessories(pluginName, platformName, accessories);
 ## Testing and Development
 
 ### Local Testing
+
 1. Build: `npm run build`
 2. Watch: `npm run watch` (live reload)
 3. Link: `npm link` or `hb-service link`
 4. Restart Homebridge: `sudo systemctl restart homebridge` or `hb-service restart`
 
 ### Debugging
+
 - Enable debug logging in Homebridge
 - Use VSCode with Node.js debugging
 - Check Homebridge logs: `tail -f ~/.homebridge/homebridge.log`

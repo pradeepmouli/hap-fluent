@@ -1,14 +1,15 @@
 ---
-description: Create an emergency hotfix workflow with expedited process and mandatory post-mortem.
-handoffs:
-  - label: Create Expedited Plan
-    agent: speckit.plan
-    prompt: Create an expedited plan for the hotfix. This is an emergency...
-    send: true
-  - label: Break Down Into Tasks
-    agent: speckit.tasks
-    prompt: Break the hotfix plan into minimal tasks
-    send: true
+description: Create an emergency hotfix workflow with expedited process and mandatory
+  post-mortem.
+hooks:
+  Stop:
+    - hooks:
+        - type: prompt
+          prompt: "After completing this workflow, consider these next steps:\n\n1. **Create\
+            \ Expedited Plan**\n   - Run: `/speckit.plan` or use the `speckit.plan` subagent\n\
+            \   - Context: Create an expedited plan for the hotfix. This is an emergency...\n\
+            2. **Break Down Into Tasks**\n   - Run: `/speckit.tasks` or use the `speckit.tasks`\
+            \ subagent\n   - Context: Break the hotfix plan into minimal tasks"
 ---
 
 The user input to you can be provided directly by the agent or as a command argument - you **MUST** consider it before proceeding with the prompt (if not empty).
@@ -19,12 +20,12 @@ $ARGUMENTS
 
 The text the user typed after `/speckit.hotfix` in the triggering message **is** the incident description. Assume you always have it available in this conversation even if `$ARGUMENTS` appears literally below. Do not ask the user to repeat it unless they provided an empty command.
 
-**⚠️  EMERGENCY WORKFLOW - EXPEDITED PROCESS ⚠️**
+**⚠️ EMERGENCY WORKFLOW - EXPEDITED PROCESS ⚠️**
 
 Given that incident description, do this:
 
 1. Run the script `.specify/scripts/bash/create-hotfix.sh --json "$ARGUMENTS"` from repo root and parse its JSON output for HOTFIX_ID, BRANCH_NAME, HOTFIX_FILE, POSTMORTEM_FILE, and TIMESTAMP. All file paths must be absolute.
-  **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
+   **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
 
 2. Load `.specify/extensions/workflows/hotfix/hotfix-template.md` to understand required sections.
 
@@ -63,3 +64,14 @@ Given that incident description, do this:
 ```
 
 Note: Hotfix workflow bypasses normal TDD process due to emergency nature. Tests must be added AFTER fix is deployed. This is the ONLY workflow that permits this deviation from the constitution.
+
+---
+
+## Recommended Next Steps
+
+After completing this workflow, consider these next steps:
+
+1. **Create Expedited Plan**: Run `/speckit.plan`
+   - Suggested prompt: Create an expedited plan for the hotfix. This is an emergency...
+2. **Break Down Into Tasks**: Run `/speckit.tasks`
+   - Suggested prompt: Break the hotfix plan into minimal tasks

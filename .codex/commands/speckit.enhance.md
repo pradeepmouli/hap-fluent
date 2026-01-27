@@ -1,10 +1,5 @@
 ---
 description: Create a minor enhancement workflow with condensed single-document planning.
-handoffs:
-  - label: Implement Enhancement
-    agent: speckit.implement
-    prompt: Implement the enhancement following the tasks in enhancement.md
-    send: true
 ---
 
 The user input to you can be provided directly by the agent or as a command argument - you **MUST** consider it before proceeding with the prompt (if not empty).
@@ -18,7 +13,7 @@ The text the user typed after `/speckit.enhance` in the triggering message **is*
 Given that enhancement description, do this:
 
 1. Run the script `.specify/scripts/bash/create-enhance.sh` from repo root and parse its JSON output for ENHANCE_ID, BRANCH_NAME, and ENHANCEMENT_FILE. All file paths must be absolute.
-  **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
+   **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
 
 2. Load `.specify/extensions/workflows/enhance/enhancement-template.md` to understand required sections.
 
@@ -52,3 +47,9 @@ Given that enhancement description, do this:
 ```
 
 Note: The script creates and checks out the new branch before writing files.
+
+---
+
+## Next Steps
+
+1. Implement Enhancement

@@ -7,55 +7,55 @@ handoffs:
       The user wants to incorporate the document at: {document_path}
 
       Based on analysis above, create a new feature specification using this document as the primary source.
-      Adapt and structure the content according to spec-kit feature specification requirements.
-    send: false
+      Adapt and structure the content according to spec-kit feature specification requirements. Please save this as research in the appropriate workflow directory.
+    send: true
   - label: Create Bugfix Specification
     agent: speckit.bugfix
     prompt: |
       The user wants to incorporate the document at: {document_path}
 
       Based on analysis above, create a new bugfix workflow using this document as the primary source.
-      Extract bug description, reproduction steps, expected vs actual behavior, and root cause if available.
-    send: false
+      Extract bug description, reproduction steps, expected vs actual behavior, and root cause if available. Please save this as research in the appropriate workflow directory.
+    send: true
   - label: Create Enhancement Specification
     agent: speckit.enhance
     prompt: |
       The user wants to incorporate the document at: {document_path}
 
       Based on analysis above, create a new enhancement workflow using this document as the primary source.
-      Focus on the problem statement, proposed changes, and verification steps.
-    send: false
+      Focus on the problem statement, proposed changes, and verification steps. Please save this as research in the appropriate workflow directory.
+    send: true
   - label: Create Modification Specification
     agent: speckit.modify
     prompt: |
       The user wants to incorporate the document at: {document_path}
 
       Based on analysis above, create a new modification workflow using this document as the primary source.
-      Identify the feature to modify and extract proposed changes with impact analysis.
-    send: false
+      Identify the feature to modify and extract proposed changes with impact analysis. Please save this as research in the appropriate workflow directory.
+    send: true
   - label: Create Refactoring Specification
     agent: speckit.refactor
     prompt: |
       The user wants to incorporate the document at: {document_path}
 
       Based on analysis above, create a new refactoring workflow using this document as the primary source.
-      Extract the code quality goals, target areas for improvement, and success metrics.
-    send: false
+      Extract the code quality goals, target areas for improvement, and success metrics. Please save this as research in the appropriate workflow directory.
+    send: true
   - label: Create Hotfix Specification
     agent: speckit.hotfix
     prompt: |
       The user wants to incorporate the document at: {document_path}
 
       Based on analysis above, create a new hotfix workflow using this document as the primary source.
-      This is urgent - extract incident details, impact, and immediate fix requirements.
-    send: false
+      This is urgent - extract incident details, impact, and immediate fix requirements. Please save this as research in the appropriate workflow directory.
+    send: true
   - label: Create Deprecation Specification
     agent: speckit.deprecate
     prompt: |
       The user wants to incorporate the document at: {document_path}
 
       Based on analysis above, create a new deprecation workflow using this document as the primary source.
-      Identify the feature to deprecate, reason for deprecation, and migration path for users.
+      Identify the feature to deprecate, reason for deprecation, and migration path for users. Please save this as research in the appropriate workflow directory.
     send: false
   - label: Create Baseline Documentation
     agent: speckit.baseline
@@ -63,32 +63,24 @@ handoffs:
       The user wants to incorporate the document at: {document_path}
 
       Based on analysis above, create a new baseline workflow using this document as the primary source.
-      Extract project context, architecture overview, and current state documentation.
-    send: false
-  - label: Create Cleanup Specification
-    agent: speckit.cleanup
-    prompt: |
-      The user wants to incorporate the document at: {document_path}
-
-      Based on analysis above, create a new cleanup workflow using this document as the primary source.
-      Identify tech debt, unused code, or organizational issues to address.
-    send: false
+      Extract project context, architecture overview, and current state documentation. Please save this as research in the appropriate workflow directory.
+    send: true
   - label: Create Implementation Plan
     agent: speckit.plan
     prompt: |
       The user wants to incorporate the document at: {document_path} into the planning stage.
 
       Based on analysis above and the existing specification, create an implementation plan
-      using this document as the primary source. Extract technical approach, steps, and decisions.
-    send: false
+      using this document as the primary source. Extract technical approach, steps, and decisions. Please save this as research in the appropriate workflow directory.
+    send: true
   - label: Create Task List
     agent: speckit.tasks
     prompt: |
       The user wants to incorporate the document at: {document_path} into the task stage.
 
       Based on analysis above, the existing spec, and plan (if available), create a task list
-      using this document as the primary source. Extract concrete action items and organize them logically.
-    send: false
+      using this document as the primary source. Extract concrete action items and organize them logically. Please save this as research in the appropriate workflow directory.
+    send: true
 ---
 
 The user input to you can be provided directly by the agent or as a command argument - you **MUST** consider it before proceeding with the prompt (if not empty).
@@ -113,6 +105,7 @@ Incorporate external documents (specs, plans, research, checklists, etc.) into e
 ```
 
 **Options:**
+
 - `--type TYPE` - Force document type (spec|plan|tasks|research|checklist|postmortem)
 - `--workflow WORKFLOW` - Initiate specific workflow if not in one (baseline|bugfix|enhance|modify|refactor|hotfix|deprecate|cleanup)
 - `--stage STAGE` - Target stage (auto|current|spec|plan|tasks)
@@ -132,6 +125,7 @@ get_feature_paths
 ```
 
 This provides:
+
 - `CURRENT_BRANCH` - Current git branch
 - `FEATURE_DIR` - Feature directory path (if in workflow)
 - `FEATURE_SPEC` - Main specification file
@@ -139,6 +133,7 @@ This provides:
 - `TASKS` - Task list file
 
 **Determine workflow stage:**
+
 - If `FEATURE_DIR` not found → Not in workflow
 - If only spec exists → Spec stage
 - If spec + plan exist → Planning stage
@@ -153,6 +148,7 @@ Use native spec-kit analyze to understand the document:
 ```
 
 **From the analysis, identify:**
+
 1. **Document Type** - What kind of document is this?
    - **Spec/Requirements** - Goals, acceptance criteria, architecture
    - **Plan/Approach** - Implementation steps, technical decisions
@@ -168,6 +164,7 @@ Use native spec-kit analyze to understand the document:
 4. **Conflicts** - Does it contradict existing workflow docs?
 
 **Detection Patterns:**
+
 - **Spec indicators**: "Requirements", "Goals", "Acceptance Criteria", "Architecture", "User Stories"
 - **Plan indicators**: "Implementation", "Approach", "Technical Design", "Steps", "Strategy"
 - **Tasks indicators**: Checkbox lists, numbered action items, "TODO", "Task", specific assignments
@@ -183,18 +180,18 @@ Based on workflow context and document type, choose strategy:
 **Action: Initiate Workflow**
 
 1. If `--workflow` specified, use that. Otherwise, determine from document content/type:
-	- If the document is a plan or tasks:
-		- Contains "enhance", "feature", "improvement" or refers to new functionality → enhance
-		- Contains "bug", "fix", "regression" or refers to an issue with existing functionality → hotfix
-	- If the document is a spec:
-		- Contains "feature", "enhance", "improvement" or refers to new functionality → feature or enhancement depending on complexity
-		- Contains "refactor", "cleanup", "optimize" → refactor
-		- Contains "deprecate", "remove", "sunset" → deprecate (ask user which feature to deprecate if unclear)
-		- Contains "baseline", "context", "current state" → baseline
-		- Contains "bug", "fix", "regression" → bugfix or hotfix depending on complexity
-		- Otherwise → Ask user for workflow type
+   - If the document is a plan, task list or both:
+     - Contains "enhance", "feature", "improvement" or refers to new functionality → enhance
+     - Contains "bug", "fix", "regression" or refers to an issue with existing functionality → hotfix
+   - If the document is a spec:
+     - Contains "feature", "enhance", "improvement" or refers to new functionality → feature or enhancement depending on complexity
+     - Contains "refactor", "cleanup", "optimize" → refactor
+     - Contains "deprecate", "remove", "sunset" → deprecate (ask user which feature to deprecate if unclear)
+     - Contains "baseline", "context", "current state" → baseline
+     - Contains "bug", "fix", "regression" → bugfix or hotfix depending on complexity
+     - Otherwise → Ask user for workflow type
 
-2. Save the document to a temporary location, with appropriate naming (e.g., `feature-spec.md`, `bugfix-spec.md`, `bugfix-plan.md` etc.	)
+2. Save the document to a temporary location, with appropriate naming (e.g., `spec.md`, `bugfix.md`, `plan.md` etc. )
 
 3. Execute the appropriate handoff to create the workflow:
    - For feature/enhancement: `/speckit.specify` or `/speckit.enhance`
@@ -203,9 +200,7 @@ Based on workflow context and document type, choose strategy:
    - For deprecate: `/speckit.deprecate`
    - For baseline: `/speckit.baseline`
 
-3. Incorporate the document into the newly created workflow directory
-
-### Scenario B: In Workflow - Document Type Matches Current Stage
+### Scenario B: Currently **in** Workflow - Document Type Matches Current Stage
 
 **Action: Enrich Current Stage**
 
@@ -221,11 +216,12 @@ cat >> "$FEATURE_SPEC" << 'EOF'
 EOF
 ```
 
-### Scenario C: In Workflow - Document Type is Next Stage
+### Scenario C: Current **in** Workflow - Document Type is Next Stage
 
 **Action: Advance to Next Stage**
 
 **C1: Have spec, document is plan**
+
 ```bash
 # Use native spec-kit plan command with document as context
 /speckit.plan
@@ -235,6 +231,7 @@ EOF
 ```
 
 **C2: Have spec + plan, document is tasks**
+
 ```bash
 # Use native spec-kit tasks command with document as context
 /speckit.tasks
@@ -242,13 +239,14 @@ EOF
 # Then incorporate task content into tasks.md
 ```
 
-### Scenario D: In Workflow - Document Type Skips Stages
+### Scenario D: Current **in** Workflow - Document Type Skips Stages
 
 **Action: Create Intermediate Stages, Then Advance**
 
 **Example: Have spec only, document is tasks**
 
 1. First, create minimal plan:
+
    ```bash
    /speckit.plan
    # Agent creates basic plan to bridge the gap
@@ -293,6 +291,7 @@ echo "  3. Mark as NEEDS RECONCILIATION (both present)"
 ### 4.2 Detect Duplicates
 
 If analyze indicates overlapping content:
+
 - Skip truly duplicate content
 - Merge complementary information
 - Note: "Incorporated X from document, skipped Y (already covered)"
@@ -300,6 +299,7 @@ If analyze indicates overlapping content:
 ### 4.3 Structure Content
 
 When adding to existing docs:
+
 - Maintain document structure (use existing headers)
 - Add new sections if needed
 - Preserve formatting consistency
@@ -308,6 +308,7 @@ When adding to existing docs:
 ### 4.4 Preserve Git History
 
 Before making changes:
+
 ```bash
 # Ensure changes are trackable
 git diff --exit-code || echo "Uncommitted changes exist"
@@ -425,12 +426,14 @@ Suggested: Review the enriched spec, then run /speckit.plan to continue.
 ## Error Handling
 
 ### Document Not Found
+
 ```
 ❌ Error: Document not found: nonexistent.md
 Please check the path and try again.
 ```
 
 ### Cannot Determine Workflow Type
+
 ```
 ❌ Cannot determine appropriate workflow type from document.
 Please specify: /speckit.incorporate document.md --workflow [type]
@@ -440,6 +443,7 @@ Available workflows:
 ```
 
 ### Conflicts Detected
+
 ```
 ⚠️  Conflicts detected - user input required
 Cannot auto-merge due to contradictions.
@@ -460,8 +464,7 @@ Please resolve manually or use:
 
 ## Integration with Other Commands
 
-- **`/speckit.analyze`** - Analyze document before incorporating
-- **`/speckit.review`** - Review after incorporation to validate
+- **`/speckit.analyze`** - Review after incorporation to address conflicts or inconsistencies
 - **`/speckit.plan`** - Called automatically when advancing to plan stage
 - **`/speckit.tasks`** - Called automatically when advancing to tasks stage
 - **Workflow creation scripts** - Called when initiating new workflows

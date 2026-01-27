@@ -1,24 +1,25 @@
 {
-	"name": "hap-codegen",
-	"version": "0.1.0",
-	"description": "Code generation for HAP-NodeJS service and characteristic TypeScript interfaces.",
-	"main": "dist/generate-hap-interfaces.js",
-	"types": "dist/generate-hap-interfaces.d.ts",
-	"module": "dist/generate-hap-interfaces.js",
-	"type": "module",
-	"private": true,
-	"scripts": {
-		"download": "tsx src/download-hap-definitions.ts",
-		"generate": "tsx src/generate-hap-interfaces.ts"
-	},
-	"license": "Apache-2.0",
-	"devDependencies": {
-		"ts-morph": "^20.0.0",
-		"ts-node": "^10.9.2",
-		"typescript": "^5.9.3"
-	},
-	"dependencies": {
-		"camelcase": "^8.0.0",
-		"reflect-metadata": "^0.2.2"
-	}
+  "name": "hap-codegen",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Code generation for HAP-NodeJS service and characteristic TypeScript interfaces.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "dist/generate-hap-interfaces.js",
+  "module": "dist/generate-hap-interfaces.js",
+  "types": "dist/generate-hap-interfaces.d.ts",
+  "scripts": {
+    "download": "tsx src/download-hap-definitions.ts",
+    "generate": "tsx src/generate-hap-interfaces.ts"
+  },
+  "dependencies": {
+    "camelcase": "^9.0.0",
+    "reflect-metadata": "^0.2.2"
+  },
+  "devDependencies": {
+    "hap-nodejs": "0.14",
+    "ts-morph": "^27.0.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
 }

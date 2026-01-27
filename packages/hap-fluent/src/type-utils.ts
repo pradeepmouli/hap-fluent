@@ -3,8 +3,8 @@
  * Provides helper types for working with services, characteristics, and state management
  */
 
-import type { CharacteristicValue } from 'hap-nodejs';
-import type { FluentCharacteristic } from './FluentCharacteristic.js';
+import type { CharacteristicValue } from "hap-nodejs";
+import type { FluentCharacteristic } from "./FluentCharacteristic.js";
 
 /**
  * Extract characteristic names from a service type
@@ -17,10 +17,10 @@ import type { FluentCharacteristic } from './FluentCharacteristic.js';
  * ```
  */
 export type CharacteristicNames<T> = T extends { characteristics: infer C }
-	? C extends Record<string, unknown>
-		? keyof C
-		: never
-	: never;
+  ? C extends Record<string, unknown>
+    ? keyof C
+    : never
+  : never;
 
 /**
  * Extract the type of a specific characteristic from a service
@@ -31,14 +31,13 @@ export type CharacteristicNames<T> = T extends { characteristics: infer C }
  * // Result: FluentCharacteristic<boolean>
  * ```
  */
-export type CharacteristicType<
-	TService,
-	TCharName extends string,
-> = TService extends { characteristics: infer C }
-	? C extends Record<TCharName, infer Char>
-		? Char
-		: never
-	: never;
+export type CharacteristicType<TService, TCharName extends string> = TService extends {
+  characteristics: infer C;
+}
+  ? C extends Record<TCharName, infer Char>
+    ? Char
+    : never
+  : never;
 
 /**
  * Represents the state of a service as a record of characteristic values
@@ -83,15 +82,15 @@ export type PartialServiceState = Partial<ServiceState>;
  * ```
  */
 export function isFluentCharacteristic(
-	value: unknown,
+  value: unknown,
 ): value is FluentCharacteristic<CharacteristicValue> {
-	return (
-		typeof value === 'object' &&
-		value !== null &&
-		'characteristic' in value &&
-		typeof (value as Record<string, unknown>).set === 'function' &&
-		typeof (value as Record<string, unknown>).get === 'function'
-	);
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "characteristic" in value &&
+    typeof (value as Record<string, unknown>).set === "function" &&
+    typeof (value as Record<string, unknown>).get === "function"
+  );
 }
 
 /**
@@ -127,7 +126,7 @@ export type OptionalProperties<T, K extends keyof T> = Omit<T, K> & Partial<Pick
  * ```
  */
 export type ValueTransformer<TInput = CharacteristicValue, TOutput = CharacteristicValue> = (
-	value: TInput,
+  value: TInput,
 ) => TOutput;
 
 /**
@@ -156,7 +155,7 @@ export type ValuePredicate<T = CharacteristicValue> = (value: T) => boolean;
  * ```
  */
 export function createClampTransformer(min: number, max: number): ValueTransformer<number, number> {
-	return (value: number): number => Math.max(min, Math.min(max, value));
+  return (value: number): number => Math.max(min, Math.min(max, value));
 }
 
 /**
@@ -176,15 +175,15 @@ export function createClampTransformer(min: number, max: number): ValueTransform
  * ```
  */
 export function createScaleTransformer(
-	fromMin: number,
-	fromMax: number,
-	toMin: number,
-	toMax: number,
+  fromMin: number,
+  fromMax: number,
+  toMin: number,
+  toMax: number,
 ): ValueTransformer<number, number> {
-	return (value: number): number => {
-		const normalized = (value - fromMin) / (fromMax - fromMin);
-		return toMin + normalized * (toMax - toMin);
-	};
+  return (value: number): number => {
+    const normalized = (value - fromMin) / (fromMax - fromMin);
+    return toMin + normalized * (toMax - toMin);
+  };
 }
 
 /**
@@ -203,14 +202,14 @@ export function createScaleTransformer(
  * ```
  */
 export function createRangePredicate(
-	min: number,
-	max: number,
-	inclusive = true,
+  min: number,
+  max: number,
+  inclusive = true,
 ): ValuePredicate<number> {
-	return (value: number): boolean => {
-		if (inclusive) {
-			return value >= min && value <= max;
-		}
-		return value > min && value < max;
-	};
+  return (value: number): boolean => {
+    if (inclusive) {
+      return value >= min && value <= max;
+    }
+    return value > min && value < max;
+  };
 }

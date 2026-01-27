@@ -1,255 +1,297 @@
-// Usage Examples for HAP Fluent API
-// These examples demonstrate the improved type-safe fluent interface
+import { Service } from "hap-nodejs";
+import { PlatformAccessory } from "homebridge";
+import type { DynamicPlatformPlugin } from "homebridge";
+import { wrapAccessory } from "../src";
 
-import { wrapService, createFluentServices } from '../src/index.js';
-import { Service } from 'homebridge';
+/**
+ * Example 1: Basic Air Purifier with AccessoryHandler
+ * Demonstrates the single-surface API for wrapping and managing accessories
+ */
+export function basicAirPurifierExample(
+  plugin: DynamicPlatformPlugin,
+  platformAccessory: PlatformAccessory,
+  api: any,
+) {
+  // Wrap accessory and add service with type accumulation
+  const handler = wrapAccessory(plugin, platformAccessory, api).with(
+    Service.AirPurifier,
+    "Main Purifier",
+  );
 
-// Example 1: Basic Service Creation and Usage
-export function basicUsageExample() {
-	// Create an AccessoryInformation service with proper typing
-	const accessoryInfo = wrapService(new Service.AccessoryInformation(), {
-		displayName: 'My RabbitAir Purifier',
-		enableLogging: true,
-		logPrefix: '[RabbitAir]'
-	});
+  // Initialize with default state
+  handler.initialize({
+    airPurifier: {
+      active: 0, // Inactive
+      currentAirPurifierState: 0, // Inactive
+      targetAirPurifierState: 0, // Manual
+      rotationSpeed: 0,
+    },
+    accessoryInformation: {
+      manufacturer: "RabbitAir",
+      model: "MinusA2",
+      serialNumber: "RA-12345",
+    },
+  });
 
-	// Set up characteristic handlers with strong typing
-	accessoryInfo
-		.onCharacteristicGet('manufacturer', () => 'RabbitAir')
-		.onCharacteristicGet('model', () => 'MinusA2')
-		.onCharacteristicGet('serialNumber', () => 'RA-12345')
-		.onCharacteristicGet('firmwareRevision', () => '1.0.4');
+  // Access and configure characteristics
+  const purifier = handler.services.airPurifier;
 
-	// Update characteristics with type safety
-	accessoryInfo.updateCharacteristic('name', 'Living Room Air Purifier');
+  purifier.characteristics.active.onGet(async () => {
+    console.log("Getting purifier active state");
+    return 0;
+  });
 
-	return accessoryInfo;
+  purifier.characteristics.active.onSet(async (value: number) => {
+    console.log(`Purifier active: ${value}`);
+  });
+
+  purifier.characteristics.rotationSpeed.onGet(async () => {
+    console.log("Getting rotation speed");
+    return 0;
+  });
+
+  purifier.characteristics.rotationSpeed.onSet(async (value: number) => {
+    console.log(`Setting rotation speed to ${value}%`);
+  });
+
+  return handler;
 }
 
+/**
+ * Example 2: Multi-Service Accessory
+ * Demonstrates managing multiple services and cross-service interactions
+ */
+export function multiServiceAccessoryExample(
+  plugin: DynamicPlatformPlugin,
+  platformAccessory: PlatformAccessory,
+  api: any,
+) {
+  // Add multiple services with type accumulation
+  const handler = wrapAccessory(plugin, platformAccessory, api)
+    .with(Service.AirPurifier, "Purifier")
+    .with(Service.AirQualitySensor, "Quality Sensor")
+    .with(Service.HumiditySensor, "Humidity Sensor");
 
+  // Initialize state for all services
+  handler.initialize({
+    airPurifier: {
+      active: 0,
+      currentAirPurifierState: 0,
+      targetAirPurifierState: 0,
+      rotationSpeed: 0,
+    },
+    airQualitySensor: {
+      airQuality: 1, // Excellent
+      pm25Density: 10,
+    },
+    humiditySensor: {
+      currentRelativeHumidity: 45,
+    },
+    accessoryInformation: {
+      manufacturer: "SmartHome Inc",
+      model: "Multi-Sensor",
+      serialNumber: "MS-98765",
+    },
+  });
 
+  // Set up purifier handlers
+  handler.services.airPurifier.characteristics.active.onSet(async (value: number) => {
+    console.log(`Purifier active state: ${value}`);
 
-// Example 2: Air Purifier Service with Validation
-export function airPurifierExample() {
-	const airPurifier = createFluentService('AirPurifier', {
-		displayName: 'RabbitAir Purifier'
-	});
+    // Update related characteristics
+    if (value === 1) {
+      handler.services.airPurifier.characteristics.currentAirPurifierState.set(2); // Purifying
+    } else {
+      handler.services.airPurifier.characteristics.currentAirPurifierState.set(0); // Inactive
+    }
+  });
 
-	// Add validators for characteristics
-	airPurifier
-		.setValidator('rotationSpeed', (speed) => {
-			if (speed < 0 || speed > 100) {
-				return 'Rotation speed must be between 0 and 100';
-			}
-			return true;
-		})
-		.setValidator('active', (active) => {
-			return active === 0 || active === 1;
-		});
+  // Monitor humidity
+  handler.services.humiditySensor.characteristics.currentRelativeHumidity.onGet(async () => {
+    console.log("Reading humidity from device");
+    return 50;
+  });
 
-	// Set up handlers with validation
-	airPurifier
-		.onCharacteristicGet('active', async () => {
-			// Simulate getting current state from device
-			return 1; // Active
-		})
-		.onCharacteristicSet('active', async (value) => {
-			console.log(`Setting purifier active state to: ${value}`);
-			// Send command to device
-		})
-		.onCharacteristicGet('currentAirPurifierState', () => {
-			return 2; // Purifying
-		})
-		.onCharacteristicSet('targetAirPurifierState', async (value) => {
-			console.log(`Setting target purifier state to: ${value}`);
-		});
-
-	return airPurifier;
+  return handler;
 }
 
-// Example 3: Multiple Services with Event Handling
-export function multipleServicesExample() {
-	const services = createFluentServices([
-		{ name: 'AccessoryInformation', config: { displayName: 'Info Service' } },
-		{ name: 'AirPurifier', config: { displayName: 'Purifier Service' } },
-		{ name: 'AirQualitySensor', config: { displayName: 'Quality Sensor' } },
-		{ name: 'FilterMaintenance', config: { displayName: 'Filter Service' } }
-	]);
+/**
+ * Example 3: Thermostat with Complex Logic
+ * Demonstrates accessing context and managing complex state
+ */
+export function thermostatExample(
+  plugin: DynamicPlatformPlugin,
+  platformAccessory: PlatformAccessory,
+  api: any,
+) {
+  const handler = wrapAccessory(plugin, platformAccessory, api)
+    .with(Service.Thermostat, "Climate Control")
+    .with(Service.TemperatureSensor, "Temperature");
 
-	// Set up cross-service event handling
-	services.AirPurifier
-		.onCharacteristicChange('active', (newValue, oldValue) => {
-			console.log(`Air purifier active changed: ${oldValue} -> ${newValue}`);
+  // Initialize state
+  handler.initialize({
+    thermostat: {
+      currentHeatingCoolingState: 0,
+      targetHeatingCoolingState: 1, // Heat
+      currentTemperature: 20,
+      targetTemperature: 22,
+      temperatureDisplayUnits: 0, // Celsius
+    },
+    temperatureSensor: {
+      currentTemperature: 20,
+    },
+    accessoryInformation: {
+      manufacturer: "SmartHome",
+      model: "Thermostat Pro",
+      serialNumber: "TH-001",
+    },
+  });
 
-			// Update air quality sensor based on purifier state
-			if (newValue === 1) {
-				services.AirQualitySensor.updateCharacteristic('statusActive', true);
-			} else {
-				services.AirQualitySensor.updateCharacteristic('statusActive', false);
-			}
-		})
-		.onCharacteristicChange('rotationSpeed', (newValue) => {
-			console.log(`Rotation speed changed to: ${newValue}%`);
-		});
+  // Store device state in context
+  handler.context.currentTemp = 20;
+  handler.context.targetTemp = 22;
+  handler.context.mode = "heat";
 
-	// Set up filter maintenance monitoring
-	services.FilterMaintenance
-		.onCharacteristicGet('filterLifeLevel', () => {
-			// Calculate filter life based on usage
-			return 75; // 75% remaining
-		})
-		.onCharacteristicGet('filterChangeIndication', () => {
-			return 0; // Filter OK
-		});
+  const thermostat = handler.services.thermostat;
 
-	return services;
+  // Target temperature handler
+  thermostat.characteristics.targetTemperature.onSet(async (value: number) => {
+    console.log(`Setting target temperature to ${value}°C`);
+    handler.context.targetTemp = value;
+    // Send command to device
+  });
+
+  // Heating mode handler
+  thermostat.characteristics.targetHeatingCoolingState.onSet(async (value: number) => {
+    const modes = ["Off", "Heat", "Cool", "Auto"];
+    console.log(`Setting mode to ${modes[value] || "Unknown"}`);
+    handler.context.mode = value;
+  });
+
+  // Periodically update current temperature
+  setInterval(() => {
+    // Simulate temperature changes
+    const sensor = handler.services.temperatureSensor;
+    sensor.characteristics.currentTemperature.set(handler.context.currentTemp);
+    thermostat.characteristics.currentTemperature.set(handler.context.currentTemp);
+  }, 10000);
+
+  return handler;
 }
 
-// Example 4: Advanced Usage with Custom Logic
-export function advancedUsageExample() {
-	const purifier = createFluentService('AirPurifier');
-	const qualitySensor = createFluentService('AirQualitySensor');
+/**
+ * Example 4: Smart Light with Color Control
+ * Demonstrates color light control with validation
+ */
+export function smartLightExample(
+  plugin: DynamicPlatformPlugin,
+  platformAccessory: PlatformAccessory,
+  api: any,
+) {
+  const handler = wrapAccessory(plugin, platformAccessory, api).with(
+    Service.Lightbulb,
+    "Color Light",
+  );
 
-	// Simulate device state
-	let deviceState = {
-		power: false,
-		speed: 0,
-		mode: 'auto',
-		airQuality: 1, // Good
-		pm25: 12
-	};
+  // Initialize with color light state
+  handler.initialize({
+    lightbulb: {
+      on: false,
+      brightness: 100,
+      hue: 0,
+      saturation: 0,
+      colorTemperature: 370, // Warm white
+    },
+    accessoryInformation: {
+      manufacturer: "Philips",
+      model: "Hue Bridge",
+      serialNumber: "HB-12345",
+    },
+  });
 
-	// Set up complex state management
-	purifier
-		.onCharacteristicGet('active', () => deviceState.power ? 1 : 0)
-		.onCharacteristicSet('active', async (value) => {
-			deviceState.power = value === 1;
+  const light = handler.services.lightbulb;
 
-			// Update related characteristics
-			if (deviceState.power) {
-				purifier.updateCharacteristic('currentAirPurifierState', 2); // Purifying
-				qualitySensor.updateCharacteristic('statusActive', true);
-			} else {
-				purifier.updateCharacteristic('currentAirPurifierState', 0); // Inactive
-				qualitySensor.updateCharacteristic('statusActive', false);
-			}
-		})
-		.onCharacteristicGet('rotationSpeed', () => deviceState.speed)
-		.onCharacteristicSet('rotationSpeed', async (value) => {
-			deviceState.speed = value;
+  // Power on/off
+  light.characteristics.on.onSet(async (value: boolean) => {
+    console.log(`Light power: ${value ? "ON" : "OFF"}`);
+  });
 
-			// Adjust device mode based on speed
-			if (value === 0) {
-				deviceState.mode = 'off';
-			} else if (value <= 33) {
-				deviceState.mode = 'low';
-			} else if (value <= 66) {
-				deviceState.mode = 'medium';
-			} else {
-				deviceState.mode = 'high';
-			}
+  // Brightness
+  light.characteristics.brightness.onSet(async (value: number) => {
+    console.log(`Brightness set to ${value}%`);
+  });
 
-			console.log(`Device mode set to: ${deviceState.mode}`);
-		});
+  // Hue
+  light.characteristics.hue.onSet(async (value: number) => {
+    console.log(`Hue set to ${value}°`);
+  });
 
-	// Set up air quality monitoring
-	qualitySensor
-		.onCharacteristicGet('airQuality', () => deviceState.airQuality)
-		.onCharacteristicGet('pm25Density', () => deviceState.pm25);
+  // Saturation
+  light.characteristics.saturation.onSet(async (value: number) => {
+    console.log(`Saturation set to ${value}%`);
+  });
 
-	// Simulate periodic air quality updates
-	setInterval(() => {
-		// Simulate air quality changes
-		deviceState.pm25 = Math.floor(Math.random() * 50) + 10; // 10-60 μg/m³
+  // Color temperature
+  light.characteristics.colorTemperature.onSet(async (value: number) => {
+    console.log(`Color temperature set to ${value}K`);
+  });
 
-		// Determine air quality level based on PM2.5
-		if (deviceState.pm25 <= 12) {
-			deviceState.airQuality = 1; // Excellent
-		} else if (deviceState.pm25 <= 35) {
-			deviceState.airQuality = 2; // Good
-		} else if (deviceState.pm25 <= 55) {
-			deviceState.airQuality = 3; // Fair
-		} else {
-			deviceState.airQuality = 4; // Inferior
-		}
-
-		// Update characteristics
-		qualitySensor
-			.updateCharacteristic('pm25Density', deviceState.pm25)
-			.updateCharacteristic('airQuality', deviceState.airQuality);
-	}, 30000); // Update every 30 seconds
-
-	return { purifier, qualitySensor };
+  return handler;
 }
 
-// Example 5: Error Handling and Validation
-export function errorHandlingExample() {
-	const service = createFluentService('AirPurifier');
+/**
+ * Example 5: Door Lock Control
+ * Demonstrates lock control and status management
+ */
+export function smartLockExample(
+  plugin: DynamicPlatformPlugin,
+  platformAccessory: PlatformAccessory,
+  api: any,
+) {
+  const handler = wrapAccessory(plugin, platformAccessory, api).with(
+    Service.Lock,
+    "Front Door Lock",
+  );
 
-	// Add comprehensive validation
-	service
-		.setValidator('rotationSpeed', (speed) => {
-			if (typeof speed !== 'number') {
-				return 'Rotation speed must be a number';
-			}
-			if (speed < 0 || speed > 100) {
-				return 'Rotation speed must be between 0 and 100';
-			}
-			if (!Number.isInteger(speed)) {
-				return 'Rotation speed must be an integer';
-			}
-			return true;
-		})
-		.setValidator('active', (active) => {
-			if (active !== 0 && active !== 1) {
-				return 'Active state must be 0 (inactive) or 1 (active)';
-			}
-			return true;
-		});
+  // Initialize lock state
+  handler.initialize({
+    lock: {
+      lockCurrentState: 1, // Unlocked
+      lockTargetState: 1, // Unlocked
+    },
+    accessoryInformation: {
+      manufacturer: "August",
+      model: "Smart Lock Pro",
+      serialNumber: "SL-99999",
+    },
+  });
 
-	// Set up error handling in callbacks
-	service
-		.onCharacteristicSet('rotationSpeed', async (value) => {
-			try {
-				// Simulate device communication that might fail
-				if (Math.random() < 0.1) { // 10% chance of failure
-					throw new Error('Device communication failed');
-				}
+  const lock = handler.services.lock;
 
-				console.log(`Successfully set rotation speed to ${value}`);
-			} catch (error) {
-				console.error('Failed to set rotation speed:', error);
-				throw error; // Re-throw to trigger HomeKit error
-			}
-		})
-		.onCharacteristicGet('currentAirPurifierState', async () => {
-			try {
-				// Simulate getting state from device
-				await new Promise(resolve => setTimeout(resolve, 100));
-				return 2; // Purifying
-			} catch (error) {
-				console.error('Failed to get purifier state:', error);
-				return 0; // Default to inactive on error
-			}
-		});
+  // Handle lock/unlock
+  lock.characteristics.lockTargetState.onSet(async (value: number) => {
+    const state = value === 0 ? "LOCK" : "UNLOCK";
+    console.log(`Lock command received: ${state}`);
 
-	return service;
-}
+    // Send command to device
+    try {
+      // Simulate device communication
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
-// Type-safe usage demonstration
-export function typeSafetyDemo() {
-	const service = createFluentService('AirPurifier');
+      // Update actual lock state
+      lock.characteristics.lockCurrentState.set(value);
+      console.log(`Lock ${state} successful`);
+    } catch (error) {
+      console.error(`Failed to ${state} door:`, error);
+      throw error;
+    }
+  });
 
-	// All of these are type-safe and will provide IntelliSense
-	service.onCharacteristicGet('active', () => 1);
-	service.onCharacteristicGet('currentAirPurifierState', () => 2);
-	service.onCharacteristicGet('targetAirPurifierState', () => 1);
-	service.onCharacteristicGet('rotationSpeed', () => 50);
+  // Monitor lock state
+  lock.characteristics.lockCurrentState.onGet(async () => {
+    console.log("Reading lock status from device");
+    return 1; // Unlocked
+  });
 
-	// These would cause TypeScript errors if uncommented:
-	// service.onCharacteristicGet('invalidCharacteristic', () => 'test'); // Error: invalid characteristic
-	// service.onCharacteristicGet('active', () => 'invalid'); // Error: wrong return type
-	// service.updateCharacteristic('rotationSpeed', 'not a number'); // Error: wrong value type
-
-	return service;
+  return handler;
 }

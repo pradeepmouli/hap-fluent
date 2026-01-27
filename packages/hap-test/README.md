@@ -30,16 +30,16 @@ pnpm add -D hap-test
 ## Quick Start
 
 ```typescript
-import { describe, it, expect } from 'vitest';
-import { TestHarness } from 'hap-test';
-import { MyPlatform } from '../src/platform';
+import { describe, it, expect } from "vitest";
+import { TestHarness } from "hap-test";
+import { MyPlatform } from "../src/platform";
 
-describe('MyPlatform', () => {
-  it('should register a lightbulb accessory', async () => {
+describe("MyPlatform", () => {
+  it("should register a lightbulb accessory", async () => {
     const harness = await TestHarness.create({
       platformConstructor: MyPlatform,
       platformConfig: {
-        name: 'Test Platform',
+        name: "Test Platform",
         // ... your config
       },
     });
@@ -52,12 +52,12 @@ describe('MyPlatform', () => {
     const accessories = homekit.accessories();
 
     expect(accessories).toHaveLength(1);
-    expect(accessories[0].displayName).toBe('My Lightbulb');
+    expect(accessories[0].displayName).toBe("My Lightbulb");
 
     // Test characteristic operations
-    const service = homekit.service(accessories[0].UUID, 'Lightbulb');
-    const onChar = service?.characteristic('On');
-    
+    const service = homekit.service(accessories[0].UUID, "Lightbulb");
+    const onChar = service?.characteristic("On");
+
     await onChar?.setValue(true);
     expect(await onChar?.getValue()).toBe(true);
 
@@ -68,9 +68,9 @@ describe('MyPlatform', () => {
 
 ## Documentation
 
-- [API Reference](./docs/api.md) *(coming soon)*
-- [User Guide](./docs/guide.md) *(coming soon)*
-- [Examples](./examples/) *(coming soon)*
+- [API Reference](./docs/api.md) _(coming soon)_
+- [User Guide](./docs/guide.md) _(coming soon)_
+- [Examples](./examples/) _(coming soon)_
 
 ## Requirements
 

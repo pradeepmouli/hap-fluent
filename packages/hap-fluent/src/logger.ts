@@ -1,137 +1,99 @@
 /**
- * Structured logging configuration for HAP Fluent
- * Uses Pino for fast, JSON-structured logging with configurable levels
+ * Logger adapter for HAP Fluent
+ * Uses Homebridge's Logging interface to integrate with the platform's logging system
  */
 
-import pino from 'pino';
+import type { Logging } from "homebridge";
 
-export type LogLevel = 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace' | 'silent';
-
-export interface LoggerOptions {
-	/**
-	 * Minimum log level to output
-	 * @default 'info'
-	 */
-	level?: LogLevel;
-
-	/**
-	 * Enable pretty printing for development
-	 * @default false
-	 */
-	pretty?: boolean;
-
-	/**
-	 * Custom log destination
-	 * @default process.stdout
-	 */
-	destination?: pino.DestinationStream;
-
-	/**
-	 * Additional context to include in all log messages
-	 */
-	base?: Record<string, unknown>;
+/**
+ * Logger interface compatible with homebridge's Logging
+ * Provides methods for logging at different levels with context support
+ */
+export interface Logger {
+  info(message: string, context?: Record<string, unknown>): void;
+  warn(message: string, context?: Record<string, unknown>): void;
+  error(message: string, context?: Record<string, unknown>): void;
+  debug(message: string, context?: Record<string, unknown>): void;
+  success?(message: string, context?: Record<string, unknown>): void;
 }
 
 /**
- * Global logger instance
+ * Adapter to wrap Homebridge's Logging interface
+ * Formats structured log messages with context for better debugging
  */
-let loggerInstance: pino.Logger | null = null;
+export class LoggerAdapter implements Logger {
+  constructor(private readonly homebridgeLogger: Logging) {}
+
+  info(message: string, context?: Record<string, unknown>): void {
+    this.homebridgeLogger.info(this.formatMessage(message, context));
+  }
+
+  warn(message: string, context?: Record<string, unknown>): void {
+    this.homebridgeLogger.warn(this.formatMessage(message, context));
+  }
+
+  error(message: string, context?: Record<string, unknown>): void {
+    this.homebridgeLogger.error(this.formatMessage(message, context));
+  }
+
+  debug(message: string, context?: Record<string, unknown>): void {
+    this.homebridgeLogger.debug(this.formatMessage(message, context));
+  }
+
+  success(message: string, context?: Record<string, unknown>): void {
+    if (this.homebridgeLogger.success) {
+      this.homebridgeLogger.success(this.formatMessage(message, context));
+    } else {
+      this.info(message, context);
+    }
+  }
+
+  private formatMessage(message: string, context?: Record<string, unknown>): string {
+    if (!context || Object.keys(context).length === 0) {
+      return message;
+    }
+    const contextStr = Object.entries(context)
+      .map(([key, value]) => `${key}=${JSON.stringify(value)}`)
+      .join(" ");
+    return `${message} [${contextStr}]`;
+  }
+}
 
 /**
- * Configure the global logger instance
+ * Create a logger instance from Homebridge's Logging interface
  *
- * @param options - Logger configuration options
- * @returns Configured Pino logger instance
+ * @param homebridgeLogger - The Homebridge logger instance
+ * @returns Logger adapter instance
  *
  * @example
  * ```typescript
- * // Development mode with pretty printing
- * configureLogger({ level: 'debug', pretty: true });
+ * class MyPlatform implements DynamicPlatformPlugin {
+ *   private readonly logger: Logger;
  *
- * // Production mode with JSON output
- * configureLogger({ level: 'info', pretty: false });
- *
- * // Custom context for all logs
- * configureLogger({
- *   level: 'debug',
- *   base: { plugin: 'my-homebridge-plugin', version: '1.0.0' }
- * });
+ *   constructor(
+ *     public readonly log: Logging,
+ *     public readonly config: PlatformConfig,
+ *     public readonly api: API,
+ *   ) {
+ *     this.logger = createLogger(log);
+ *   }
+ * }
  * ```
  */
-export function configureLogger(options: LoggerOptions = {}): pino.Logger {
-	const {
-		level = 'info',
-		pretty = false,
-		destination,
-		base = { name: 'hap-fluent' },
-	} = options;
-
-	const transport = pretty
-		? {
-				target: 'pino-pretty',
-				options: {
-					colorize: true,
-					translateTime: 'HH:MM:ss.l',
-					ignore: 'pid,hostname',
-				},
-			}
-		: undefined;
-
-	loggerInstance = pino(
-		{
-			level,
-			base,
-			...(transport && { transport }),
-		},
-		destination,
-	);
-
-	return loggerInstance;
+export function createLogger(homebridgeLogger: Logging): Logger {
+  return new LoggerAdapter(homebridgeLogger);
 }
 
 /**
- * Get the current logger instance
- * If no logger has been configured, returns a default logger with 'info' level
- *
- * @returns Current Pino logger instance
- *
- * @example
- * ```typescript
- * const logger = getLogger();
- * logger.info('Operation completed');
- * logger.error({ err }, 'Operation failed');
- * ```
+ * Create a no-op logger for testing or when homebridge logger is not available
+ * All log methods do nothing
  */
-export function getLogger(): pino.Logger {
-	if (!loggerInstance) {
-		loggerInstance = pino({
-			level: 'info',
-			base: { name: 'hap-fluent' },
-		});
-	}
-	return loggerInstance;
-}
-
-/**
- * Create a child logger with additional context
- *
- * @param context - Additional context to include in all child logger messages
- * @returns Child logger instance with bound context
- *
- * @example
- * ```typescript
- * const serviceLogger = createChildLogger({ service: 'Lightbulb', uuid: '123' });
- * serviceLogger.debug('Service created');
- * // Output: {"level":20,"service":"Lightbulb","uuid":"123","msg":"Service created"}
- * ```
- */
-export function createChildLogger(context: Record<string, unknown>): pino.Logger {
-	return getLogger().child(context);
-}
-
-/**
- * Reset the logger instance (primarily for testing)
- */
-export function resetLogger(): void {
-	loggerInstance = null;
+export function createNoOpLogger(): Logger {
+  return {
+    info: () => {},
+    warn: () => {},
+    error: () => {},
+    debug: () => {},
+    success: () => {},
+  };
 }

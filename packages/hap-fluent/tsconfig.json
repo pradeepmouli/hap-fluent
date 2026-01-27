@@ -1,24 +1,18 @@
 {
-	"extends": "../../tsconfig.json",
-	"compilerOptions": {
-		"target": "ES2020",
-		"module": "node18",
-		"moduleResolution": "node16",
-		"rootDir": "src",
-		"outDir": "dist",
-		"strict": true,
-		"esModuleInterop": true,
-		"skipLibCheck": true,
-		"tsBuildInfoFile": "dist/.tsbuildinfo",
-		"sourceMap": true,
-		"declarationMap": true
-	},
-	"include": [
-		"src"
-	],
-	"exclude": [
-		"node_modules",
-		"dist",
-		"examples"
-	]
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "node18",
+    "moduleResolution": "node16",
+    "rootDir": "src",
+    "outDir": "dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "tsBuildInfoFile": "dist/.tsbuildinfo",
+    "sourceMap": true,
+    "declarationMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "examples", "test"]
 }

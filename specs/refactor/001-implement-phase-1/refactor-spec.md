@@ -8,12 +8,15 @@
 **Status**: [x] Planning | [ ] Baseline Captured | [ ] In Progress | [ ] Validation | [ ] Complete
 
 ## Input
+
 User description: "Implement all phases of enhancement proposals: Fix type safety violations, add error handling, clean up code quality issues, correct package dependencies, improve developer experience, add comprehensive testing, implement advanced features, optimize performance, and enhance build tooling"
 
 ## Motivation
 
 ### Current State Problems
+
 **Code Smell(s)**:
+
 - [x] Type Safety Violations (`as any`, `@ts-ignore`)
 - [x] Missing Error Handling (no try-catch in async operations)
 - [x] Dead Code (large commented-out blocks)
@@ -22,6 +25,7 @@ User description: "Implement all phases of enhancement proposals: Fix type safet
 - [x] Broken Examples (syntax errors in usage-examples.ts)
 
 **Concrete Examples**:
+
 - `packages/hap-fluent/src/FluentService.ts` lines 73, 83, 89, 92: Multiple `as any` casts defeating type safety
 - `packages/hap-fluent/src/AccessoryHandler.ts` lines 66, 69, 150: `@ts-ignore` and `@ts-expect-error` masking issues
 - `packages/hap-fluent/src/AccessoryHandler.ts` lines 102-113, 240-294: Large blocks of commented-out code
@@ -31,12 +35,14 @@ User description: "Implement all phases of enhancement proposals: Fix type safet
 - `packages/hap-fluent/src/FluentService.ts`: `getOrAddService` validates, but `wrapService` doesn't
 
 ### Business/Technical Justification
+
 [x] **Blocking new features**: Type safety issues prevent safe refactoring and feature additions
 [x] **Causing frequent bugs**: Missing error handling leads to silent failures and crashes
 [x] **Developer velocity impact**: Broken examples and unclear APIs slow down adoption
 [x] **Technical debt accumulation**: Code quality issues compound, making maintenance harder
 
 **Why NOW**:
+
 - Library is approaching 1.0.0 release - must implement all enhancements before stable API
 - Current type safety violations violate new constitution principles (Type Safety First)
 - Incorrect dependency configuration causes version conflicts for consumers
@@ -48,7 +54,9 @@ User description: "Implement all phases of enhancement proposals: Fix type safet
 ## Proposed Improvement
 
 ### Refactoring Pattern/Technique
+
 **Primary Techniques** (6 Phases):
+
 1. **Phase 1 - Code Quality & Robustness**: Type safety restoration, error handling, code cleanup
 2. **Phase 2 - Developer Experience**: Documentation, improved error messages, debug logging
 3. **Phase 3 - Testability**: Test coverage, integration tests, property-based testing
@@ -60,39 +68,46 @@ User description: "Implement all phases of enhancement proposals: Fix type safet
 Implement comprehensive enhancements incrementally across 6 phases, each building on the previous:
 
 **Phase 1 (Critical Foundation)**:
+
 - Remove all type safety violations with proper type guards
 - Add comprehensive error handling with custom error classes
 - Clean up dead code and fix broken examples
 - Correct package dependency configuration
 
 **Phase 2 (Developer Experience)**:
+
 - Create comprehensive README and API documentation
 - Improve error messages with actionable context
 - Add debug logging with `debug` package
 - Create type utilities for better DX
 
 **Phase 3 (Testing Infrastructure)**:
+
 - Add test coverage reporting and tracking
 - Implement integration tests with real HAP-NodeJS
 - Add property-based tests for complex scenarios
 - Establish coverage thresholds
 
 **Phase 4 (Advanced Features)**:
+
 - Implement validation framework with composable validators
 - Add standard interceptor API with fluent methods (log, limit, clamp, transform, audit)
 - Interceptors wrap onSet/onGet handlers for HomeKit-initiated changes
 
 **Phase 5 (Performance)**:
+
 - Add intelligent caching layer
 - Implement batch operations for bulk updates
 - Optimize memory usage and bundle size
 
 **Phase 6 (Build Tooling)**:
+
 - Enable source maps for production debugging
 - Add modern package exports for tree-shaking
 - Implement bundle size tracking in CI
 
 **Files Affected** (Complete List):
+
 - **Modified**:
   - `packages/hap-fluent/src/FluentCharacteristic.ts` (error handling, events, caching)
   - `packages/hap-fluent/src/FluentService.ts` (type safety, validation, batching)
@@ -118,7 +133,9 @@ Implement comprehensive enhancements incrementally across 6 phases, each buildin
   - Dead code in AccessoryHandler.ts (inline removal)
 
 ### Design Improvements
+
 **Before** (Current State):
+
 ```typescript
 // Phase 1 Issues:
 // - Unsafe type casts
@@ -152,6 +169,7 @@ async set(value: T): Promise<void> {
 ```
 
 **After** (All Phases Complete):
+
 ```typescript
 // Phase 1: Type Safety & Error Handling
 if (!isCharacteristicValue(value)) {
@@ -208,6 +226,7 @@ service.updateBatch({ On: true, Brightness: 75 });
   }
 }
 ```
+
 ```
 
 ## Baseline Metrics
@@ -526,7 +545,7 @@ Revert if any of these occur:
 3. **Standard Interceptor API**
    - [X] Add `.log()` method to FluentCharacteristic for logging operations
    - [X] Add `.limit(maxCalls, windowMs)` for rate-limiting
-   - [X] Add `.clamp(min, max)` for value clamping  
+   - [X] Add `.clamp(min, max)` for value clamping
    - [X] Add `.transform(fn)` for value transformation
    - [X] Add `.audit()` for audit trail tracking
    - [X] Interceptors wrap onSet/onGet handlers (listening side)
@@ -649,3 +668,4 @@ Revert if any of these occur:
 
 ---
 *Refactor spec created using `/refactor` workflow - See .specify/extensions/workflows/refactor/*
+```

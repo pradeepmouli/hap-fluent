@@ -1,38 +1,29 @@
 // Auto-generated HAP Fluent API wrapper
 // This file will be extended to use generated interfaces from hap-codegen
 
-
-import { Service, Characteristic, type WithUUID, type CharacteristicValue, type CharacteristicSetHandler } from 'homebridge';
-import type { InterfaceForService } from './types/index.js';
-import { CamelCase, PascalCase } from 'type-fest';
-import  {PlatformAccessory} from 'homebridge';
-import camelcase from 'camelcase';
-
-
-
-
 /**
  * FluentCharacteristic wraps a HAP characteristic with strong typing and fluent API
  */
-export * from './FluentCharacteristic.js';
+export * from "./FluentCharacteristic.js";
 
-export * from './FluentService.js';
+export * from "./FluentService.js";
 
-export * from './AccessoryHandler.js';
+// Export AccessoryHandler and the primary single-surface API: wrapAccessory
+export * from "./FluentAccessory.js";
 
-export * from './types/index.js';
+export * from "./types/index.js";
 
 // Export error classes for type-safe error handling
-export * from './errors.js';
+export * from "./errors.js";
 
 // Export type guards for runtime type validation
-export * from './type-guards.js';
+export * from "./type-guards.js";
 
 // Export type utilities for improved developer experience
-export * from './type-utils.js';
+export * from "./type-utils.js";
 
 // Export logger configuration
-export * from './logger.js';
+export * from "./logger.js";
 
 // Example usage (to be replaced with generated interfaces)
 // import { AccessoryInformationCharacteristics } from 'hap-codegen/hap-interfaces';

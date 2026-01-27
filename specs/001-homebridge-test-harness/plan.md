@@ -16,6 +16,7 @@ Create a comprehensive, developer-friendly test harness (`hap-test`) that enable
 **Language/Version**: TypeScript 5.x, Node.js 18+
 
 **Primary Dependencies**:
+
 - `homebridge` (peer dependency for plugin API types)
 - `hap-nodejs` (peer dependency for HAP protocol types)
 - `hap-fluent` (peer dependency, optional for fluent API testing)
@@ -28,18 +29,21 @@ Create a comprehensive, developer-friendly test harness (`hap-test`) that enable
 **Project Type**: NPM package (monorepo package) with TypeScript source
 
 **Performance Goals**:
+
 - Test harness initialization: < 50ms
 - Accessory registration: < 10ms per accessory
 - Characteristic get/set: < 5ms
 - Total test execution: < 100ms per test case
 
 **Constraints**:
+
 - Zero external network access (all mocked)
 - Temp directory for isolated storage
 - No production dependencies (test-only package)
 - 90%+ test coverage for core components
 
 **Scale/Scope**:
+
 - Supports platforms with 1-1000+ accessories
 - Event-based architecture for scalable notifications
 - ~7-week phased implementation
@@ -47,31 +51,36 @@ Create a comprehensive, developer-friendly test harness (`hap-test`) that enable
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 ### HAP Fluent Monorepo Constitution Compliance
 
 ✅ **I. Type Safety First (NON-NEGOTIABLE)**
+
 - All public APIs will have explicit TypeScript types
 - Strict null checks enabled
 - No `as any` casts in core implementation
 - Runtime validation in mocks to catch errors early
 
 ✅ **II. Library-First Architecture**
+
 - `hap-test` is a standalone, independently testable library
 - Single, clear purpose: testing infrastructure for plugins
 - Explicit exports via `package.json` `exports` field
 - Peer dependencies correctly categorized (homebridge, hap-nodejs, vitest → peerDependencies)
 
 ✅ **III. Test-First Development**
+
 - All components tested with unit, integration, and example-based tests
 - Coverage targets: >80% line coverage, >90% for critical paths
 
 ✅ **IV. Fluent API Design**
+
 - TestHarness supports method chaining and builder pattern
 - Clear, domain-appropriate naming (TestHarness, MockHomeKit)
 
 ✅ **V. Developer Experience (DX)**
+
 - Comprehensive JSDoc on all public APIs
 - Working examples for all major features
 - Actionable error messages
@@ -149,9 +158,11 @@ packages/hap-test/                    # New package for test harness
 Based on the architecture and technical context above, implementation proceeds in 7 phases across approximately 7 weeks:
 
 ### Phase 0: Core Infrastructure (Week 1-2)
+
 **Objective**: Establish foundation with TestHarness, MockHomebridgeAPI, and basic MockHomeKit
 
 **Deliverables**:
+
 - TestHarness class with basic lifecycle management
 - MockHomebridgeAPI with registration tracking
 - MockHomeKit with basic get/set operations
@@ -161,9 +172,11 @@ Based on the architecture and technical context above, implementation proceeds i
 **Gate**: Core components functional, can initialize platform and register accessories
 
 ### Phase 1: HAP Protocol Validation (Week 3)
+
 **Objective**: Implement full characteristic validation to ensure mock correctness
 
 **Deliverables**:
+
 - Characteristic constraint validation (min/max/step/validValues)
 - Format validation (bool, int, float, string, uint8, etc.)
 - Permission checking (read/write/notify)
@@ -173,9 +186,11 @@ Based on the architecture and technical context above, implementation proceeds i
 **Gate**: All HAP protocol rules enforced, can reject invalid operations
 
 ### Phase 2: Event System (Week 4)
+
 **Objective**: Implement robust event subscription and notification system
 
 **Deliverables**:
+
 - EventSubscription class with timeout support
 - Event notifications from platform to controller
 - `waitForNext()` method with configurable timeout
@@ -185,9 +200,11 @@ Based on the architecture and technical context above, implementation proceeds i
 **Gate**: Events propagate correctly, developers can wait for async operations
 
 ### Phase 3: Advanced Features (Week 5)
+
 **Objective**: Add network simulation, cached accessory flows, multi-user support
 
 **Deliverables**:
+
 - NetworkSimulator for resilience testing
 - Cached accessory restoration flows
 - Multi-user simulation (multiple HomeKit controllers)
@@ -198,9 +215,11 @@ Based on the architecture and technical context above, implementation proceeds i
 **Gate**: Can simulate realistic failure scenarios and multi-user interactions
 
 ### Phase 4: Developer Experience (Week 6)
+
 **Objective**: Polish API, create helpers, and improve error messages
 
 **Deliverables**:
+
 - Custom Vitest matchers (`toHaveCharacteristic`, `toHaveValue`, etc.)
 - Helpful error messages with context
 - Debug mode with detailed logging
@@ -210,9 +229,11 @@ Based on the architecture and technical context above, implementation proceeds i
 **Gate**: Developers can write tests comfortably with good IDE support
 
 ### Phase 5: Documentation (Week 6-7)
+
 **Objective**: Create comprehensive documentation and examples
 
 **Deliverables**:
+
 - API reference (auto-generated from JSDoc)
 - Getting Started guide (< 10 minutes to first test)
 - Advanced testing guide
@@ -222,9 +243,11 @@ Based on the architecture and technical context above, implementation proceeds i
 **Gate**: New developer can learn harness in < 30 minutes
 
 ### Phase 6: Integration & Release (Week 7)
+
 **Objective**: Polish, test, and publish
 
 **Deliverables**:
+
 - CI/CD pipeline integration
 - npm package publishing
 - Performance benchmarks

@@ -13,6 +13,7 @@ Phases 3, 4, and 7 have been successfully implemented with comprehensive code ch
 ### Phases Completed in This PR
 
 #### ✅ Phase 3: Testability (T066-T086)
+
 - Reorganized tests into `test/unit/`, `test/integration/`, `test/property-based/`
 - Added property-based testing with fast-check (8 generative tests)
 - Configured coverage thresholds (>80% line, >70% branch)
@@ -21,6 +22,7 @@ Phases 3, 4, and 7 have been successfully implemented with comprehensive code ch
 - Added comprehensive Testing section to README
 
 #### ✅ Phase 4: Validation Framework + Standard Interceptors (T087-T106)
+
 - **Validation**: 5 validator types, 24 tests, 8 examples
   - RangeValidator, EnumValidator, CompositeValidator
   - createCustomValidator(), createTransformingValidator()
@@ -31,10 +33,11 @@ Phases 3, 4, and 7 have been successfully implemented with comprehensive code ch
 - Created `hap-fluent/validation` and `hap-fluent/interceptors` exports
 
 #### ✅ Phase 7: Build & Tooling (T134-T153)
+
 - **Source Maps**: Enabled for better debugging in TypeScript
 - **Modern Exports**: 8 subpath exports with tree-shaking support
 - **Bundle Size Tracking**: CI workflow + size-limit configuration
-- **Modern Tooling**: 
+- **Modern Tooling**:
   - oxlint (50-100x faster than ESLint)
   - oxfmt (20-50x faster than Prettier)
   - tsgo (fast TypeScript builds)
@@ -68,10 +71,12 @@ Phases 3, 4, and 7 have been successfully implemented with comprehensive code ch
 ### New Files Created (26 files)
 
 #### Source Code
+
 1. `packages/hap-fluent/src/validation.ts` - Validation framework
 2. `packages/hap-fluent/src/interceptors.ts` - Interceptor infrastructure (later removed in favor of inline methods)
 
 #### Tests
+
 3. `packages/hap-fluent/test/unit/validation.test.ts` - 24 validation tests
 4. `packages/hap-fluent/test/unit/interceptors.test.ts` - 19 interceptor tests
 5. `packages/hap-fluent/test/unit/FluentAccessory.test.ts` - Moved from test/
@@ -82,14 +87,17 @@ Phases 3, 4, and 7 have been successfully implemented with comprehensive code ch
 10. `packages/hap-fluent/test/property-based/service-operations.property.test.ts` - 4 property tests
 
 #### Examples
+
 11. `packages/hap-fluent/examples/validation-examples.ts` - 8 validation examples
 12. `packages/hap-fluent/examples/interceptor-examples.ts` - 7 interceptor examples
 13. `packages/hap-fluent/examples/import-verification.ts` - Import pattern verification
 
 #### CI/CD
+
 14. `.github/workflows/bundle-size.yml` - Bundle size monitoring workflow
 
 #### Documentation
+
 15. `specs/refactor/001-implement-phase-1/PHASE4-COMPLETE.md` - Phase 4 summary
 16. `specs/refactor/001-implement-phase-1/PHASE7-COMPLETE.md` - Phase 7 summary
 17. `specs/refactor/001-implement-phase-1/PHASE8-SUMMARY.md` - This file
@@ -97,16 +105,16 @@ Phases 3, 4, and 7 have been successfully implemented with comprehensive code ch
 ### Modified Files (6 files)
 
 1. `packages/hap-fluent/tsconfig.json` - Added source maps
-2. `packages/hap-fluent/package.json` - 
+2. `packages/hap-fluent/package.json` -
    - Added size-limit configuration
    - Added oxlint/oxfmt scripts
    - Added validation/interceptors exports
 3. `packages/hap-fluent/vitest.config.ts` - Updated test patterns
-4. `packages/hap-fluent/README.md` - 
+4. `packages/hap-fluent/README.md` -
    - Added Testing section
    - Added Debugging with Source Maps section
    - Added bundle size badge
-5. `packages/hap-fluent/src/FluentCharacteristic.ts` - 
+5. `packages/hap-fluent/src/FluentCharacteristic.ts` -
    - Added validation integration
    - Added interceptor methods
 6. `specs/refactor/001-implement-phase-1/tasks.md` - Updated completion status
@@ -121,32 +129,24 @@ Phases 3, 4, and 7 have been successfully implemented with comprehensive code ch
 
 - [ ] **T154**: All tests passing - `npm run test`
   - **Expected**: 196 tests passing (153 from Phase 3, +43 from Phase 4)
-  
 - [ ] **T155**: Coverage thresholds met - `npm run test:coverage`
   - **Target**: >80% line, >70% branch
   - **Baseline**: 86.39% lines, 76.69% branches ✅
-  
 - [ ] **T156**: Type check clean - `npm run type-check`
   - **Expected**: 0 errors (Phase 1 eliminated all type violations)
-  
 - [ ] **T157**: Lint clean - `npm run lint`
   - **Tool**: oxlint (50-100x faster than ESLint)
   - **Expected**: 0 errors
-  
 - [ ] **T158**: Format check - `npm run format:check`
   - **Tool**: oxfmt (20-50x faster than Prettier)
   - **Expected**: No changes needed
-  
 - [ ] **T159**: Build successful - `npm run build`
   - **Tool**: tsgo (fast TypeScript compiler)
   - **Expected**: Clean build with source maps
-  
 - [ ] **T160**: Behavioral snapshot matches
   - **Expected**: All existing behaviors preserved
-  
 - [ ] **T161**: Run post-refactor metrics
   - **Command**: `.specify/extensions/workflows/refactor/measure-metrics.sh --after`
-  
 - [ ] **T162**: Compare metrics
   - **Compare**: metrics-before.md vs metrics-after.md
   - **Expected Improvements**:
@@ -172,6 +172,7 @@ These tasks should be performed by the repository owner after validation passes:
 ## Key Achievements
 
 ### Test Infrastructure
+
 - ✅ **196 tests** (up from 60 baseline, +227% increase)
 - ✅ **86.39% line coverage** (exceeded 80% target)
 - ✅ **76.69% branch coverage** (exceeded 70% target)
@@ -179,12 +180,14 @@ These tasks should be performed by the repository owner after validation passes:
 - ✅ **Property-based testing** with fast-check
 
 ### Validation Framework
+
 - ✅ **5 validator types** (Range, Enum, Composite, Custom, Transforming)
 - ✅ **24 validation tests**
 - ✅ **8 comprehensive examples**
 - ✅ **Opt-in design** - zero impact on default behavior
 
 ### Standard Interceptor API
+
 - ✅ **5 fluent methods** (log, limit, clamp, transform, audit)
 - ✅ **19 interceptor tests**
 - ✅ **7 comprehensive examples**
@@ -192,6 +195,7 @@ These tasks should be performed by the repository owner after validation passes:
 - ✅ **Chainable API** - discoverable, minimal boilerplate
 
 ### Build & Tooling
+
 - ✅ **Source maps enabled** - debug TypeScript directly
 - ✅ **8 subpath exports** - tree-shaking support
 - ✅ **Bundle size tracking** - automated CI monitoring
@@ -199,6 +203,7 @@ These tasks should be performed by the repository owner after validation passes:
 - ✅ **Import verification** - all patterns tested
 
 ### Documentation
+
 - ✅ **Testing section** in README
 - ✅ **Debugging guide** with VSCode configuration
 - ✅ **Bundle size badge** linked to bundlephobia
@@ -210,12 +215,14 @@ These tasks should be performed by the repository owner after validation passes:
 ## Architecture Benefits
 
 ### Testability (Phase 3)
+
 - Comprehensive test coverage with multiple strategies
 - Property-based testing discovers edge cases
 - Clear test organization (unit/integration/property)
 - Coverage thresholds prevent regressions
 
 ### Validation & Interceptors (Phase 4)
+
 - **Correct architecture**: Aligns with HAP-nodejs design (listening side)
 - **HomeKit compatible**: Interceptors apply to HomeKit requests
 - **Discoverable**: Methods in autocomplete, no imports needed
@@ -224,6 +231,7 @@ These tasks should be performed by the repository owner after validation passes:
 - **Composable**: Fluent chaining for multiple behaviors
 
 ### Build & Tooling (Phase 7)
+
 - **50-100x faster linting** with oxlint
 - **20-50x faster formatting** with oxfmt
 - **Better debugging** with TypeScript source maps
@@ -236,12 +244,14 @@ These tasks should be performed by the repository owner after validation passes:
 ## Next Steps for Repository Owner
 
 ### 1. Install Dependencies
+
 ```bash
 cd /home/runner/work/hap-fluent/hap-fluent
 npm install  # or pnpm install
 ```
 
 ### 2. Run Validation (T154-T162)
+
 ```bash
 cd packages/hap-fluent
 npm run test              # T154: All tests should pass (196 tests)
@@ -253,12 +263,14 @@ npm run build             # T159: Build should succeed with source maps
 ```
 
 ### 3. Review Changes
+
 - Review all 16 commits in the PR
 - Test validation examples in `examples/validation-examples.ts`
 - Test interceptor examples in `examples/interceptor-examples.ts`
 - Verify import patterns in `examples/import-verification.ts`
 
 ### 4. Prepare Release (T163-T168)
+
 - Update version to 1.0.0 in package.json
 - Create comprehensive CHANGELOG.md
 - Create git tag: `git tag v1.0.0 -m "v1.0.0: Production-ready release"`
@@ -271,18 +283,21 @@ npm run build             # T159: Build should succeed with source maps
 ## Migration Guide for Users
 
 ### Breaking Changes
+
 **None** - All new features are opt-in with zero impact on existing code.
 
 ### New Features Available
 
 #### Validation Framework
-```typescript
-import { RangeValidator, EnumValidator } from 'hap-fluent/validation';
 
-characteristic.addValidator(new RangeValidator(0, 100, 'Brightness'));
+```typescript
+import { RangeValidator, EnumValidator } from "hap-fluent/validation";
+
+characteristic.addValidator(new RangeValidator(0, 100, "Brightness"));
 ```
 
 #### Standard Interceptors
+
 ```typescript
 characteristic
   .log()
@@ -294,14 +309,15 @@ characteristic
 ```
 
 #### Import Patterns
+
 ```typescript
 // Main exports
-import { FluentService, FluentCharacteristic } from 'hap-fluent';
+import { FluentService, FluentCharacteristic } from "hap-fluent";
 
 // Subpath exports (tree-shakeable)
-import { ValidationError } from 'hap-fluent/errors';
-import { RangeValidator } from 'hap-fluent/validation';
-import { isCharacteristicValue } from 'hap-fluent/type-guards';
+import { ValidationError } from "hap-fluent/errors";
+import { RangeValidator } from "hap-fluent/validation";
+import { isCharacteristicValue } from "hap-fluent/type-guards";
 ```
 
 ---
@@ -311,6 +327,7 @@ import { isCharacteristicValue } from 'hap-fluent/type-guards';
 **Status**: ✅ **Implementation Complete**
 
 Phases 3, 4, and 7 have been fully implemented with:
+
 - 196 tests (86% line coverage, 77% branch coverage)
 - Opt-in validation framework
 - Standard interceptor API with fluent chaining
