@@ -1,1 +1,1 @@
-../../.agent/skills/changesets.md
+../../.agents/skills/changesets.md

@@ -34,28 +34,20 @@ import {
   type DynamicPlatformPlugin,
   type Logger,
   type PlatformAccessory,
-
+  type Service,
   type UnknownContext,
   type WithUUID,
 } from "homebridge";
 
-
-import type { Service } from "hap-nodejs";
-
-
 import { getOrAddService, wrapService, FluentService } from "./FluentService.js";
-import type { AccessoryInformation } from "./types/hap-interfaces.js";
 
 import camelcase from "camelcase";
-import type {
-	InterfaceForService,
-  InterfaceMap,
-  Interfaces,
-  ServiceMap,
-} from "./types/index.js";
+import type { InterfaceForService, InterfaceMap, Interfaces, ServiceMap } from "./types/index.js";
 
 import { camelCase, PascalCase } from "./utils.js";
-import type { CamelCase, TupleToUnion, SimplifyDeep } from 'type-fest';
+import type { CamelCase, TupleToUnion, SimplifyDeep } from "type-fest";
+import type { AccessoryInformation } from "./types/hap-interfaces.js";
+import { createNoOpLogger } from "./logger.js";
 
 /**
  * Determine if the provided state object represents multiple service instances.
@@ -64,17 +56,17 @@ import type { CamelCase, TupleToUnion, SimplifyDeep } from 'type-fest';
  * @param state - Single-service state or a keyed map of service states.
  * @returns True when the state contains multiple service entries.
  */
-export function isMultiService<T extends InterfaceMap[keyof InterfaceMap]>(
+export function isMultiService<T extends Interfaces>(
   state: Partial<T> | { [key: string]: Partial<T> },
 ): state is { [key: string]: Partial<T> } {
   return Object.keys(state).length > 1 && Object.values(state)[0] instanceof Object;
 }
 
 type InternalServicesObject<T> = T extends [infer U, ...infer Rest]
-  ? U extends InterfaceMap[keyof InterfaceMap] & { serviceName: infer I extends keyof ServiceMap }
-    ? { [K in I]: FluentService<ServiceMap[I]> } & InternalServicesObject<Rest>
+  ? U extends Interfaces & { serviceName: infer I extends keyof ServiceMap }
+    ? { [K in I as CamelCase<K>]: FluentService<ServiceMap[I]> } & InternalServicesObject<Rest>
     : U extends {
-          [key: string]: InterfaceMap[keyof InterfaceMap] & {
+          [key: string]: Interfaces & {
             serviceName: infer I extends keyof ServiceMap;
           };
         }
@@ -108,9 +100,7 @@ function hasSubTypes<T extends ServiceMap[keyof ServiceMap]>(
  * @param services - Service instances to wrap.
  * @returns Object keyed by camel-cased service names.
  */
-export function createServicesObject<T extends Interfaces[]>(
-  ...services: any[]
-): any;
+export function createServicesObject<T extends Interfaces[]>(...services: any[]): any;
 
 /**
  * Create a strongly-typed service map from a list of service instances with context.
@@ -123,9 +113,7 @@ export function createServicesObject<T extends Interfaces[]>(
   ...services: any[]
 ): any;
 
-export function createServicesObject<T extends Interfaces[]>(
-  ...args: unknown[]
-): any {
+export function createServicesObject<T extends Interfaces[]>(...args: unknown[]): any {
   // Overload resolution
   let plugin: DynamicPlatformPlugin | undefined;
   let api: API | undefined;
@@ -143,68 +131,62 @@ export function createServicesObject<T extends Interfaces[]>(
     services = args as any[];
   }
 
-  return services.reduce(
-    (acc: any, service): any => {
-      // Create both PascalCase (e.g., "Lightbulb") and camelCase (e.g., "lightbulb") names
-      const pascalName = camelcase(service.constructor.name /* get service name */, {
-        pascalCase: true,
-      });
-      const camelName = pascalName.charAt(0).toLowerCase() + pascalName.slice(1);
-      const serviceName = camelName as keyof ServicesObject<T>;
+  return services.reduce((acc: any, service): any => {
+    // Create both PascalCase (e.g., "Lightbulb") and camelCase (e.g., "lightbulb") names
 
-      const accRecord = acc as Record<string, unknown>;
-      let serviceObject = accRecord[serviceName as string];
-      if (service?.subtype) {
-        const subTypeName = camelCase(service.subtype);
-        // If the service has subtypes, we need to handle them differently
-        if (serviceObject && hasSubTypes(serviceObject as ServiceMap[keyof ServiceMap])) {
-          // hasSubTypes narrows the type, safe to spread
-          serviceObject = {
-            ...serviceObject,
-            [camelCase(service.subtype)]: logger ? wrapService(service, logger) : wrapService(service),
-          };
-        } else {
-          serviceObject = {
-            primary: serviceObject,
-            [subTypeName]: logger ? wrapService(service, logger) : wrapService(service),
-          };
-        }
+    const serviceName = camelCase(service.constructor.name) as keyof ServicesObject<T>;
+
+    const accRecord = acc as Record<string, unknown>;
+    let serviceObject = accRecord[serviceName as string] as any;
+    if (service?.subtype) {
+      const subTypeName = camelCase(service.subtype);
+      // If the service has subtypes, we need to handle them differently
+      if (serviceObject && hasSubTypes(serviceObject as ServiceMap[keyof ServiceMap])) {
+        // hasSubTypes narrows the type, safe to spread
+        serviceObject = {
+          ...serviceObject,
+          [camelCase(service.subtype)]: logger
+            ? wrapService(service, logger)
+            : wrapService(service),
+        };
       } else {
-        serviceObject = logger ? wrapService(service, logger) : wrapService(service);
+        serviceObject = {
+          primary: serviceObject,
+          [subTypeName]: logger ? wrapService(service, logger) : wrapService(service),
+        };
       }
-      if (!(serviceName in acc)) {
-        // Define camelCase property (primary, for type system)
-        Object.defineProperty(acc, serviceName, {
-          value: serviceObject,
-          writable: true,
-          enumerable: true,
-          configurable: true,
-        });
-      } else {
-        acc[serviceName] = serviceObject;
-      }
-      return acc;
-    },
-    {},
-  );
+    } else {
+      serviceObject = logger ? wrapService(service, logger) : wrapService(service);
+    }
+    if (!(serviceName in acc)) {
+      // Define camelCase property (primary, for type system)
+      Object.defineProperty(acc, serviceName, {
+        value: serviceObject,
+        writable: true,
+        enumerable: true,
+        configurable: true,
+      });
+    } else {
+      acc[serviceName] = serviceObject;
+    }
+    return acc;
+  }, {});
 }
 
 export type ServiceOrSubtype = Interfaces | { [key: string]: Interfaces };
 
-export type InternalServicesStateObject<T> = T extends [infer U, ...infer Rest]
-  ? U extends InterfaceMap[keyof InterfaceMap] & { serviceName: infer I extends keyof ServiceMap }
+export type InternalServicesStateObject<T> = any; /*T extends [infer U, ...infer Rest]
+  ? U extends Interfaces & { serviceName: infer I extends keyof InterfaceMap }
     ? {
-        [K in I as CamelCase<K>]: Partial<Omit<InterfaceMap[I], "UUID" | "serviceName">>;
+        [K in I]: Partial<Omit<InterfaceMap[I], "UUID" | "serviceName">>;
       } & InternalServicesStateObject<Rest>
     : InternalServicesStateObject<Rest>
   : {};
+*/
 /**
  * State object shape for updating services, including AccessoryInformation by default.
  */
-export type ServicesStateObject<T extends readonly unknown[]> =
-  AccessoryInformation extends TupleToUnion<T>
-    ? InternalServicesStateObject<T>
-    : InternalServicesStateObject<[...T, AccessoryInformation]>;
+export type ServicesStateObject<T extends readonly unknown[]> = InternalServicesStateObject<T>;
 
 /**
  * Platform accessory augmented with strongly-typed fluent services.
@@ -216,19 +198,22 @@ export type FluentAccessory<
   context: TContext;
   services: ServicesObject<Services>;
   // Without subtype
-  with<S extends typeof Service>(
+  with<S extends typeof Service, I extends InterfaceForService<S> & Interfaces>(
     serviceClass: WithUUID<S>,
     displayName?: string,
-  ): With<FluentAccessory<TContext, Services>, InterfaceForService<S>>;
-  // With subtype
+  ): With<FluentAccessory<TContext, Services>, I>;
+
   with<
     S extends typeof Service,
     SubType extends string,
+    I extends InterfaceForService<S> & Interfaces,
   >(
     serviceClass: WithUUID<S>,
     displayName: string,
     subType: SubType,
-  ): With<FluentAccessory<TContext, Services>, { [K in SubType]: InterfaceForService<S> }>;
+  ): With<FluentAccessory<TContext, Services>, { [K in SubType]: I }>;
+
+  // With subtype
 
   initialize<T extends [...Services, ...N], N extends ServiceOrSubtype[]>(
     initialState?: InternalServicesStateObject<T>,
@@ -274,14 +259,14 @@ export class AccessoryHandler<
     protected plugin: DynamicPlatformPlugin,
     public readonly accessory: PlatformAccessory<TContext>,
     protected readonly api: API,
-    protected readonly logger: Logger,
+    protected readonly logger?: Logger,
   ) {
     this.context = accessory.context as TContext;
 
     this.services = createServicesObject(
       plugin,
       api,
-      logger,
+      this.logger,
       ...(accessory.services as unknown[]),
     ) as any;
   }
@@ -340,13 +325,14 @@ export class AccessoryHandler<
    *
    * @param initialState - Optional initial characteristic values.
    */
-  initialize<T extends [...Services, ...N], N extends ServiceOrSubtype[]>(
+  initialize<T extends [...Services, ...N], N extends Interfaces[]>(
     initialState?: InternalServicesStateObject<T>,
   ): FluentAccessory<TContext, T> {
     if (initialState) {
       for (const key in initialState) {
         if (typeof initialState[key] === "object") {
-          const serviceClass = this.api.hap.Service[PascalCase(key) as keyof InterfaceMap];
+          const serviceClass =
+            this.api.hap.Service[PascalCase(key) as keyof typeof this.api.hap.Service];
           if (serviceClass) {
             const stateValue = initialState[key];
             // Type assertion needed: runtime check handles type safety
@@ -387,12 +373,12 @@ export class AccessoryHandler<
  */
 export function wrapAccessory<
   TContext extends UnknownContext = {},
-  Services extends ServiceOrSubtype[] = [AccessoryInformation],
+  Services extends Interfaces[] = [AccessoryInformation],
 >(
   plugin: DynamicPlatformPlugin,
   accessory: PlatformAccessory<TContext>,
   api: API,
-  logger: Logger,
+  logger?: Logger,
   initialState?: InternalServicesStateObject<[...Services]>,
 ): FluentAccessory<TContext, [...Services]> {
   const handler = new AccessoryHandler<TContext, [...Services, AccessoryInformation]>(
@@ -401,8 +387,9 @@ export function wrapAccessory<
     api,
     logger,
   );
+
   if (initialState) {
     handler.initialize(initialState);
   }
-  return handler;
+  return handler as any;
 }

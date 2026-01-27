@@ -22,7 +22,10 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
    * @param characteristic - HAP characteristic to wrap.
    * @param logger - Optional logger instance for logging operations.
    */
-  constructor(private characteristic: Characteristic, private readonly logger: Logger = createNoOpLogger()) {}
+  constructor(
+    private characteristic: Characteristic,
+    private readonly logger: Logger = createNoOpLogger(),
+  ) {}
 
   /**
    * Update the characteristic's metadata properties.
@@ -42,10 +45,10 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
    */
   get(): T | undefined {
     const value = this.characteristic.value as T | undefined;
-    this.logger.debug(
-      "Retrieved characteristic value",
-      { characteristic: this.characteristic.displayName, value },
-    );
+    this.logger.debug("Retrieved characteristic value", {
+      characteristic: this.characteristic.displayName,
+      value,
+    });
     return value;
   }
 
@@ -61,17 +64,17 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
    * are applied in onSet handlers, which are triggered when HomeKit accesses the characteristic.
    */
   set(value: T): this {
-    this.logger.debug(
-      "Setting characteristic value",
-      { characteristic: this.characteristic.displayName, value },
-    );
+    this.logger.debug("Setting characteristic value", {
+      characteristic: this.characteristic.displayName,
+      value,
+    });
 
     try {
       if (!isCharacteristicValue(value)) {
-        this.logger.warn(
-          "Invalid characteristic value",
-          { characteristic: this.characteristic.displayName, value },
-        );
+        this.logger.warn("Invalid characteristic value", {
+          characteristic: this.characteristic.displayName,
+          value,
+        });
         throw new FluentCharacteristicError("Invalid characteristic value", {
           characteristic: this.characteristic.displayName,
           value,
@@ -79,19 +82,20 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
       }
 
       this.characteristic.setValue(value);
-      this.logger.debug(
-        "Successfully set characteristic value",
-        { characteristic: this.characteristic.displayName, value },
-      );
+      this.logger.debug("Successfully set characteristic value", {
+        characteristic: this.characteristic.displayName,
+        value,
+      });
       return this;
     } catch (error) {
       if (error instanceof FluentCharacteristicError) {
         throw error;
       }
-      this.logger.error(
-        "Failed to set characteristic value",
-        { characteristic: this.characteristic.displayName, value, error },
-      );
+      this.logger.error("Failed to set characteristic value", {
+        characteristic: this.characteristic.displayName,
+        value,
+        error,
+      });
       throw new FluentCharacteristicError("Failed to set characteristic value", {
         characteristic: this.characteristic.displayName,
         value,
@@ -108,35 +112,36 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
    * @throws {FluentCharacteristicError} If value is invalid or updateValue fails
    */
   update(value: T): this {
-    this.logger.debug(
-      "Updating characteristic value",
-      { characteristic: this.characteristic.displayName, value },
-    );
+    this.logger.debug("Updating characteristic value", {
+      characteristic: this.characteristic.displayName,
+      value,
+    });
     try {
       if (!isCharacteristicValue(value)) {
-        this.logger.warn(
-          "Invalid characteristic value",
-          { characteristic: this.characteristic.displayName, value },
-        );
+        this.logger.warn("Invalid characteristic value", {
+          characteristic: this.characteristic.displayName,
+          value,
+        });
         throw new FluentCharacteristicError("Invalid characteristic value", {
           characteristic: this.characteristic.displayName,
           value,
         });
       }
       this.characteristic.updateValue(value);
-      this.logger.debug(
-        "Successfully updated characteristic value",
-        { characteristic: this.characteristic.displayName, value },
-      );
+      this.logger.debug("Successfully updated characteristic value", {
+        characteristic: this.characteristic.displayName,
+        value,
+      });
       return this;
     } catch (error) {
       if (error instanceof FluentCharacteristicError) {
         throw error;
       }
-      this.logger.error(
-        "Failed to update characteristic value",
-        { characteristic: this.characteristic.displayName, value, error },
-      );
+      this.logger.error("Failed to update characteristic value", {
+        characteristic: this.characteristic.displayName,
+        value,
+        error,
+      });
       throw new FluentCharacteristicError("Failed to update characteristic value", {
         characteristic: this.characteristic.displayName,
         value,
@@ -168,10 +173,10 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
           value = (await this.runAfterGetInterceptors(value)) as T;
         }
 
-        this.logger.debug(
-          "onGet handler completed with interceptors",
-          { characteristic: this.characteristic.displayName, value },
-        );
+        this.logger.debug("onGet handler completed with interceptors", {
+          characteristic: this.characteristic.displayName,
+          value,
+        });
 
         return value;
       } catch (error) {
@@ -197,10 +202,10 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
     // Wrap the handler with interceptors
     const wrappedHandler = async (value: T): Promise<void> => {
       try {
-        this.logger.debug(
-          "onSet handler called",
-          { characteristic: this.characteristic.displayName, value },
-        );
+        this.logger.debug("onSet handler called", {
+          characteristic: this.characteristic.displayName,
+          value,
+        });
 
         // Run beforeSet interceptors
         if (this.interceptors.length > 0) {
@@ -215,10 +220,10 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
           await this.runAfterSetInterceptors(value);
         }
 
-        this.logger.debug(
-          "onSet handler completed with interceptors",
-          { characteristic: this.characteristic.displayName, value },
-        );
+        this.logger.debug("onSet handler completed with interceptors", {
+          characteristic: this.characteristic.displayName,
+          value,
+        });
       } catch (error) {
         // Run error interceptors
         if (this.interceptors.length > 0 && error instanceof Error) {
@@ -229,10 +234,11 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
           throw error;
         }
 
-        this.logger.error(
-          "onSet handler failed",
-          { characteristic: this.characteristic.displayName, value, error },
-        );
+        this.logger.error("onSet handler failed", {
+          characteristic: this.characteristic.displayName,
+          value,
+          error,
+        });
         throw new FluentCharacteristicError("onSet handler failed", {
           characteristic: this.characteristic.displayName,
           value,
@@ -260,7 +266,10 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
   log(): this {
     this.interceptors.push({
       beforeSet: (value, context) => {
-        this.logger.debug("[Log] Before set", { characteristic: context.characteristicName, value });
+        this.logger.debug("[Log] Before set", {
+          characteristic: context.characteristicName,
+          value,
+        });
         return value;
       },
       afterSet: (value, context) => {
@@ -274,7 +283,10 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
         return value;
       },
       onError: (error, context) => {
-        this.logger.error("[Log] Error occurred", { characteristic: context.characteristicName, error });
+        this.logger.error("[Log] Error occurred", {
+          characteristic: context.characteristicName,
+          error,
+        });
       },
     });
     return this;
@@ -309,10 +321,11 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
           const error = new Error(
             `Rate limit exceeded: ${maxCalls} calls per ${windowMs}ms for ${context.characteristicName}`,
           );
-          this.logger.warn(
-            "Rate limit exceeded",
-            { characteristic: context.characteristicName, maxCalls, windowMs },
-          );
+          this.logger.warn("Rate limit exceeded", {
+            characteristic: context.characteristicName,
+            maxCalls,
+            windowMs,
+          });
           throw error;
         }
 
@@ -345,10 +358,11 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
         const clamped = Math.max(min, Math.min(max, value));
 
         if (clamped !== value) {
-          this.logger.debug(
-            "Value clamped to range",
-            { characteristic: context.characteristicName, original: value, clamped },
-          );
+          this.logger.debug("Value clamped to range", {
+            characteristic: context.characteristicName,
+            original: value,
+            clamped,
+          });
         }
 
         return clamped;
@@ -398,10 +412,11 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
           value,
           timestamp: context.timestamp,
         });
-        this.logger.info(
-          "[Audit] SET operation",
-          { characteristic: context.characteristicName, value, auditCount: auditTrail.length },
-        );
+        this.logger.info("[Audit] SET operation", {
+          characteristic: context.characteristicName,
+          value,
+          auditCount: auditTrail.length,
+        });
         return value;
       },
       beforeGet: (context) => {
@@ -409,10 +424,10 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
           operation: "get",
           timestamp: context.timestamp,
         });
-        this.logger.info(
-          "[Audit] GET operation",
-          { characteristic: context.characteristicName, auditCount: auditTrail.length },
-        );
+        this.logger.info("[Audit] GET operation", {
+          characteristic: context.characteristicName,
+          auditCount: auditTrail.length,
+        });
       },
     });
     return this;
@@ -458,10 +473,11 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
     this.interceptors.push({
       beforeSet: (value, context) => {
         const encoded = encode(value);
-        this.logger.debug(
-          "[Codec] Encoded value for SET",
-          { characteristic: context.characteristicName, original: value, encoded },
-        );
+        this.logger.debug("[Codec] Encoded value for SET", {
+          characteristic: context.characteristicName,
+          original: value,
+          encoded,
+        });
         return encoded;
       },
       afterGet: (value, context) => {
@@ -469,10 +485,11 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
           return value;
         }
         const decoded = decode(value);
-        this.logger.debug(
-          "[Codec] Decoded value for GET",
-          { characteristic: context.characteristicName, original: value, decoded },
-        );
+        this.logger.debug("[Codec] Decoded value for GET", {
+          characteristic: context.characteristicName,
+          original: value,
+          decoded,
+        });
         return decoded;
       },
     });

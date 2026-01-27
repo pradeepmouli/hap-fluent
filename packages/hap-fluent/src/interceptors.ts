@@ -95,18 +95,12 @@ export function createLoggingInterceptor(logger?: Logger): Interceptor {
 
   return {
     beforeSet(value, context) {
-      log.debug(
-        "[Interceptor] Before set",
-        { characteristic: context.characteristicName, value },
-      );
+      log.debug("[Interceptor] Before set", { characteristic: context.characteristicName, value });
       return value;
     },
 
     afterSet(value, context) {
-      log.debug(
-        "[Interceptor] After set",
-        { characteristic: context.characteristicName, value },
-      );
+      log.debug("[Interceptor] After set", { characteristic: context.characteristicName, value });
     },
 
     beforeGet(context) {
@@ -114,18 +108,15 @@ export function createLoggingInterceptor(logger?: Logger): Interceptor {
     },
 
     afterGet(value, context) {
-      log.debug(
-        "[Interceptor] After get",
-        { characteristic: context.characteristicName, value },
-      );
+      log.debug("[Interceptor] After get", { characteristic: context.characteristicName, value });
       return value;
     },
 
     onError(error, context) {
-      log.error(
-        "[Interceptor] Error occurred",
-        { characteristic: context.characteristicName, error },
-      );
+      log.error("[Interceptor] Error occurred", {
+        characteristic: context.characteristicName,
+        error,
+      });
     },
   };
 }
@@ -142,7 +133,11 @@ export function createLoggingInterceptor(logger?: Logger): Interceptor {
  * characteristic.intercept(createRateLimitInterceptor(logger, 5, 1000));
  * ```
  */
-export function createRateLimitInterceptor(logger: Logger | undefined, maxCalls: number, windowMs: number): Interceptor {
+export function createRateLimitInterceptor(
+  logger: Logger | undefined,
+  maxCalls: number,
+  windowMs: number,
+): Interceptor {
   const calls: number[] = [];
   const log = logger || createNoOpLogger();
 
@@ -160,10 +155,11 @@ export function createRateLimitInterceptor(logger: Logger | undefined, maxCalls:
         const error = new Error(
           `Rate limit exceeded: ${maxCalls} calls per ${windowMs}ms for ${context.characteristicName}`,
         );
-        log.warn(
-          "Rate limit exceeded",
-          { characteristic: context.characteristicName, maxCalls, windowMs },
-        );
+        log.warn("Rate limit exceeded", {
+          characteristic: context.characteristicName,
+          maxCalls,
+          windowMs,
+        });
         throw error;
       }
 
@@ -185,7 +181,11 @@ export function createRateLimitInterceptor(logger: Logger | undefined, maxCalls:
  * characteristic.intercept(createClampingInterceptor(logger, 0, 100));
  * ```
  */
-export function createClampingInterceptor(logger: Logger | undefined, min: number, max: number): Interceptor {
+export function createClampingInterceptor(
+  logger: Logger | undefined,
+  min: number,
+  max: number,
+): Interceptor {
   const log = logger || createNoOpLogger();
 
   return {
@@ -197,10 +197,11 @@ export function createClampingInterceptor(logger: Logger | undefined, min: numbe
       const clamped = Math.max(min, Math.min(max, value));
 
       if (clamped !== value) {
-        log.debug(
-          "Value clamped to range",
-          { characteristic: context.characteristicName, original: value, clamped },
-        );
+        log.debug("Value clamped to range", {
+          characteristic: context.characteristicName,
+          original: value,
+          clamped,
+        });
       }
 
       return clamped;
@@ -430,10 +431,11 @@ export function createCodecInterceptor(
   return {
     beforeSet(value, context) {
       const encoded = encode(value);
-      log.debug(
-        "[Codec] Encoded value for SET",
-        { characteristic: context.characteristicName, original: value, encoded },
-      );
+      log.debug("[Codec] Encoded value for SET", {
+        characteristic: context.characteristicName,
+        original: value,
+        encoded,
+      });
       return encoded;
     },
 
@@ -442,10 +444,11 @@ export function createCodecInterceptor(
         return value;
       }
       const decoded = decode(value);
-      log.debug(
-        "[Codec] Decoded value for GET",
-        { characteristic: context.characteristicName, original: value, decoded },
-      );
+      log.debug("[Codec] Decoded value for GET", {
+        characteristic: context.characteristicName,
+        original: value,
+        decoded,
+      });
       return decoded;
     },
   };

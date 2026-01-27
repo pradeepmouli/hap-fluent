@@ -1,1 +1,1 @@
-../../.agent/skills/ts-monorepo-dev.md
+../../.agents/skills/ts-monorepo-dev.md

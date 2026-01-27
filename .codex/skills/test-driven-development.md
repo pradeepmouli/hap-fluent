@@ -1,1 +1,1 @@
-../../.agent/skills/test-driven-development.md
+../../.agents/skills/test-driven-development.md

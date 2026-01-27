@@ -33,7 +33,9 @@ export function basicAccessoryHandlerExample(
 
   // Add services first
   const handler2 = handler.with(api.hap.Service.Lightbulb, "Main Light");
-
+  handler2.services.lightbulb.characteristics.hue.onSet(async (value: number) => {
+    console.log(`Setting hue to ${value}`);
+  });
   // Initialize with initial state (synchronous)
   handler2.initialize({
     lightbulb: {

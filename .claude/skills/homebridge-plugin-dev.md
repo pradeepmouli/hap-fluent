@@ -1,1 +1,1 @@
-../../.agent/skills/homebridge-plugin-dev.md
+../../.agents/skills/homebridge-plugin-dev.md

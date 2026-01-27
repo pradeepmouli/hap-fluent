@@ -1,1 +1,1 @@
-../../.agent/skills/testing-vitest.md
+../../.agents/skills/testing-vitest.md

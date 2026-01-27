@@ -1,1 +1,1 @@
-../../.agent/skills/hap-nodejs.md
+../../.agents/skills/hap-nodejs.md
