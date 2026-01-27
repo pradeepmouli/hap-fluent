@@ -23,6 +23,8 @@ export type InterfaceForService<T extends typeof Service> = T extends {
   ? I
   : never;
 
+
+
 export type Services = ServiceMap[keyof ServiceMap];
 
 export type Interfaces = InterfaceMap[keyof InterfaceMap];
