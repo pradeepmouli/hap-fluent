@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES2022",
     "module": "node18",
     "moduleResolution": "node16",
     "rootDir": "src",
@@ -14,5 +14,5 @@
     "declarationMap": true
   },
   "include": ["src"],
-  "exclude": ["node_modules", "dist", "examples"]
+  "exclude": ["node_modules", "dist", "examples", "test"]
 }

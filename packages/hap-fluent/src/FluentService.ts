@@ -1,12 +1,9 @@
 import {
-  type Service,
-  type Characteristic,
   type WithUUID,
   type CharacteristicValue,
-  type PrimitiveTypes,
   type PlatformAccessory,
+  type Service,
 } from "homebridge";
-import camelcase from "camelcase";
 import type { InterfaceForService } from "./types/index.js";
 import { PascalCase, type CamelCase } from "type-fest";
 import { FluentCharacteristic } from "./FluentCharacteristic.js";
@@ -132,12 +129,16 @@ export function getOrAddService<T extends typeof Service>(
   let displayName: string | undefined;
   let resolvedSubType: string | undefined;
 
-  if (loggerOrDisplayName && typeof loggerOrDisplayName === 'object' && 'info' in loggerOrDisplayName) {
+  if (
+    loggerOrDisplayName &&
+    typeof loggerOrDisplayName === "object" &&
+    "info" in loggerOrDisplayName
+  ) {
     // Third argument is a logger
     logger = loggerOrDisplayName as Logger;
     displayName = displayNameOrSubType;
     resolvedSubType = subType;
-  } else if (typeof loggerOrDisplayName === 'string') {
+  } else if (typeof loggerOrDisplayName === "string") {
     // Third argument is a display name (backward compatibility)
     logger = undefined;
     displayName = loggerOrDisplayName;
@@ -160,22 +161,30 @@ export function getOrAddService<T extends typeof Service>(
     : platformAccessory.getService(serviceClass);
 
   if (existingService) {
-    finalLogger.debug("Found existing service", { displayName, subType: resolvedSubType, uuid: serviceClass.UUID });
+    finalLogger.debug("Found existing service", {
+      displayName,
+      subType: resolvedSubType,
+      uuid: serviceClass.UUID,
+    });
     return wrapService(existingService as InstanceType<T>, finalLogger);
   } else {
-    finalLogger.debug("Creating new service", { displayName, subType: resolvedSubType, uuid: serviceClass.UUID });
-    const newService = new serviceClass(displayName ?? "", resolvedSubType ?? "") as InstanceType<T>;
+    finalLogger.debug("Creating new service", {
+      displayName,
+      subType: resolvedSubType,
+      uuid: serviceClass.UUID,
+    });
+    const newService = new serviceClass(
+      displayName ?? "",
+      resolvedSubType ?? "",
+    ) as InstanceType<T>;
     platformAccessory.addService(newService);
 
-    finalLogger.info(
-      "Created and added new service",
-      {
-        displayName,
-        subType: resolvedSubType,
-        uuid: serviceClass.UUID,
-        characteristicCount: newService.characteristics.length,
-      },
-    );
+    finalLogger.info("Created and added new service", {
+      displayName,
+      subType: resolvedSubType,
+      uuid: serviceClass.UUID,
+      characteristicCount: newService.characteristics.length,
+    });
 
     return wrapService(newService, finalLogger);
   }
@@ -198,9 +207,15 @@ export function wrapService<T extends typeof Service>(service: InstanceType<T>):
  * @returns A fluent, strongly-typed service wrapper.
  * @throws {ValidationError} If service is invalid
  */
-export function wrapService<T extends typeof Service>(service: InstanceType<T>, logger: Logger): FluentService<T>;
+export function wrapService<T extends typeof Service>(
+  service: InstanceType<T>,
+  logger: Logger,
+): FluentService<T>;
 
-export function wrapService<T extends typeof Service>(service: InstanceType<T>, logger?: Logger): FluentService<T> {
+export function wrapService<T extends typeof Service>(
+  service: InstanceType<T>,
+  logger?: Logger,
+): FluentService<T> {
   const finalLogger = logger || createNoOpLogger();
 
   if (!isService(service)) {
@@ -212,14 +227,11 @@ export function wrapService<T extends typeof Service>(service: InstanceType<T>, 
     });
   }
 
-  finalLogger.debug(
-    "Wrapping service with fluent interface",
-    {
-      serviceName: service.displayName,
-      uuid: service.UUID,
-      characteristicCount: service.characteristics.length,
-    },
-  );
+  finalLogger.debug("Wrapping service with fluent interface", {
+    serviceName: service.displayName,
+    uuid: service.UUID,
+    characteristicCount: service.characteristics.length,
+  });
 
   const e = {
     characteristics: Object.fromEntries(

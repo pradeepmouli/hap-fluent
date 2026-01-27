@@ -1,11 +1,13 @@
 // Re-export all the types from the interface files
-export * from "./hap-interfaces.js";
+//export * from "./hap-interfaces.js";
 export * from "./hap-enums.js";
 import { InterfaceMap, ServiceMap } from "./hap-interfaces.js";
-import type { Service } from "homebridge";
+
+import type { Service } from "hap-nodejs";
 
 // Re-export with explicit names to resolve ambiguity
-
+export type { InterfaceMap } from "./hap-interfaces.js";
+export type { ServiceMap } from "./hap-interfaces.js";
 /**
  * Utility interface for services with typed UUIDs
  * This is kept for backward compatibility but is no longer needed

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { AccessoryHandler, createServicesObject } from "../../src/AccessoryHandler.js";
+import { AccessoryHandler, createServicesObject } from "../../src/FluentAccessory.js";
 import { wrapService } from "../../src/FluentService.js";
 import { createNoOpLogger } from "../../src/logger.js";
 import {
