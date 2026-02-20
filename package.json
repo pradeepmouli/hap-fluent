@@ -23,7 +23,10 @@
     "format:check": "oxfmt --check",
     "type-check": "pnpm -r run type-check",
     "clean": "pnpm -r run clean",
-    "dev": "pnpm -r --parallel run dev"
+    "dev": "pnpm -r --parallel run dev",
+    "changeset": "changeset",
+    "changeset:version": "changeset version",
+    "changeset:publish": "pnpm run build && changeset publish"
   },
   "devDependencies": {
     "@types/node": "^24.9.1",

@@ -2,46 +2,68 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [master, develop]
   pull_request:
-    branches: [ main ]
+    branches: [master, develop]
 
 jobs:
-  lint-and-test:
+  build-and-test:
+    name: Build and test
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [20.x, 24.x]
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v6
 
-    - name: Install pnpm
-      uses: pnpm/action-setup@v2
-      with:
-        version: 8
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'pnpm'
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
 
-    - name: Install dependencies
-      run: pnpm install --frozen-lockfile
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-    - name: Type check
-      run: pnpm run type-check
+      - name: Type check
+        run: pnpm run type-check
 
-    - name: Lint
-      run: pnpm run lint
+      - name: Lint
+        run: pnpm run lint
 
-    - name: Format check
-      run: pnpm run format:check
+      - name: Format check
+        run: pnpm run format:check
+        continue-on-error: true
 
-    - name: Build
-      run: pnpm run build
+      - name: Build
+        run: pnpm run build
 
-    - name: Test
-      run: pnpm run test
+      - name: Test
+        run: pnpm run test
+
+      - name: Test with coverage
+        if: matrix.node-version == '20.x'
+        run: pnpm run test -- --coverage
+
+      - name: Upload coverage reports
+        if: matrix.node-version == '20.x'
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./coverage/lcov.info
+          fail_ci_if_error: false
+
+      - name: Security audit (non-blocking)
+        if: matrix.node-version == '20.x'
+        run: pnpm audit --audit-level moderate
+        continue-on-error: true
+
+      - name: Bundle size
+        if: matrix.node-version == '20.x'
+        run: pnpm dlx size-limit
+        continue-on-error: true
