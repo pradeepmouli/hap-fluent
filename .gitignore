@@ -8,6 +8,6 @@ coverage/
 .env.local
 .env.*.local
 .nyc_output/
-.pnpm-debug.log*\
+.pnpm-debug.log*
 .tsconfig.tsbuildinfo
 *.tsbuildinfo
