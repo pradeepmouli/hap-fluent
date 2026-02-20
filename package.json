@@ -7,7 +7,7 @@
   "workspaces": [
     "packages/*"
   ],
-  "packageManager": "pnpm@8.15.0",
+  "packageManager": "pnpm@10.6.2",
   "engines": {
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"
@@ -26,7 +26,8 @@
     "dev": "pnpm -r --parallel run dev",
     "changeset": "changeset",
     "changeset:version": "changeset version",
-    "changeset:publish": "pnpm run build && changeset publish"
+    "changeset:publish": "pnpm run build && changeset publish",
+    "prepare": "simple-git-hooks"
   },
   "devDependencies": {
     "@types/node": "^24.9.1",
@@ -47,23 +48,19 @@
     "tsx": "^4.20.6",
     "type-fest": "^4.41.0",
     "typescript": "^5.9.3",
-    "vitest": "^3.0.0"
+    "vitest": "^3.0.0",
+    "simple-git-hooks": "^2.13.1"
   },
   "pnpm": {
     "overrides": {
       "glob": "^11.0.0"
     }
   },
-  "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{json,md,yml,yaml}": [
-      "prettier --write"
-    ]
-  },
   "dependencies": {
     "homebridge-lib": "^7.1.9"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged",
+    "pre-push": "pnpm run type-check"
   }
 }
