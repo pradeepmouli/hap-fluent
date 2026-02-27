@@ -12,7 +12,8 @@
     "build": "tsgo",
     "download": "tsx src/download-hap-definitions.ts",
     "generate": "tsx src/generate-hap-interfaces.ts",
-    "type-check": "tsgo --noEmit"
+    "type-check": "tsgo --noEmit",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo"
   },
   "dependencies": {
     "camelcase": "^8.0.0",

@@ -45,7 +45,7 @@
     }
   },
   "scripts": {
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run clean && npm run build",
     "build": "tsgo",
     "lint": "oxlint src/",
     "lint:eslint": "eslint 'src/**/*.{ts,tsx}'",
@@ -57,7 +57,8 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "type-check": "tsgo --noEmit"
+    "type-check": "tsgo --noEmit",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
