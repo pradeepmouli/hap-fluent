@@ -38,7 +38,7 @@
     }
   },
   "scripts": {
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run clean && npm run build",
     "build": "tsgo --build",
     "build:tsc": "tsc",
     "lint": "oxlint src/",
@@ -53,7 +53,7 @@
     "test:coverage": "vitest run --coverage",
     "type-check": "tsgo --noEmit",
     "type-check:tsc": "tsc --noEmit",
-    "clean": "rimraf dist",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo",
     "size": "size-limit",
     "size:why": "size-limit --why"
   },
