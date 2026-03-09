@@ -45,7 +45,6 @@
     }
   },
   "scripts": {
-    "prepublishOnly": "npm run clean && npm run build",
     "build": "tsgo",
     "lint": "oxlint src/",
     "lint:eslint": "eslint 'src/**/*.{ts,tsx}'",
