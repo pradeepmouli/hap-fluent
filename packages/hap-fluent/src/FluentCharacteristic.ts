@@ -2,15 +2,15 @@ import {
   Characteristic,
   type CharacteristicValue,
   type CharacteristicSetHandler,
-  type PrimitiveTypes,
   type CharacteristicProps,
   type PartialAllowingNull,
 } from "homebridge";
 import { FluentCharacteristicError } from "./errors.js";
 import { isCharacteristicValue } from "./type-guards.js";
 import { getLogger } from "./logger.js";
-import type { Interceptor, InterceptorContext } from "./interceptors.js";
 import {
+  type Interceptor,
+  type InterceptorContext,
   createLoggingInterceptor,
   createRateLimitInterceptor,
   createClampingInterceptor,

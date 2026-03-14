@@ -1,14 +1,8 @@
-import {
-  Service,
-  Characteristic,
-  type WithUUID,
-  type CharacteristicValue,
-  type PrimitiveTypes,
-} from "homebridge";
+import { Service, Characteristic, type WithUUID, type CharacteristicValue } from "homebridge";
 import { PlatformAccessory } from "homebridge";
 import camelcase from "camelcase";
 import type { InterfaceForService } from "./types/index.js";
-import { PascalCase } from "type-fest";
+import type { CamelCase, PascalCase } from "type-fest";
 import { FluentCharacteristic } from "./FluentCharacteristic.js";
 import { ValidationError } from "./errors.js";
 import { isService } from "./type-guards.js";
@@ -27,77 +21,77 @@ import { getLogger } from "./logger.js";
  *   'My Light'
  * );
  *
- * // Access characteristics with camelCase or PascalCase
- * lightbulb.characteristics.On.set(true);
+ * // Access characteristics with camelCase
+ * lightbulb.characteristics.on.set(true);
  * lightbulb.on = true; // Shorthand property access
  *
  * // Register handlers
- * lightbulb.onGet('On', async () => await getLightState());
- * lightbulb.onSet('On', async (value) => await setLightState(value));
+ * lightbulb.onGet('on', async () => await getLightState());
+ * lightbulb.onSet('on', async (value) => await setLightState(value));
  *
  * // Update without triggering handlers
- * lightbulb.update('Brightness', 75);
+ * lightbulb.update('brightness', 75);
  * ```
  */
 export type FluentService<T extends typeof Service> = InterfaceForService<T> & {
   /**
    * Collection of all characteristics for this service
-   * Keys are PascalCase characteristic names (e.g., 'On', 'Brightness')
+   * Keys are camelCase characteristic names (e.g., 'on', 'brightness')
    */
   characteristics: {
-    [K in CharacteristicNamesOf<T> as PascalCase<K>]: FluentCharacteristic<
+    [K in CharacteristicNamesOf<T> as CamelCase<K>]: FluentCharacteristic<
       InterfaceForService<T>[K] & CharacteristicValue
     >;
   };
   /**
    * Register an async getter for a characteristic
    *
-   * @param key - Characteristic name (PascalCase)
+   * @param key - Characteristic name (camelCase)
    * @param callback - Async function returning the characteristic value
    *
    * @example
    * ```typescript
-   * service.onGet('On', async () => {
+   * service.onGet('on', async () => {
    *   const state = await getDeviceState();
    *   return state.isOn;
    * });
    * ```
    */
   onGet<K extends CharacteristicNamesOf<T>>(
-    key: PascalCase<K>,
+    key: CamelCase<K>,
     callback: () => Promise<InterfaceForService<T>[K]>,
   ): void;
   /**
    * Register an async setter for a characteristic
    *
-   * @param key - Characteristic name (PascalCase)
+   * @param key - Characteristic name (camelCase)
    * @param callback - Async function receiving the new value
    *
    * @example
    * ```typescript
-   * service.onSet('On', async (value) => {
+   * service.onSet('on', async (value) => {
    *   await setDeviceState({ isOn: value });
    * });
    * ```
    */
   onSet<K extends CharacteristicNamesOf<T>>(
-    key: PascalCase<K>,
+    key: CamelCase<K>,
     callback: (value: InterfaceForService<T>[K]) => Promise<void>,
   ): void;
   /**
    * Update a characteristic value without triggering SET handlers
    *
-   * @param key - Characteristic name (PascalCase)
+   * @param key - Characteristic name (camelCase)
    * @param value - New characteristic value
    *
    * @example
    * ```typescript
    * // Update brightness from external state change
-   * service.update('Brightness', newBrightness);
+   * service.update('brightness', newBrightness);
    * ```
    */
   update<K extends CharacteristicNamesOf<T>>(
-    key: PascalCase<K>,
+    key: CamelCase<K>,
     value: InterfaceForService<T>[K],
   ): void;
 };
@@ -193,8 +187,7 @@ export function wrapService<T extends typeof Service>(service: InstanceType<T>):
   const e = {
     characteristics: Object.fromEntries(
       svc.characteristics.map((p: InstanceType<typeof Characteristic>) => {
-        const pascalName = camelcase(p.displayName, { pascalCase: true });
-        const camelName = pascalName.charAt(0).toLowerCase() + pascalName.slice(1);
+        const camelName = camelcase(p.displayName);
         return [camelName, new FluentCharacteristic(p)];
       }),
     ) as { [R in keyof FluentService<T>]: FluentCharacteristic<CharacteristicValue> },
@@ -230,16 +223,16 @@ export function wrapService<T extends typeof Service>(service: InstanceType<T>):
   };
 
   for (const key in e.characteristics) {
-    // Create PascalCase property (e.g., "On", "Brightness")
+    // Create camelCase shorthand property (e.g., "on", "brightness")
     Object.defineProperty(obj, key, {
       get: () => e.characteristics[key as keyof typeof e.characteristics].get(),
       set: (value) => e.characteristics[key as keyof typeof e.characteristics].set(value),
     });
 
-    // Also create lowercase property for backward compatibility (e.g., "on", "brightness")
-    const lowercaseKey = key.charAt(0).toLowerCase() + key.slice(1);
-    if (lowercaseKey !== key) {
-      Object.defineProperty(obj, lowercaseKey, {
+    // Also create PascalCase shorthand property (e.g., "On", "Brightness")
+    const pascalKey = key.charAt(0).toUpperCase() + key.slice(1);
+    if (pascalKey !== key) {
+      Object.defineProperty(obj, pascalKey, {
         get: () => e.characteristics[key as keyof typeof e.characteristics].get(),
         set: (value) => e.characteristics[key as keyof typeof e.characteristics].set(value),
       });
