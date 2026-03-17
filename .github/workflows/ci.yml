@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, master, develop, '001-*', 'changeset-release/**']
+    branches-ignore: ['sub**']
   pull_request:
     branches-ignore: ['sub**']
 
