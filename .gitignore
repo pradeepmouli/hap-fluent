@@ -11,3 +11,4 @@ coverage/
 .pnpm-debug.log*
 .tsconfig.tsbuildinfo
 *.tsbuildinfo
+docs/

@@ -18,6 +18,9 @@
     "format:check": "oxfmt --check",
     "type-check": "pnpm -r --filter '!hap-codegen' run type-check",
     "clean": "pnpm -r --filter '!hap-codegen' run clean",
+    "docs": "typedoc",
+    "docs:md": "typedoc --options typedoc.md.json",
+    "docs:all": "pnpm docs && pnpm docs:md",
     "dev": "pnpm -r --filter '!hap-codegen' --parallel run dev",
     "changeset": "changeset",
     "changeset:version": "changeset version",
@@ -48,6 +51,8 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
     "type-fest": "^4.41.0",
+    "typedoc": "^0.28.17",
+    "typedoc-plugin-markdown": "^4.11.0",
     "typescript": "^5.9.3",
     "vitest": "^3.0.0"
   },

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["packages/hap-fluent/src/index.ts", "packages/hap-test/src/index.ts"],
+  "tsconfig": "packages/hap-fluent/tsconfig.json",
+  "skipErrorChecking": true,
+  "out": "./docs",
+  "plugin": [],
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeInternal": true,
+  "readme": "README.md",
+  "name": "HAP-Fluent API Documentation",
+  "navigationLinks": {
+    "GitHub": "https://github.com/pradeepmouli/hap-fluent"
+  },
+  "hideGenerator": false,
+  "sort": ["source-order"],
+  "categorizeByGroup": false,
+  "defaultCategory": "API",
+  "includeVersion": true,
+  "searchInComments": true,
+  "searchInDocuments": true,
+  "validation": {
+    "notExported": true,
+    "invalidLink": true,
+    "notDocumented": false
+  },
+  "commentStyle": "jsdoc",
+  "treatWarningsAsErrors": false,
+  "gitRevision": "master"
+}
