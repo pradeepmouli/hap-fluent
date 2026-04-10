@@ -1,0 +1,1 @@
+../../.agents/skills/hap-nodejs.md

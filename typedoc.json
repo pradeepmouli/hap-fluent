@@ -4,7 +4,7 @@
   "tsconfig": "packages/hap-fluent/tsconfig.json",
   "skipErrorChecking": true,
   "out": "./docs",
-  "plugin": [],
+  "plugin": ["typedoc-plugin-to-skills"],
   "excludePrivate": true,
   "excludeProtected": true,
   "excludeInternal": true,
