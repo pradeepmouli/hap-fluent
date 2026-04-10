@@ -3,6 +3,18 @@
   "version": "1.0.0",
   "private": true,
   "description": "TypeScript monorepo for HAP-Fluent - Type-safe wrapper for Homebridge HAP-NodeJS",
+  "keywords": [
+    "accessories",
+    "characteristics",
+    "fluent-api",
+    "hap",
+    "hap-nodejs",
+    "homekit",
+    "iot",
+    "services",
+    "smart-home",
+    "type-safe"
+  ],
   "workspaces": [
     "packages/*"
   ],
