@@ -12,3 +12,4 @@ coverage/
 .tsconfig.tsbuildinfo
 *.tsbuildinfo
 docs/
+!apps/docs/

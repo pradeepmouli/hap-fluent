@@ -35,6 +35,8 @@
     "docs": "typedoc",
     "docs:md": "typedoc --options typedoc.md.json",
     "docs:all": "pnpm docs && pnpm docs:md",
+    "docs:dev": "pnpm --filter @hap-fluent/docs dev",
+    "docs:build": "pnpm --filter @hap-fluent/docs build",
     "dev": "pnpm -r --filter '!hap-codegen' --parallel run dev",
     "changeset": "changeset",
     "changeset:version": "changeset version",

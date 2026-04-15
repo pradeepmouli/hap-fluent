@@ -11,6 +11,8 @@ HAP Fluent provides a type-safe, fluent API for working with HomeKit Accessory P
 
 > **⚠️ Pre-1.0 software** — APIs are subject to change between minor versions. Pin to exact versions in production. See the [release notes](https://github.com/pradeepmouli/hap-fluent/releases) for breaking changes between releases.
 
+📚 **Documentation:** <https://pradeepmouli.github.io/hap-fluent/>
+
 ## Features
 
 - ✨ **Fluent API**: Method chaining for readable, expressive code
