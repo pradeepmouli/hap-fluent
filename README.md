@@ -2,16 +2,19 @@
 
 > Fluent, strongly-typed wrapper for HAP-NodeJS services and characteristics
 
-[![npm version](https://img.shields.io/npm/v/hap-fluent.svg)](https://www.npmjs.com/package/hap-fluent)
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
-[![Bundle Size](https://img.shields.io/bundlephobia/minzip/hap-fluent)](https://bundlephobia.com/package/hap-fluent)
-
-HAP Fluent provides a type-safe, fluent API for working with HomeKit Accessory Protocol (HAP) services and characteristics in Homebridge plugins. It eliminates boilerplate code, provides compile-time type safety, and offers excellent developer experience with comprehensive error handling and structured logging.
-
 > **⚠️ Pre-1.0 software** — APIs are subject to change between minor versions. Pin to exact versions in production. See the [release notes](https://github.com/pradeepmouli/hap-fluent/releases) for breaking changes between releases.
 
+<p align="center">
+  <a href="https://www.npmjs.com/package/hap-fluent"><img src="https://img.shields.io/npm/v/hap-fluent?style=flat-square&label=hap-fluent" alt="npm version" /></a>
+  <a href="https://github.com/pradeepmouli/hap-fluent/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/pradeepmouli/hap-fluent/ci.yml?style=flat-square" alt="ci" /></a>
+  <img src="https://img.shields.io/badge/license-Apache--2.0-blue?style=flat-square" alt="license" />
+  <img src="https://img.shields.io/badge/node-%3E%3D20-brightgreen?style=flat-square" alt="node" />
+  <a href="https://bundlephobia.com/package/hap-fluent"><img src="https://img.shields.io/bundlephobia/minzip/hap-fluent?style=flat-square" alt="bundle size" /></a>
+</p>
+
 📚 **Documentation:** <https://pradeepmouli.github.io/hap-fluent/>
+
+HAP Fluent provides a type-safe, fluent API for working with HomeKit Accessory Protocol (HAP) services and characteristics in Homebridge plugins. It eliminates boilerplate code, provides compile-time type safety, and offers excellent developer experience with comprehensive error handling and structured logging.
 
 ## Features
 
