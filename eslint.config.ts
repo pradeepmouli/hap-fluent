@@ -16,8 +16,8 @@ export const eslintConfig: eslint.Linter.Config[] = [
       '**/.idea/**',
       '**/pnpm-lock.yaml',
       '**/package-lock.json',
-      '**/yarn.lock',
-    ],
+      '**/yarn.lock'
+    ]
   },
   {
     files: ['**/*.{ts,tsx,js,jsx}'],
@@ -26,25 +26,25 @@ export const eslintConfig: eslint.Linter.Config[] = [
       parserOptions: {
         ecmaVersion: 2022,
         sourceType: 'module',
-        project: ['./tsconfig.json', './packages/*/tsconfig.json'],
+        project: ['./tsconfig.json', './packages/*/tsconfig.json']
       },
       globals: {
         node: 'readonly',
         console: 'readonly',
-        process: "readonly",
+        process: 'readonly',
         Buffer: 'readonly',
         __dirname: 'readonly',
         __filename: 'readonly',
         exports: 'writable',
         module: 'writable',
-        require: 'readonly',
-      },
+        require: 'readonly'
+      }
     },
     plugins: {
       //@ts-expect-error
       '@typescript-eslint': typescriptPlugin,
       import: importPlugin,
-      prettier: prettierPlugin,
+      prettier: prettierPlugin
     },
     rules: {
       // Prettier integration
@@ -72,9 +72,9 @@ export const eslintConfig: eslint.Linter.Config[] = [
           'newlines-between': 'always',
           alphabetize: {
             order: 'asc',
-            caseInsensitive: true,
-          },
-        },
+            caseInsensitive: true
+          }
+        }
       ],
       'import/prefer-default-export': 'off',
       'import/extensions': [
@@ -84,8 +84,8 @@ export const eslintConfig: eslint.Linter.Config[] = [
           ts: 'never',
           tsx: 'never',
           js: 'always',
-          jsx: 'never',
-        },
+          jsx: 'never'
+        }
       ],
       'import/no-extraneous-dependencies': [
         'error',
@@ -95,9 +95,9 @@ export const eslintConfig: eslint.Linter.Config[] = [
             '**/*.spec.ts',
             '**/*.config.ts',
             '**/*.config.js',
-            '**/test/**',
-          ],
-        },
+            '**/test/**'
+          ]
+        }
       ],
       'import/no-duplicates': 'error',
       'import/no-self-import': 'error',
@@ -178,8 +178,8 @@ export const eslintConfig: eslint.Linter.Config[] = [
         {
           anonymous: 'always',
           named: 'never',
-          asyncArrow: 'always',
-        },
+          asyncArrow: 'always'
+        }
       ],
       'space-in-parens': 'error',
       'space-infix-ops': 'error',
@@ -208,7 +208,7 @@ export const eslintConfig: eslint.Linter.Config[] = [
       'no-param-reassign': 'error',
       'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
       'no-continue': 'error',
-      'consistent-return': "error",
+      'consistent-return': 'error',
       'default-case': 'error',
       'no-case-declarations': 'error',
       'no-multi-spaces': 'error',
@@ -220,8 +220,8 @@ export const eslintConfig: eslint.Linter.Config[] = [
       complexity: ['warn', 10],
       'max-depth': ['warn', 4],
       'max-lines': ['warn', 300],
-      'max-params': ['warn', 4],
-    },
+      'max-params': ['warn', 4]
+    }
   },
   {
     files: ['**/*.test.ts', '**/*.spec.ts'],
@@ -232,8 +232,8 @@ export const eslintConfig: eslint.Linter.Config[] = [
         before: 'readonly',
         after: 'readonly',
         beforeEach: 'readonly',
-        afterEach: 'readonly',
-      },
+        afterEach: 'readonly'
+      }
     },
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
@@ -242,8 +242,8 @@ export const eslintConfig: eslint.Linter.Config[] = [
       'func-style': 'off',
       'prefer-arrow-callback': 'off',
       'max-lines': 'off',
-      'no-unused-expressions': 'off',
-    },
+      'no-unused-expressions': 'off'
+    }
   },
-  prettierConfig,
+  prettierConfig
 ];

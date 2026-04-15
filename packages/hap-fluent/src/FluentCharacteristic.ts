@@ -3,11 +3,11 @@ import {
   type CharacteristicValue,
   type CharacteristicSetHandler,
   type CharacteristicProps,
-  type PartialAllowingNull,
-} from "homebridge";
-import { FluentCharacteristicError } from "./errors.js";
-import { isCharacteristicValue } from "./type-guards.js";
-import { getLogger } from "./logger.js";
+  type PartialAllowingNull
+} from 'homebridge';
+import { FluentCharacteristicError } from './errors.js';
+import { isCharacteristicValue } from './type-guards.js';
+import { getLogger } from './logger.js';
 import {
   type Interceptor,
   type InterceptorContext,
@@ -15,8 +15,8 @@ import {
   createRateLimitInterceptor,
   createClampingInterceptor,
   createTransformInterceptor,
-  createCodecInterceptor,
-} from "./interceptors.js";
+  createCodecInterceptor
+} from './interceptors.js';
 
 /**
  * FluentCharacteristic wraps a HAP characteristic with strong typing and fluent API
@@ -50,7 +50,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
     const value = this.characteristic.value as T | undefined;
     logger.debug(
       { characteristic: this.characteristic.displayName, value },
-      "Retrieved characteristic value",
+      'Retrieved characteristic value'
     );
     return value;
   }
@@ -70,25 +70,25 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
     const logger = getLogger();
     logger.debug(
       { characteristic: this.characteristic.displayName, value },
-      "Setting characteristic value",
+      'Setting characteristic value'
     );
 
     try {
       if (!isCharacteristicValue(value)) {
         logger.warn(
           { characteristic: this.characteristic.displayName, value },
-          "Invalid characteristic value",
+          'Invalid characteristic value'
         );
-        throw new FluentCharacteristicError("Invalid characteristic value", {
+        throw new FluentCharacteristicError('Invalid characteristic value', {
           characteristic: this.characteristic.displayName,
-          value,
+          value
         });
       }
 
       this.characteristic.setValue(value);
       logger.debug(
         { characteristic: this.characteristic.displayName, value },
-        "Successfully set characteristic value",
+        'Successfully set characteristic value'
       );
       return this;
     } catch (error) {
@@ -97,12 +97,12 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
       }
       logger.error(
         { characteristic: this.characteristic.displayName, value, error },
-        "Failed to set characteristic value",
+        'Failed to set characteristic value'
       );
-      throw new FluentCharacteristicError("Failed to set characteristic value", {
+      throw new FluentCharacteristicError('Failed to set characteristic value', {
         characteristic: this.characteristic.displayName,
         value,
-        originalError: error,
+        originalError: error
       });
     }
   }
@@ -118,23 +118,23 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
     const logger = getLogger();
     logger.debug(
       { characteristic: this.characteristic.displayName, value },
-      "Updating characteristic value",
+      'Updating characteristic value'
     );
     try {
       if (!isCharacteristicValue(value)) {
         logger.warn(
           { characteristic: this.characteristic.displayName, value },
-          "Invalid characteristic value",
+          'Invalid characteristic value'
         );
-        throw new FluentCharacteristicError("Invalid characteristic value", {
+        throw new FluentCharacteristicError('Invalid characteristic value', {
           characteristic: this.characteristic.displayName,
-          value,
+          value
         });
       }
       this.characteristic.updateValue(value);
       logger.debug(
         { characteristic: this.characteristic.displayName, value },
-        "Successfully updated characteristic value",
+        'Successfully updated characteristic value'
       );
       return this;
     } catch (error) {
@@ -143,12 +143,12 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
       }
       logger.error(
         { characteristic: this.characteristic.displayName, value, error },
-        "Failed to update characteristic value",
+        'Failed to update characteristic value'
       );
-      throw new FluentCharacteristicError("Failed to update characteristic value", {
+      throw new FluentCharacteristicError('Failed to update characteristic value', {
         characteristic: this.characteristic.displayName,
         value,
-        originalError: error,
+        originalError: error
       });
     }
   }
@@ -180,7 +180,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 
         logger.debug(
           { characteristic: this.characteristic.displayName, value },
-          "onGet handler completed with interceptors",
+          'onGet handler completed with interceptors'
         );
 
         return value;
@@ -211,7 +211,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
       try {
         logger.debug(
           { characteristic: this.characteristic.displayName, value },
-          "onSet handler called",
+          'onSet handler called'
         );
 
         // Run beforeSet interceptors
@@ -229,7 +229,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 
         logger.debug(
           { characteristic: this.characteristic.displayName, value },
-          "onSet handler completed with interceptors",
+          'onSet handler completed with interceptors'
         );
       } catch (error) {
         // Run error interceptors
@@ -243,12 +243,12 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
 
         logger.error(
           { characteristic: this.characteristic.displayName, value, error },
-          "onSet handler failed",
+          'onSet handler failed'
         );
-        throw new FluentCharacteristicError("onSet handler failed", {
+        throw new FluentCharacteristicError('onSet handler failed', {
           characteristic: this.characteristic.displayName,
           value,
-          originalError: error,
+          originalError: error
         });
       }
     };
@@ -345,13 +345,13 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
           auditTrail.shift();
         }
         auditTrail.push({
-          operation: "set",
+          operation: 'set',
           value,
-          timestamp: context.timestamp,
+          timestamp: context.timestamp
         });
         logger.info(
           { characteristic: context.characteristicName, value, auditCount: auditTrail.length },
-          "[Audit] SET operation",
+          '[Audit] SET operation'
         );
         return value;
       },
@@ -360,14 +360,14 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
           auditTrail.shift();
         }
         auditTrail.push({
-          operation: "get",
-          timestamp: context.timestamp,
+          operation: 'get',
+          timestamp: context.timestamp
         });
         logger.info(
           { characteristic: context.characteristicName, auditCount: auditTrail.length },
-          "[Audit] GET operation",
+          '[Audit] GET operation'
         );
-      },
+      }
     });
     return this;
   }
@@ -407,7 +407,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
    */
   codec(
     encode: (value: CharacteristicValue) => CharacteristicValue,
-    decode: (value: CharacteristicValue) => CharacteristicValue,
+    decode: (value: CharacteristicValue) => CharacteristicValue
   ): this {
     this.interceptors.push(createCodecInterceptor(encode, decode));
     return this;
@@ -434,7 +434,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
     return {
       characteristicName: this.characteristic.displayName,
       value,
-      timestamp: Date.now(),
+      timestamp: Date.now()
     };
   }
 
@@ -498,7 +498,7 @@ export class FluentCharacteristic<T extends CharacteristicValue> {
    * @private
    */
   private async runAfterGetInterceptors(
-    value: CharacteristicValue | undefined,
+    value: CharacteristicValue | undefined
   ): Promise<CharacteristicValue | undefined> {
     let currentValue = value;
     const context = this.createInterceptorContext(value);

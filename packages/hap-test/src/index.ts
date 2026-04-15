@@ -1,6 +1,6 @@
 /**
  * hap-test - Test harness for Homebridge plugin development
- * 
+ *
  * @packageDocumentation
  */
 

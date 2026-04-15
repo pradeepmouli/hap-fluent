@@ -30,20 +30,20 @@ import {
   type DynamicPlatformPlugin,
   PlatformAccessory,
   type UnknownContext,
-  type WithUUID,
-} from "homebridge";
-import { Service } from "hap-nodejs";
+  type WithUUID
+} from 'homebridge';
+import { Service } from 'hap-nodejs';
 
-import { TupleToUnion } from "type-fest";
+import { TupleToUnion } from 'type-fest';
 
-import { _definitions } from "hap-nodejs";
+import { _definitions } from 'hap-nodejs';
 
-import { getOrAddService, wrapService, FluentService } from "./FluentService.js";
-import type { AccessoryInformation } from "./types/hap-interfaces.js";
-import type { CamelCase, SimplifyDeep } from "type-fest";
-import camelcase from "camelcase";
-import type { ServiceForInterface, Interfaces, InterfaceMap, ServiceMap } from "./types/index.js";
-import { getLogger } from "./logger.js";
+import { getOrAddService, wrapService, FluentService } from './FluentService.js';
+import type { AccessoryInformation } from './types/hap-interfaces.js';
+import type { CamelCase, SimplifyDeep } from 'type-fest';
+import camelcase from 'camelcase';
+import type { ServiceForInterface, Interfaces, InterfaceMap, ServiceMap } from './types/index.js';
+import { getLogger } from './logger.js';
 
 /**
  * Determine if the provided state object represents multiple service instances.
@@ -53,7 +53,7 @@ import { getLogger } from "./logger.js";
  * @returns True when the state contains multiple service entries.
  */
 export function isMultiService<T extends InterfaceMap[keyof InterfaceMap]>(
-  state: Partial<T> | { [key: string]: Partial<T> },
+  state: Partial<T> | { [key: string]: Partial<T> }
 ): state is { [key: string]: Partial<T> } {
   const keys = Object.keys(state);
   return keys.length > 1 && (state as Record<string, unknown>)[keys[0]] instanceof Object;
@@ -78,9 +78,9 @@ export type ServicesObject<T extends readonly unknown[]> =
  * Check if a service entry holds multiple subtypes instead of a single instance.
  */
 function hasSubTypes<T extends ServiceMap[keyof ServiceMap]>(
-  service: Record<string, T> | T,
+  service: Record<string, T> | T
 ): service is Record<string, T> & object {
-  return !Object.keys(service).includes("UUID");
+  return !Object.keys(service).includes('UUID');
 }
 
 /**
@@ -93,10 +93,10 @@ function hasSubTypes<T extends ServiceMap[keyof ServiceMap]>(
 function applyInitialState<Services extends Interfaces[]>(
   services: Record<string, unknown>,
   accessory: PlatformAccessory,
-  initialState: InternalServicesStateObject<Services>,
+  initialState: InternalServicesStateObject<Services>
 ): void {
   for (const key in initialState) {
-    if (typeof initialState[key] !== "object") {
+    if (typeof initialState[key] !== 'object') {
       continue;
     }
     const pascalKey = camelcase(key, { pascalCase: true });
@@ -107,7 +107,7 @@ function applyInitialState<Services extends Interfaces[]>(
       continue;
     }
     const stateValue = initialState[key];
-    if (typeof stateValue === "object" && isMultiService(stateValue as any)) {
+    if (typeof stateValue === 'object' && isMultiService(stateValue as any)) {
       // Multi-service handling not yet implemented
       continue;
     }
@@ -119,7 +119,7 @@ function applyInitialState<Services extends Interfaces[]>(
     for (const charKey in initialState[key]) {
       const characteristics = (wrappedService as any).characteristics;
       const wrappedChar = characteristics?.[charKey];
-      if (wrappedChar && typeof wrappedChar.set === "function") {
+      if (wrappedChar && typeof wrappedChar.set === 'function') {
         wrappedChar.set(initialState[key][charKey]);
       }
     }
@@ -139,7 +139,7 @@ export function createServicesObject<T extends Interfaces[]>(
     (acc: ServicesObject<T>, service): ServicesObject<T> => {
       // Create both PascalCase (e.g., "Lightbulb") and camelCase (e.g., "lightbulb") names
       const pascalName = camelcase(service.constructor.name /* get service name */, {
-        pascalCase: true,
+        pascalCase: true
       });
       const camelName = pascalName.charAt(0).toLowerCase() + pascalName.slice(1);
       const serviceName = camelName as keyof ServicesObject<T>;
@@ -164,7 +164,7 @@ export function createServicesObject<T extends Interfaces[]>(
           value: serviceObject,
           writable: true,
           enumerable: true,
-          configurable: true,
+          configurable: true
         });
         // Also define PascalCase property for backward compatibility
         if (pascalName !== serviceName) {
@@ -172,7 +172,7 @@ export function createServicesObject<T extends Interfaces[]>(
             value: serviceObject,
             writable: true,
             enumerable: false, // Don't enumerate to avoid duplication
-            configurable: true,
+            configurable: true
           });
         }
       } else {
@@ -180,14 +180,14 @@ export function createServicesObject<T extends Interfaces[]>(
       }
       return acc;
     },
-    {} as ServicesObject<T>,
+    {} as ServicesObject<T>
   );
 }
 
 export type InternalServicesStateObject<T> = T extends [infer U, ...infer Rest]
   ? U extends InterfaceMap[keyof InterfaceMap] & { serviceName: infer I extends keyof ServiceMap }
     ? {
-        [K in I as CamelCase<K>]: Partial<Omit<InterfaceMap[I], "UUID" | "serviceName">>;
+        [K in I as CamelCase<K>]: Partial<Omit<InterfaceMap[I], 'UUID' | 'serviceName'>>;
       } & InternalServicesStateObject<Rest>
     : InternalServicesStateObject<Rest>
   : {};
@@ -204,7 +204,7 @@ export type ServicesStateObject<T extends readonly unknown[]> =
  */
 export type FluentAccessory<
   TContext extends UnknownContext,
-  Services extends Interfaces[],
+  Services extends Interfaces[]
 > = ServicesObject<Services> & PlatformAccessory<TContext>;
 
 /**
@@ -224,7 +224,7 @@ export type FluentAccessory<
  */
 export function initializeAccessory<TContext extends UnknownContext, Services extends Interfaces[]>(
   accessory: PlatformAccessory<TContext>,
-  initialState: InternalServicesStateObject<Services>,
+  initialState: InternalServicesStateObject<Services>
 ): FluentAccessory<TContext, Services> {
   const logger = getLogger();
   logger.info(
@@ -232,13 +232,13 @@ export function initializeAccessory<TContext extends UnknownContext, Services ex
       accessoryUUID: accessory.UUID,
       accessoryName: accessory.displayName,
       serviceCount: accessory.services.length,
-      stateKeys: Object.keys(initialState),
+      stateKeys: Object.keys(initialState)
     },
-    "Initializing accessory with state",
+    'Initializing accessory with state'
   );
 
   const services = createServicesObject(
-    ...(accessory.services as unknown as InstanceType<ServiceForInterface<Services[number]>>[]),
+    ...(accessory.services as unknown as InstanceType<ServiceForInterface<Services[number]>>[])
   );
   applyInitialState<Services>(services as Record<string, unknown>, accessory, initialState);
   return Object.assign(accessory, services as ServicesObject<Services>);
@@ -257,11 +257,11 @@ export class AccessoryHandler<TContext extends UnknownContext, Services extends 
    */
   constructor(
     protected plugin: DynamicPlatformPlugin,
-    public readonly accessory: PlatformAccessory<TContext>,
+    public readonly accessory: PlatformAccessory<TContext>
   ) {
     this.context = accessory.context as TContext;
     this.services = createServicesObject(
-      ...(accessory.services as unknown as InstanceType<ServiceForInterface<Services[number]>>[]),
+      ...(accessory.services as unknown as InstanceType<ServiceForInterface<Services[number]>>[])
     ) as ServicesObject<Services>;
   }
 
@@ -275,7 +275,7 @@ export class AccessoryHandler<TContext extends UnknownContext, Services extends 
   addService<S extends typeof Service>(
     serviceClass: WithUUID<S>,
     displayName?: string,
-    subType?: string,
+    subType?: string
   ): FluentService<S> {
     return getOrAddService(this.accessory, serviceClass, displayName, subType);
   }
@@ -290,7 +290,7 @@ export class AccessoryHandler<TContext extends UnknownContext, Services extends 
       applyInitialState<Services>(
         this.services as Record<string, unknown>,
         this.accessory,
-        initialState,
+        initialState
       );
     }
   }

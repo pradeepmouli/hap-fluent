@@ -1,12 +1,12 @@
-import { Service, Characteristic, type WithUUID, type CharacteristicValue } from "homebridge";
-import { PlatformAccessory } from "homebridge";
-import camelcase from "camelcase";
-import type { InterfaceForService } from "./types/index.js";
-import type { CamelCase, PascalCase } from "type-fest";
-import { FluentCharacteristic } from "./FluentCharacteristic.js";
-import { ValidationError } from "./errors.js";
-import { isService } from "./type-guards.js";
-import { getLogger } from "./logger.js";
+import { Service, Characteristic, type WithUUID, type CharacteristicValue } from 'homebridge';
+import { PlatformAccessory } from 'homebridge';
+import camelcase from 'camelcase';
+import type { InterfaceForService } from './types/index.js';
+import type { CamelCase, PascalCase } from 'type-fest';
+import { FluentCharacteristic } from './FluentCharacteristic.js';
+import { ValidationError } from './errors.js';
+import { isService } from './type-guards.js';
+import { getLogger } from './logger.js';
 
 /**
  * Fluent wrapper for HAP Service with strong typing and characteristic access
@@ -59,7 +59,7 @@ export type FluentService<T extends typeof Service> = InterfaceForService<T> & {
    */
   onGet<K extends CharacteristicNamesOf<T>>(
     key: CamelCase<K>,
-    callback: () => Promise<InterfaceForService<T>[K]>,
+    callback: () => Promise<InterfaceForService<T>[K]>
   ): void;
   /**
    * Register an async setter for a characteristic
@@ -76,7 +76,7 @@ export type FluentService<T extends typeof Service> = InterfaceForService<T> & {
    */
   onSet<K extends CharacteristicNamesOf<T>>(
     key: CamelCase<K>,
-    callback: (value: InterfaceForService<T>[K]) => Promise<void>,
+    callback: (value: InterfaceForService<T>[K]) => Promise<void>
   ): void;
   /**
    * Update a characteristic value without triggering SET handlers
@@ -92,13 +92,13 @@ export type FluentService<T extends typeof Service> = InterfaceForService<T> & {
    */
   update<K extends CharacteristicNamesOf<T>>(
     key: CamelCase<K>,
-    value: InterfaceForService<T>[K],
+    value: InterfaceForService<T>[K]
   ): void;
 };
 
 export type CharacteristicNamesOf<T extends typeof Service> = keyof Omit<
   InterfaceForService<T>,
-  "UUID" | "serviceName"
+  'UUID' | 'serviceName'
 >;
 
 /**
@@ -114,17 +114,17 @@ export function getOrAddService<T extends typeof Service>(
   platformAccessory: PlatformAccessory,
   serviceClass: WithUUID<T>,
   displayName?: string,
-  subType?: string,
+  subType?: string
 ): FluentService<T> {
   const logger = getLogger();
 
-  if (typeof serviceClass !== "function") {
-    logger.error({ serviceClass }, "Service class must be a constructor function");
-    throw new Error("Service class must be a constructor function");
+  if (typeof serviceClass !== 'function') {
+    logger.error({ serviceClass }, 'Service class must be a constructor function');
+    throw new Error('Service class must be a constructor function');
   }
-  if (!("UUID" in serviceClass)) {
-    logger.error({ serviceClass }, "Service class must have a UUID property");
-    throw new Error("Service class must have a UUID property");
+  if (!('UUID' in serviceClass)) {
+    logger.error({ serviceClass }, 'Service class must have a UUID property');
+    throw new Error('Service class must have a UUID property');
   }
 
   const existingService = subType
@@ -132,11 +132,11 @@ export function getOrAddService<T extends typeof Service>(
     : platformAccessory.getService(serviceClass);
 
   if (existingService) {
-    logger.debug({ displayName, subType, uuid: serviceClass.UUID }, "Found existing service");
+    logger.debug({ displayName, subType, uuid: serviceClass.UUID }, 'Found existing service');
     return wrapService(existingService as InstanceType<T>);
   } else {
-    logger.debug({ displayName, subType, uuid: serviceClass.UUID }, "Creating new service");
-    const newService = new serviceClass(displayName ?? "", subType ?? "") as InstanceType<T>;
+    logger.debug({ displayName, subType, uuid: serviceClass.UUID }, 'Creating new service');
+    const newService = new serviceClass(displayName ?? '', subType ?? '') as InstanceType<T>;
     platformAccessory.addService(newService);
 
     logger.info(
@@ -144,9 +144,9 @@ export function getOrAddService<T extends typeof Service>(
         displayName,
         subType,
         uuid: serviceClass.UUID,
-        characteristicCount: newService.characteristics.length,
+        characteristicCount: newService.characteristics.length
       },
-      "Created and added new service",
+      'Created and added new service'
     );
 
     return wrapService(newService);
@@ -167,11 +167,11 @@ export function wrapService<T extends typeof Service>(service: InstanceType<T>):
   const svc = service as unknown as Service;
 
   if (!isService(svc)) {
-    logger.error({ service }, "Invalid service object");
-    throw new ValidationError("Invalid service object", {
+    logger.error({ service }, 'Invalid service object');
+    throw new ValidationError('Invalid service object', {
       value: service,
-      expected: "HAP Service instance",
-      actual: typeof service,
+      expected: 'HAP Service instance',
+      actual: typeof service
     });
   }
 
@@ -179,9 +179,9 @@ export function wrapService<T extends typeof Service>(service: InstanceType<T>):
     {
       serviceName: svc.displayName,
       uuid: svc.UUID,
-      characteristicCount: svc.characteristics.length,
+      characteristicCount: svc.characteristics.length
     },
-    "Wrapping service with fluent interface",
+    'Wrapping service with fluent interface'
   );
 
   const e = {
@@ -189,44 +189,44 @@ export function wrapService<T extends typeof Service>(service: InstanceType<T>):
       svc.characteristics.map((p: InstanceType<typeof Characteristic>) => {
         const camelName = camelcase(p.displayName);
         return [camelName, new FluentCharacteristic(p)];
-      }),
-    ) as { [R in keyof FluentService<T>]: FluentCharacteristic<CharacteristicValue> },
+      })
+    ) as { [R in keyof FluentService<T>]: FluentCharacteristic<CharacteristicValue> }
   };
 
   const obj = {
     ...e,
     onGet: <K extends keyof InterfaceForService<T>>(
       key: K,
-      callback: () => Promise<InterfaceForService<T>[K]>,
+      callback: () => Promise<InterfaceForService<T>[K]>
     ) => {
       // Type assertion needed: TypeScript can't prove InterfaceForService[K] extends CharacteristicValue
       // Runtime validation happens in FluentCharacteristic
       return e.characteristics[key].onGet(
-        callback as unknown as () => Promise<CharacteristicValue>,
+        callback as unknown as () => Promise<CharacteristicValue>
       );
     },
     onSet: <K extends keyof InterfaceForService<T>>(
       key: K,
-      callback: (value: InterfaceForService<T>[K]) => Promise<void>,
+      callback: (value: InterfaceForService<T>[K]) => Promise<void>
     ) => {
       // Type assertion needed: TypeScript can't prove CharacteristicValue extends InterfaceForService[K]
       // Runtime validation happens in FluentCharacteristic
       return e.characteristics[key].onSet(
-        callback as unknown as (value: CharacteristicValue) => Promise<void>,
+        callback as unknown as (value: CharacteristicValue) => Promise<void>
       );
     },
     update: <K extends keyof InterfaceForService<T>>(key: K, value: InterfaceForService<T>[K]) => {
       // Type assertion needed: TypeScript can't prove InterfaceForService[K] extends CharacteristicValue
       // Runtime validation happens in FluentCharacteristic.update()
       e.characteristics[key].update(value as unknown as CharacteristicValue);
-    },
+    }
   };
 
   for (const key in e.characteristics) {
     // Create camelCase shorthand property (e.g., "on", "brightness")
     Object.defineProperty(obj, key, {
       get: () => e.characteristics[key as keyof typeof e.characteristics].get(),
-      set: (value) => e.characteristics[key as keyof typeof e.characteristics].set(value),
+      set: (value) => e.characteristics[key as keyof typeof e.characteristics].set(value)
     });
 
     // Also create PascalCase shorthand property (e.g., "On", "Brightness")
@@ -234,7 +234,7 @@ export function wrapService<T extends typeof Service>(service: InstanceType<T>):
     if (pascalKey !== key) {
       Object.defineProperty(obj, pascalKey, {
         get: () => e.characteristics[key as keyof typeof e.characteristics].get(),
-        set: (value) => e.characteristics[key as keyof typeof e.characteristics].set(value),
+        set: (value) => e.characteristics[key as keyof typeof e.characteristics].set(value)
       });
     }
   }

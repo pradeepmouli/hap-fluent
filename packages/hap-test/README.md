@@ -39,9 +39,9 @@ describe('MyPlatform', () => {
     const harness = await TestHarness.create({
       platformConstructor: MyPlatform,
       platformConfig: {
-        name: 'Test Platform',
+        name: 'Test Platform'
         // ... your config
-      },
+      }
     });
 
     // Wait for platform to register accessories
@@ -57,7 +57,7 @@ describe('MyPlatform', () => {
     // Test characteristic operations
     const service = homekit.service(accessories[0].UUID, 'Lightbulb');
     const onChar = service?.characteristic('On');
-    
+
     await onChar?.setValue(true);
     expect(await onChar?.getValue()).toBe(true);
 
@@ -68,9 +68,9 @@ describe('MyPlatform', () => {
 
 ## Documentation
 
-- [API Reference](./docs/api.md) *(coming soon)*
-- [User Guide](./docs/guide.md) *(coming soon)*
-- [Examples](./examples/) *(coming soon)*
+- [API Reference](./docs/api.md) _(coming soon)_
+- [User Guide](./docs/guide.md) _(coming soon)_
+- [Examples](./examples/) _(coming soon)_
 
 ## Requirements
 

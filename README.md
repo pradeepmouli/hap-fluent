@@ -41,36 +41,36 @@ npm install homebridge@>=1.11.0 hap-nodejs@>=0.13.0
 ## Quick Start
 
 ```typescript
-import { API } from "homebridge";
-import { getOrAddService, initializeAccessory } from "hap-fluent";
-import { configureLogger } from "hap-fluent/logger";
+import { API } from 'homebridge';
+import { getOrAddService, initializeAccessory } from 'hap-fluent';
+import { configureLogger } from 'hap-fluent/logger';
 
 // Configure logging (optional)
-configureLogger({ level: "debug", pretty: true });
+configureLogger({ level: 'debug', pretty: true });
 
 export default (api: API) => {
-  api.registerAccessory("MyPlugin", "MyAccessory", MyAccessory);
+  api.registerAccessory('MyPlugin', 'MyAccessory', MyAccessory);
 };
 
 class MyAccessory {
   constructor(
     private readonly log: any,
     private readonly config: any,
-    private readonly api: API,
+    private readonly api: API
   ) {
     // Create accessory
-    const uuid = api.hap.uuid.generate("my-unique-id");
-    const accessory = new api.platformAccessory("My Light", uuid);
+    const uuid = api.hap.uuid.generate('my-unique-id');
+    const accessory = new api.platformAccessory('My Light', uuid);
 
     // Add lightbulb service with fluent API
-    const lightbulb = getOrAddService(accessory, api.hap.Service.Lightbulb, "My Light");
+    const lightbulb = getOrAddService(accessory, api.hap.Service.Lightbulb, 'My Light');
 
     // Set up characteristic handlers
-    lightbulb.onGet("On", async () => {
+    lightbulb.onGet('On', async () => {
       return await this.getLightState();
     });
 
-    lightbulb.onSet("On", async (value) => {
+    lightbulb.onSet('On', async (value) => {
       await this.setLightState(value);
     });
 
@@ -97,14 +97,14 @@ class MyAccessory {
 Wrap HAP services with type-safe characteristic access and fluent methods.
 
 ```typescript
-import { getOrAddService, wrapService } from "hap-fluent";
+import { getOrAddService, wrapService } from 'hap-fluent';
 
 // Get or add a service
 const lightbulb = getOrAddService(
   accessory,
   hap.Service.Lightbulb,
-  "Living Room Light",
-  "main", // optional subtype
+  'Living Room Light',
+  'main' // optional subtype
 );
 
 // Access characteristics (both camelCase and PascalCase supported)
@@ -116,17 +116,17 @@ lightbulb.on = true;
 lightbulb.brightness = 75;
 
 // Register handlers
-lightbulb.onGet("On", async () => {
+lightbulb.onGet('On', async () => {
   return await getDeviceState();
 });
 
-lightbulb.onSet("Brightness", async (value) => {
+lightbulb.onSet('Brightness', async (value) => {
   await setDeviceBrightness(value);
 });
 
 // Update without triggering SET handlers
-lightbulb.update("On", false);
-lightbulb.update("Brightness", 50);
+lightbulb.update('On', false);
+lightbulb.update('Brightness', 50);
 ```
 
 ### FluentCharacteristic
@@ -159,21 +159,21 @@ lightbulb.characteristics.On.onSet(async (value) => {
 Initialize accessories with state and type-safe service access.
 
 ```typescript
-import { initializeAccessory } from "hap-fluent";
+import { initializeAccessory } from 'hap-fluent';
 
 const accessory = initializeAccessory(platformAccessory, {
   lightbulb: {
     on: true,
     brightness: 75,
     hue: 120,
-    saturation: 50,
+    saturation: 50
   },
   accessoryInformation: {
-    manufacturer: "ACME",
-    model: "Light-1000",
-    serialNumber: "SN12345",
-    firmwareRevision: "1.0.0",
-  },
+    manufacturer: 'ACME',
+    model: 'Light-1000',
+    serialNumber: 'SN12345',
+    firmwareRevision: '1.0.0'
+  }
 });
 
 // Access services with full type safety
@@ -191,23 +191,23 @@ import {
   FluentCharacteristicError,
   FluentServiceError,
   ValidationError,
-  ConfigurationError,
-} from "hap-fluent/errors";
+  ConfigurationError
+} from 'hap-fluent/errors';
 
 try {
   lightbulb.characteristics.Brightness.set(150);
 } catch (error) {
   if (error instanceof FluentCharacteristicError) {
-    console.error("Characteristic Error:", {
+    console.error('Characteristic Error:', {
       message: error.message,
       characteristic: error.context?.characteristic,
       value: error.context?.value,
-      originalError: error.context?.originalError,
+      originalError: error.context?.originalError
     });
 
     // Implement retry, fallback, or user notification
   } else if (error instanceof ValidationError) {
-    console.error("Validation Error:", error.context);
+    console.error('Validation Error:', error.context);
   }
 }
 ```
@@ -229,22 +229,22 @@ HAP Fluent uses Pino for fast, structured JSON logging.
 ### Configuration
 
 ```typescript
-import { configureLogger, getLogger, createChildLogger } from "hap-fluent/logger";
+import { configureLogger, getLogger, createChildLogger } from 'hap-fluent/logger';
 
 // Development: pretty printing
 configureLogger({
-  level: "debug",
-  pretty: true,
+  level: 'debug',
+  pretty: true
 });
 
 // Production: JSON output
 configureLogger({
-  level: "info",
+  level: 'info',
   pretty: false,
   base: {
-    plugin: "homebridge-my-plugin",
-    version: "1.0.0",
-  },
+    plugin: 'homebridge-my-plugin',
+    version: '1.0.0'
+  }
 });
 ```
 
@@ -254,18 +254,18 @@ configureLogger({
 const logger = getLogger();
 
 // Structured logging
-logger.info({ deviceId: "123", status: "online" }, "Device connected");
-logger.debug({ operation: "setBrightness", value: 75 }, "Setting brightness");
-logger.warn("Device slow to respond, retrying...");
-logger.error({ err: new Error("Timeout") }, "Operation failed");
+logger.info({ deviceId: '123', status: 'online' }, 'Device connected');
+logger.debug({ operation: 'setBrightness', value: 75 }, 'Setting brightness');
+logger.warn('Device slow to respond, retrying...');
+logger.error({ err: new Error('Timeout') }, 'Operation failed');
 
 // Child loggers with context
 const deviceLogger = createChildLogger({
-  device: "living-room-light",
-  deviceId: "12345",
+  device: 'living-room-light',
+  deviceId: '12345'
 });
 
-deviceLogger.info("State changed");
+deviceLogger.info('State changed');
 // Output includes device context in every log
 ```
 
@@ -286,7 +286,7 @@ HAP Fluent provides type utilities for common operations:
 ### Value Transformers
 
 ```typescript
-import { createClampTransformer, createScaleTransformer } from "hap-fluent/type-utils";
+import { createClampTransformer, createScaleTransformer } from 'hap-fluent/type-utils';
 
 // Clamp values to valid range
 const clampBrightness = createClampTransformer(0, 100);
@@ -301,7 +301,7 @@ percentToDecimal(50); // Returns 0.5
 ### Value Predicates
 
 ```typescript
-import { createRangePredicate } from "hap-fluent/type-utils";
+import { createRangePredicate } from 'hap-fluent/type-utils';
 
 const isValidHue = createRangePredicate(0, 360);
 isValidHue(180); // true
@@ -315,19 +315,19 @@ import type {
   ServiceState,
   PartialServiceState,
   CharacteristicNames,
-  CharacteristicType,
-} from "hap-fluent/type-utils";
+  CharacteristicType
+} from 'hap-fluent/type-utils';
 
 // Service state management
 const state: ServiceState = {
   on: true,
   brightness: 75,
-  hue: 120,
+  hue: 120
 };
 
 // Partial updates
 const update: PartialServiceState = {
-  brightness: 100,
+  brightness: 100
 };
 ```
 
@@ -394,30 +394,30 @@ Transforms values when setting (encode) and retrieving (decode). Perfect for uni
 characteristic
   .codec(
     (fahrenheit) => ((fahrenheit - 32) * 5) / 9, // encode: F to C
-    (celsius) => (celsius * 9) / 5 + 32, // decode: C to F
+    (celsius) => (celsius * 9) / 5 + 32 // decode: C to F
   )
   .onSet(async (value) => {
-    console.log("Temperature in Fahrenheit (decoded):", value);
+    console.log('Temperature in Fahrenheit (decoded):', value);
   });
 
 // String format conversion
 characteristic
   .codec(
     (value) => String(value).toUpperCase(), // encode
-    (value) => String(value).toLowerCase(), // decode
+    (value) => String(value).toLowerCase() // decode
   )
   .onSet(async (value) => {
-    console.log("Received lower-case string (decoded):", value);
+    console.log('Received lower-case string (decoded):', value);
   });
 
 // JSON serialization
 characteristic
   .codec(
     (obj) => JSON.stringify(obj), // encode
-    (str) => JSON.parse(String(str)), // decode
+    (str) => JSON.parse(String(str)) // decode
   )
   .onSet(async (value) => {
-    console.log("Received object (decoded from JSON):", value);
+    console.log('Received object (decoded from JSON):', value);
   });
 ```
 
@@ -456,39 +456,39 @@ characteristic
 const accessory = initializeAccessory(platformAccessory, {
   lightbulb: {
     on: true,
-    brightness: 75,
+    brightness: 75
   },
   temperatureSensor: {
-    currentTemperature: 22.5,
+    currentTemperature: 22.5
   },
   accessoryInformation: {
-    manufacturer: "ACME",
-    model: "Smart Light Pro",
-  },
+    manufacturer: 'ACME',
+    model: 'Smart Light Pro'
+  }
 });
 
 // Access each service
-accessory.lightbulb.onSet("On", async (value) => {
+accessory.lightbulb.onSet('On', async (value) => {
   await device.setPower(value);
 });
 
-accessory.temperatureSensor.update("CurrentTemperature", 23.0);
+accessory.temperatureSensor.update('CurrentTemperature', 23.0);
 ```
 
 ### Service with Subtypes
 
 ```typescript
 // Create multiple instances of the same service type
-const outlet1 = getOrAddService(accessory, hap.Service.Outlet, "Main Outlet", "outlet-1");
+const outlet1 = getOrAddService(accessory, hap.Service.Outlet, 'Main Outlet', 'outlet-1');
 
-const outlet2 = getOrAddService(accessory, hap.Service.Outlet, "USB Outlet", "outlet-2");
+const outlet2 = getOrAddService(accessory, hap.Service.Outlet, 'USB Outlet', 'outlet-2');
 
 // Configure each independently
-outlet1.onSet("On", async (value) => {
+outlet1.onSet('On', async (value) => {
   await device.setOutlet(1, value);
 });
 
-outlet2.onSet("On", async (value) => {
+outlet2.onSet('On', async (value) => {
   await device.setOutlet(2, value);
 });
 ```
@@ -496,7 +496,7 @@ outlet2.onSet("On", async (value) => {
 ### Error Recovery with Retry
 
 ```typescript
-import { FluentCharacteristicError } from "hap-fluent/errors";
+import { FluentCharacteristicError } from 'hap-fluent/errors';
 
 async function setWithRetry(characteristic: any, value: any, maxRetries = 3): Promise<boolean> {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -506,10 +506,10 @@ async function setWithRetry(characteristic: any, value: any, maxRetries = 3): Pr
     } catch (error) {
       if (error instanceof FluentCharacteristicError) {
         if (attempt < maxRetries) {
-          logger.warn({ attempt, maxRetries }, "Retrying...");
+          logger.warn({ attempt, maxRetries }, 'Retrying...');
           await delay(Math.pow(2, attempt) * 1000);
         } else {
-          logger.error({ attempt, maxRetries, error }, "Failed after retries");
+          logger.error({ attempt, maxRetries, error }, 'Failed after retries');
           return false;
         }
       } else {
@@ -524,7 +524,7 @@ async function setWithRetry(characteristic: any, value: any, maxRetries = 3): Pr
 ### Custom Type Guards
 
 ```typescript
-import { isFluentCharacteristic } from "hap-fluent/type-utils";
+import { isFluentCharacteristic } from 'hap-fluent/type-utils';
 
 function processValue(obj: unknown) {
   if (isFluentCharacteristic(obj)) {
@@ -551,13 +551,13 @@ import {
   PlatformConfig,
   Service,
   Characteristic,
-  Logger,
-} from "homebridge";
-import { FluentService, getOrAddService } from "hap-fluent";
-import { configureLogger } from "hap-fluent/logger";
+  Logger
+} from 'homebridge';
+import { FluentService, getOrAddService } from 'hap-fluent';
+import { configureLogger } from 'hap-fluent/logger';
 
-const PLUGIN_NAME = "homebridge-smart-lights";
-const PLATFORM_NAME = "SmartLights";
+const PLUGIN_NAME = 'homebridge-smart-lights';
+const PLATFORM_NAME = 'SmartLights';
 
 export = (api: API) => {
   api.registerPlatform(PLATFORM_NAME, SmartLightsPlatform);
@@ -569,15 +569,15 @@ class SmartLightsPlatform implements DynamicPlatformPlugin {
   constructor(
     private readonly log: Logger,
     private readonly config: PlatformConfig,
-    private readonly api: API,
+    private readonly api: API
   ) {
     // Configure hap-fluent logging
     configureLogger({
-      level: config.debug ? "debug" : "info",
-      pretty: true,
+      level: config.debug ? 'debug' : 'info',
+      pretty: true
     });
 
-    this.api.on("didFinishLaunching", () => {
+    this.api.on('didFinishLaunching', () => {
       this.discoverDevices();
     });
   }
@@ -586,7 +586,7 @@ class SmartLightsPlatform implements DynamicPlatformPlugin {
    * Called when Homebridge restores cached accessories from disk at startup
    */
   configureAccessory(accessory: PlatformAccessory) {
-    this.log.info("Loading accessory from cache:", accessory.displayName);
+    this.log.info('Loading accessory from cache:', accessory.displayName);
 
     // Re-attach handlers to cached accessory
     this.setupAccessoryHandlers(accessory);
@@ -606,13 +606,13 @@ class SmartLightsPlatform implements DynamicPlatformPlugin {
 
       if (existingAccessory) {
         // Update existing accessory
-        this.log.info("Restoring existing accessory:", device.name);
+        this.log.info('Restoring existing accessory:', device.name);
         existingAccessory.context.device = device;
         this.setupAccessoryHandlers(existingAccessory);
         this.api.updatePlatformAccessories([existingAccessory]);
       } else {
         // Create new accessory
-        this.log.info("Adding new accessory:", device.name);
+        this.log.info('Adding new accessory:', device.name);
         const accessory = new this.api.platformAccessory(device.name, uuid);
         accessory.context.device = device;
 
@@ -626,7 +626,7 @@ class SmartLightsPlatform implements DynamicPlatformPlugin {
     const deviceUUIDs = new Set(devices.map((d) => this.api.hap.uuid.generate(d.id)));
     for (const [uuid, accessory] of this.accessories) {
       if (!deviceUUIDs.has(uuid)) {
-        this.log.info("Removing accessory:", accessory.displayName);
+        this.log.info('Removing accessory:', accessory.displayName);
         this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
         this.accessories.delete(uuid);
       }
@@ -644,20 +644,20 @@ class SmartLightsPlatform implements DynamicPlatformPlugin {
     info
       .setCharacteristic(
         this.api.hap.Characteristic.Manufacturer,
-        device.manufacturer || "Smart Lights",
+        device.manufacturer || 'Smart Lights'
       )
-      .setCharacteristic(this.api.hap.Characteristic.Model, device.model || "Smart Bulb")
+      .setCharacteristic(this.api.hap.Characteristic.Model, device.model || 'Smart Bulb')
       .setCharacteristic(this.api.hap.Characteristic.SerialNumber, device.serialNumber || device.id)
       .setCharacteristic(
         this.api.hap.Characteristic.FirmwareRevision,
-        device.firmwareVersion || "1.0.0",
+        device.firmwareVersion || '1.0.0'
       );
 
     // Get or add lightbulb service using hap-fluent
     const lightbulb: FluentService = getOrAddService(
       accessory,
       this.api.hap.Service.Lightbulb,
-      device.name,
+      device.name
     );
 
     // HAP validates brightness automatically based on characteristic props
@@ -667,21 +667,21 @@ class SmartLightsPlatform implements DynamicPlatformPlugin {
     lightbulb.characteristics.On.log() // Log all operations
       .limit(5, 1000) // Rate limit to 5 calls per second
       .onGet(async () => {
-        this.log.debug("Getting On state for", device.name);
+        this.log.debug('Getting On state for', device.name);
         try {
           const state = await this.getDeviceState(device.id);
           return state.on;
         } catch (error) {
-          this.log.error("Failed to get On state:", error);
+          this.log.error('Failed to get On state:', error);
           throw error;
         }
       })
       .onSet(async (value: boolean) => {
-        this.log.debug("Setting On state to", value, "for", device.name);
+        this.log.debug('Setting On state to', value, 'for', device.name);
         try {
           await this.setDevicePower(device.id, value);
         } catch (error) {
-          this.log.error("Failed to set On state:", error);
+          this.log.error('Failed to set On state:', error);
           throw error;
         }
       });
@@ -690,21 +690,21 @@ class SmartLightsPlatform implements DynamicPlatformPlugin {
     lightbulb.characteristics.Brightness.transform((value) => Math.round(value as number)) // Round to integer
       .clamp(0, 100) // Ensure within range
       .onGet(async () => {
-        this.log.debug("Getting Brightness for", device.name);
+        this.log.debug('Getting Brightness for', device.name);
         try {
           const state = await this.getDeviceState(device.id);
           return state.brightness;
         } catch (error) {
-          this.log.error("Failed to get Brightness:", error);
+          this.log.error('Failed to get Brightness:', error);
           throw error;
         }
       })
       .onSet(async (value: number) => {
-        this.log.debug("Setting Brightness to", value, "for", device.name);
+        this.log.debug('Setting Brightness to', value, 'for', device.name);
         try {
           await this.setDeviceBrightness(device.id, value);
         } catch (error) {
-          this.log.error("Failed to set Brightness:", error);
+          this.log.error('Failed to set Brightness:', error);
           throw error;
         }
       });
@@ -716,7 +716,7 @@ class SmartLightsPlatform implements DynamicPlatformPlugin {
         // encode (beforeSet): Convert Kelvin from HomeKit into mireds for the device/HAP
         (kelvin) => Math.round(1000000 / (kelvin as number)),
         // decode (afterGet): Convert mireds from the device/HAP into Kelvin for HomeKit
-        (mireds) => Math.round(1000000 / (mireds as number)),
+        (mireds) => Math.round(1000000 / (mireds as number))
       )
         .onGet(async () => {
           const state = await this.getDeviceState(device.id);
@@ -772,7 +772,7 @@ class SmartLightsPlatform implements DynamicPlatformPlugin {
           lightbulb.characteristics.Saturation?.update(state.saturation);
         }
       } catch (error) {
-        this.log.error("Failed to poll device state:", error);
+        this.log.error('Failed to poll device state:', error);
       }
     }, 30000);
   }
@@ -782,19 +782,19 @@ class SmartLightsPlatform implements DynamicPlatformPlugin {
     // Fetch devices from your API
     return [
       {
-        id: "1",
-        name: "Living Room Light",
-        manufacturer: "ACME",
-        model: "LB-100",
-        supportsColor: true,
+        id: '1',
+        name: 'Living Room Light',
+        manufacturer: 'ACME',
+        model: 'LB-100',
+        supportsColor: true
       },
       {
-        id: "2",
-        name: "Bedroom Light",
-        manufacturer: "ACME",
-        model: "LB-50",
-        supportsColor: false,
-      },
+        id: '2',
+        name: 'Bedroom Light',
+        manufacturer: 'ACME',
+        model: 'LB-50',
+        supportsColor: false
+      }
     ];
   }
 
@@ -840,12 +840,12 @@ const service =
 
 service
   .getCharacteristic(hap.Characteristic.On)
-  .on("get", (callback) => {
+  .on('get', (callback) => {
     this.getDeviceState(device.id)
       .then((state) => callback(null, state.on))
       .catch((error) => callback(error));
   })
-  .on("set", (value, callback) => {
+  .on('set', (value, callback) => {
     this.setDevicePower(device.id, value)
       .then(() => callback(null))
       .catch((error) => callback(error));
@@ -877,12 +877,12 @@ The hap-fluent approach is more concise, type-safe, and includes built-in featur
 ```typescript
 // In plugin constructor or platform
 configureLogger({
-  level: process.env.DEBUG ? "debug" : "info",
-  pretty: process.env.NODE_ENV === "development",
+  level: process.env.DEBUG ? 'debug' : 'info',
+  pretty: process.env.NODE_ENV === 'development',
   base: {
     plugin: this.name,
-    version: this.version,
-  },
+    version: this.version
+  }
 });
 ```
 
@@ -895,10 +895,10 @@ class MyAccessory {
   constructor(accessory: PlatformAccessory) {
     this.logger = createChildLogger({
       accessory: accessory.displayName,
-      uuid: accessory.UUID,
+      uuid: accessory.UUID
     });
 
-    this.logger.info("Accessory initialized");
+    this.logger.info('Accessory initialized');
   }
 }
 ```
@@ -911,7 +911,7 @@ try {
 } catch (error) {
   if (error instanceof FluentCharacteristicError) {
     // Log and recover
-    this.logger.error({ error }, "Failed to set characteristic");
+    this.logger.error({ error }, 'Failed to set characteristic');
     // Use fallback value or notify user
   } else {
     // Unknown error, re-throw
@@ -923,14 +923,14 @@ try {
 ### 4. Use Type Utilities for Validation
 
 ```typescript
-import { createRangePredicate, createClampTransformer } from "hap-fluent/type-utils";
+import { createRangePredicate, createClampTransformer } from 'hap-fluent/type-utils';
 
 const isValid = createRangePredicate(0, 100);
 const clamp = createClampTransformer(0, 100);
 
 function setBrightness(value: number) {
   if (!isValid(value)) {
-    logger.warn({ value }, "Invalid brightness, clamping");
+    logger.warn({ value }, 'Invalid brightness, clamping');
     value = clamp(value);
   }
 
@@ -945,13 +945,13 @@ function setBrightness(value: number) {
 const initialState = {
   lightbulb: {
     on: false,
-    brightness: 0,
+    brightness: 0
   },
   accessoryInformation: {
-    manufacturer: "ACME",
-    model: "Light-1000",
-    serialNumber: device.serialNumber,
-  },
+    manufacturer: 'ACME',
+    model: 'Light-1000',
+    serialNumber: device.serialNumber
+  }
 };
 
 // Initialize with state
@@ -980,23 +980,23 @@ HAP Fluent requires TypeScript 5.0+ with strict mode enabled:
 
 ```typescript
 // Main API
-export { getOrAddService, wrapService } from "hap-fluent";
-export { FluentCharacteristic, FluentService } from "hap-fluent";
-export { initializeAccessory, createServicesObject } from "hap-fluent";
+export { getOrAddService, wrapService } from 'hap-fluent';
+export { FluentCharacteristic, FluentService } from 'hap-fluent';
+export { initializeAccessory, createServicesObject } from 'hap-fluent';
 
 // Error handling
-export * from "hap-fluent/errors";
-export { isCharacteristicValue, isService, isCharacteristic } from "hap-fluent/type-guards";
+export * from 'hap-fluent/errors';
+export { isCharacteristicValue, isService, isCharacteristic } from 'hap-fluent/type-guards';
 
 // Logging
-export { configureLogger, getLogger, createChildLogger, resetLogger } from "hap-fluent/logger";
-export type { LogLevel, LoggerOptions } from "hap-fluent/logger";
+export { configureLogger, getLogger, createChildLogger, resetLogger } from 'hap-fluent/logger';
+export type { LogLevel, LoggerOptions } from 'hap-fluent/logger';
 
 // Type utilities
-export * from "hap-fluent/type-utils";
+export * from 'hap-fluent/type-utils';
 
 // Types
-export type * from "hap-fluent/types";
+export type * from 'hap-fluent/types';
 ```
 
 ## Performance
@@ -1029,8 +1029,8 @@ service
 ```typescript
 const lightbulb = getOrAddService(accessory, hap.Service.Lightbulb);
 
-lightbulb.onGet("On", async () => await getLightState());
-lightbulb.onSet("On", async (value) => await setLightState(value));
+lightbulb.onGet('On', async () => await getLightState());
+lightbulb.onSet('On', async (value) => await setLightState(value));
 ```
 
 ## Troubleshooting
@@ -1047,23 +1047,23 @@ If you see type errors, ensure:
 
 ```typescript
 // Ensure logger is configured before use
-configureLogger({ level: "debug" });
+configureLogger({ level: 'debug' });
 
 // Check that level is not 'silent'
 const logger = getLogger();
-console.log("Current level:", logger.level);
+console.log('Current level:', logger.level);
 ```
 
 ### Characteristic Value Errors
 
 ```typescript
-import { isCharacteristicValue } from "hap-fluent/type-guards";
+import { isCharacteristicValue } from 'hap-fluent/type-guards';
 
 // Validate before setting
 if (isCharacteristicValue(value)) {
   characteristic.set(value);
 } else {
-  logger.error({ value }, "Invalid characteristic value");
+  logger.error({ value }, 'Invalid characteristic value');
 }
 ```
 

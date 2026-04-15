@@ -1,9 +1,9 @@
 import { Service } from 'hap-nodejs';
-import type { 
-  InterfaceFor, 
+import type {
+  InterfaceFor,
   InterfaceForInstance,
   ConstructorForInterface,
-  ServiceConstructorToInterface 
+  ServiceConstructorToInterface
 } from '../src/types/service-to-interface-mapping.js';
 import type { AccessoryInformation, AirPurifier } from '../src/types/hap-interfaces.js';
 
@@ -35,7 +35,7 @@ function createTypedService<T extends keyof ServiceConstructorToInterface>(
   interface: ServiceConstructorToInterface[T];
 } {
   const service = new constructor(displayName) as InstanceType<T>;
-  
+
   return {
     service,
     interface: {} as ServiceConstructorToInterface[T] // Interface type for reference
@@ -51,10 +51,7 @@ const typedAirPurifier = createTypedService(Service.AirPurifier, 'Main Air Purif
 function getCharacteristicValue<
   T extends keyof ServiceConstructorToInterface,
   K extends keyof ServiceConstructorToInterface[T]
->(
-  service: InstanceType<T>,
-  characteristicName: K
-): ServiceConstructorToInterface[T][K] {
+>(service: InstanceType<T>, characteristicName: K): ServiceConstructorToInterface[T][K] {
   // This would access the characteristic with proper typing
   return (service as any).getCharacteristic(characteristicName)?.value;
 }

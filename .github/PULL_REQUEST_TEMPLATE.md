@@ -1,9 +1,11 @@
 # Pull Request
 
 ## Description
+
 <!-- Describe your changes in detail -->
 
 ## Type of Change
+
 <!-- Mark the relevant option with an "x" -->
 
 - [ ] Bug fix (non-breaking change which fixes an issue)
@@ -15,12 +17,14 @@
 - [ ] Test update
 
 ## Changeset
+
 <!-- Have you created a changeset? -->
 
 - [ ] I have created a changeset using `pnpm changeset`
 - [ ] This PR does not require a changeset (documentation, tests, etc.)
 
 ## Testing
+
 <!-- Describe the tests you ran to verify your changes -->
 
 - [ ] All existing tests pass
@@ -38,6 +42,7 @@
 - [ ] New and existing unit tests pass locally with my changes
 
 ## Related Issues
+
 <!-- Link any related issues here -->
 
 Closes #

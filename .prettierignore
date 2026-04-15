@@ -7,3 +7,24 @@ coverage/
 .env
 .env.local
 .env.*.local
+
+# Generated/vendored/build outputs
+**/dist/**
+**/build/**
+**/node_modules/**
+**/coverage/**
+**/.turbo/**
+**/.cache/**
+
+# Docs and specs (hand-written markdown, not code)
+docs/**
+specs/**
+
+# Agent tooling
+.agents/**
+.claude/**
+.codex/**
+.gemini/**
+.specify/**
+.github/agents/**
+.github/skills/**

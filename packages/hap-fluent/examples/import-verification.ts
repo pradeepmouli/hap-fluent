@@ -1,6 +1,6 @@
 /**
  * Import Verification Examples
- * 
+ *
  * These examples verify that the package exports work correctly
  * for both main exports and subpath exports.
  */
