@@ -3,7 +3,13 @@
   "version": "0.3.0",
   "description": "Fluent, strongly-typed wrapper for HAP-NodeJS services and characteristics.",
   "license": "Apache-2.0",
-  "author": "Pradeep Mouli",
+  "author": "Pradeep Mouli <pmouli@mac.com> (https://github.com/pradeepmouli)",
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

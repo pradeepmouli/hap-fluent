@@ -12,7 +12,7 @@
     "vitest"
   ],
   "license": "MIT",
-  "author": "HAP Fluent Monorepo Contributors",
+  "author": "Pradeep Mouli <pmouli@mac.com> (https://github.com/pradeepmouli)",
   "repository": {
     "type": "git",
     "url": "https://github.com/pradeepmouli/hap-fluent.git",

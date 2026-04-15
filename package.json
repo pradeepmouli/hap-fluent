@@ -15,6 +15,7 @@
     "smart-home",
     "type-safe"
   ],
+  "author": "Pradeep Mouli <pmouli@mac.com> (https://github.com/pradeepmouli)",
   "workspaces": [
     "packages/*"
   ],
