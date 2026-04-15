@@ -47,7 +47,7 @@
     "@changesets/changelog-github": "^0.6.0",
     "@changesets/cli": "^2.30.0",
     "@to-skills/vitepress": "^0.2.0",
-    "@types/node": "^24.9.1",
+    "@types/node": "^25.6.0",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.57.2",
     "@typescript/native-preview": "7.0.0-dev.20260301.1",
