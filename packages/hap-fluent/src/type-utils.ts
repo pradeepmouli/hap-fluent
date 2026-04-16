@@ -1,20 +1,33 @@
 /**
- * Type utilities for improving developer experience with HAP Fluent
- * Provides helper types for working with services, characteristics, and state management
+ * Compile-time type helpers and runtime value utilities for HAP Fluent.
+ *
+ * @remarks
+ * This module exports TypeScript utility types for extracting characteristic
+ * names and value types from service types, plus runtime transformer and
+ * predicate factories for characteristic value manipulation.
+ *
+ * Import selectively — all exports are tree-shakeable.
  */
 
 import type { CharacteristicValue } from 'hap-nodejs';
 import type { FluentCharacteristic } from './FluentCharacteristic.js';
 
 /**
- * Extract characteristic names from a service type
- * Useful for type-safe characteristic access
+ * Extract the camelCase characteristic name union from a `FluentService` type.
+ *
+ * @remarks
+ * Useful when you need to constrain a key parameter to valid characteristic
+ * names for a specific service type, or when generating type-safe state objects.
+ *
+ * @typeParam T - A `FluentService` type or any object with a `characteristics` property.
  *
  * @example
  * ```typescript
- * type LightbulbChars = CharacteristicNames<typeof Lightbulb>;
+ * type LightbulbChars = CharacteristicNames<FluentService<typeof hap.Service.Lightbulb>>;
  * // Result: 'on' | 'brightness' | 'hue' | 'saturation' | ...
  * ```
+ *
+ * @category TypeUtils
  */
 export type CharacteristicNames<T> = T extends { characteristics: infer C }
   ? C extends Record<string, unknown>
@@ -23,13 +36,18 @@ export type CharacteristicNames<T> = T extends { characteristics: infer C }
   : never;
 
 /**
- * Extract the type of a specific characteristic from a service
+ * Extract the `FluentCharacteristic<T>` type for a named characteristic on a service.
+ *
+ * @typeParam TService - A `FluentService` type.
+ * @typeParam TCharName - The camelCase characteristic name string.
  *
  * @example
  * ```typescript
- * type OnChar = CharacteristicType<typeof Lightbulb, 'on'>;
+ * type OnChar = CharacteristicType<FluentService<typeof hap.Service.Lightbulb>, 'on'>;
  * // Result: FluentCharacteristic<boolean>
  * ```
+ *
+ * @category TypeUtils
  */
 export type CharacteristicType<TService, TCharName extends string> = TService extends {
   characteristics: infer C;
@@ -40,7 +58,11 @@ export type CharacteristicType<TService, TCharName extends string> = TService ex
   : never;
 
 /**
- * Represents the state of a service as a record of characteristic values
+ * A flat record mapping characteristic names to their current HAP values.
+ *
+ * @remarks
+ * Used for bulk state snapshots and type-safe state passing. Keys should be
+ * camelCase characteristic names matching `CharacteristicNames<T>`.
  *
  * @example
  * ```typescript
@@ -51,12 +73,13 @@ export type CharacteristicType<TService, TCharName extends string> = TService ex
  *   saturation: 50
  * };
  * ```
+ *
+ * @category TypeUtils
  */
 export type ServiceState = Record<string, CharacteristicValue>;
 
 /**
- * Represents a partial state update for a service
- * Allows updating only specific characteristics
+ * A partial {@link ServiceState} for incremental characteristic updates.
  *
  * @example
  * ```typescript
@@ -65,21 +88,29 @@ export type ServiceState = Record<string, CharacteristicValue>;
  *   brightness: 100
  * };
  * ```
+ *
+ * @category TypeUtils
  */
 export type PartialServiceState = Partial<ServiceState>;
 
 /**
- * Type guard to check if a value is a FluentCharacteristic
+ * Determine whether `value` is a {@link FluentCharacteristic} instance.
  *
- * @param value - Value to check
- * @returns True if value is a FluentCharacteristic
+ * @remarks
+ * Uses duck-typing to check for `set` and `get` methods, matching the
+ * `FluentCharacteristic` public API without requiring an `instanceof` check.
+ *
+ * @param value - Value to test.
+ * @returns `true` if `value` has `set` and `get` functions (duck-type match).
  *
  * @example
  * ```typescript
  * if (isFluentCharacteristic(obj)) {
- *   await obj.set(true);
+ *   obj.set(true);
  * }
  * ```
+ *
+ * @category TypeUtils
  */
 export function isFluentCharacteristic(
   value: unknown
@@ -94,7 +125,10 @@ export function isFluentCharacteristic(
 }
 
 /**
- * Utility type to make specific properties required
+ * Make a subset of properties on `T` required while leaving others unchanged.
+ *
+ * @typeParam T - Source type.
+ * @typeParam K - Keys to make required.
  *
  * @example
  * ```typescript
@@ -102,11 +136,16 @@ export function isFluentCharacteristic(
  * type RequiredConfig = RequireProperties<Config, 'host' | 'port'>;
  * // Result: { host: string; port: number; timeout?: number }
  * ```
+ *
+ * @category TypeUtils
  */
 export type RequireProperties<T, K extends keyof T> = T & Required<Pick<T, K>>;
 
 /**
- * Utility type to make specific properties optional
+ * Make a subset of properties on `T` optional while leaving others unchanged.
+ *
+ * @typeParam T - Source type.
+ * @typeParam K - Keys to make optional.
  *
  * @example
  * ```typescript
@@ -114,65 +153,86 @@ export type RequireProperties<T, K extends keyof T> = T & Required<Pick<T, K>>;
  * type PartialConfig = OptionalProperties<Config, 'timeout'>;
  * // Result: { host: string; port: number; timeout?: number }
  * ```
+ *
+ * @category TypeUtils
  */
 export type OptionalProperties<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 /**
- * Represents a function that transforms a characteristic value
+ * A function that transforms a characteristic value from one type/shape to another.
+ *
+ * @typeParam TInput - Input value type.
+ * @typeParam TOutput - Output value type.
  *
  * @example
  * ```typescript
  * const percentToDecimal: ValueTransformer<number, number> = (value) => value / 100;
  * ```
+ *
+ * @category TypeUtils
  */
 export type ValueTransformer<TInput = CharacteristicValue, TOutput = CharacteristicValue> = (
   value: TInput
 ) => TOutput;
 
 /**
- * Represents a predicate function for characteristic values
+ * A predicate function for characteristic values.
+ *
+ * @typeParam T - Value type to test.
  *
  * @example
  * ```typescript
  * const isValidBrightness: ValuePredicate<number> = (value) =>
  *   typeof value === 'number' && value >= 0 && value <= 100;
  * ```
+ *
+ * @category TypeUtils
  */
 export type ValuePredicate<T = CharacteristicValue> = (value: T) => boolean;
 
 /**
- * Create a value transformer that clamps a numeric value within a range
+ * Create a {@link ValueTransformer} that clamps a numeric value to `[min, max]`.
  *
- * @param min - Minimum allowed value
- * @param max - Maximum allowed value
- * @returns Transformer function that clamps values
+ * @param min - Minimum allowed value (inclusive).
+ * @param max - Maximum allowed value (inclusive).
+ * @returns A transformer function that returns `Math.max(min, Math.min(max, value))`.
  *
  * @example
  * ```typescript
  * const clampBrightness = createClampTransformer(0, 100);
  * clampBrightness(150); // Returns 100
  * clampBrightness(-10); // Returns 0
+ * clampBrightness(75);  // Returns 75
  * ```
+ *
+ * @category TypeUtils
  */
 export function createClampTransformer(min: number, max: number): ValueTransformer<number, number> {
   return (value: number): number => Math.max(min, Math.min(max, value));
 }
 
 /**
- * Create a value transformer that scales a value from one range to another
+ * Create a {@link ValueTransformer} that linearly maps a value from one numeric
+ * range to another.
  *
- * @param fromMin - Source range minimum
- * @param fromMax - Source range maximum
- * @param toMin - Target range minimum
- * @param toMax - Target range maximum
- * @returns Transformer function that scales values
+ * @param fromMin - Source range minimum.
+ * @param fromMax - Source range maximum.
+ * @param toMin - Target range minimum.
+ * @param toMax - Target range maximum.
+ * @returns A transformer function applying the linear mapping.
  *
  * @example
  * ```typescript
  * // Convert percentage (0-100) to decimal (0-1)
  * const percentToDecimal = createScaleTransformer(0, 100, 0, 1);
  * percentToDecimal(50); // Returns 0.5
+ *
+ * // Convert Homebridge 0-100 brightness to device 0-255 range
+ * const brightnessToDevice = createScaleTransformer(0, 100, 0, 255);
+ * brightnessToDevice(50); // Returns 127.5
  * ```
+ *
+ * @category TypeUtils
  */
 export function createScaleTransformer(
   fromMin: number,
@@ -187,19 +247,23 @@ export function createScaleTransformer(
 }
 
 /**
- * Create a value predicate that checks if a number is within a range
+ * Create a {@link ValuePredicate} that validates whether a number falls
+ * within `[min, max]`.
  *
- * @param min - Minimum allowed value
- * @param max - Maximum allowed value
- * @param inclusive - Whether min/max are inclusive (default: true)
- * @returns Predicate function that validates range
+ * @param min - Minimum value.
+ * @param max - Maximum value.
+ * @param inclusive - When `true` (default), the bounds are inclusive.
+ * @returns A predicate returning `true` if the value is within range.
  *
  * @example
  * ```typescript
  * const isValidHue = createRangePredicate(0, 360);
  * isValidHue(180); // Returns true
  * isValidHue(400); // Returns false
+ * isValidHue(0);   // Returns true (inclusive)
  * ```
+ *
+ * @category TypeUtils
  */
 export function createRangePredicate(
   min: number,

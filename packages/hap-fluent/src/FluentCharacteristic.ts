@@ -19,7 +19,68 @@ import {
 } from './interceptors.js';
 
 /**
- * FluentCharacteristic wraps a HAP characteristic with strong typing and fluent API
+ * Type-safe, chainable wrapper around a single HAP-NodeJS `Characteristic`.
+ *
+ * @remarks
+ * Every HomeKit characteristic has a HAP-specified UUID, a value type
+ * (`boolean`, `number`, `string`, or `object`), and optional min/max/step
+ * constraints defined in the HAP specification. `FluentCharacteristic` enforces
+ * the TypeScript-level type via the `T` type parameter and delegates all
+ * runtime mutations to the underlying `hap-nodejs` characteristic so the
+ * HomeKit protocol contract is never broken.
+ *
+ * Interceptors (logging, rate-limiting, clamping, codec, transform) are
+ * executed only inside `onGet`/`onSet` handler pipelines — **not** when you
+ * call `set()` or `update()` directly from your plugin code.
+ *
+ * @typeParam T - The TypeScript value type for this characteristic
+ *   (`boolean`, `number`, `string`, or `CharacteristicValue`).
+ *
+ * @useWhen
+ * - You need fine-grained control over a single characteristic (interceptors,
+ *   value clamping, codec translation, audit trail).
+ * - You want to chain `.clamp().log().onSet(handler)` declaratively.
+ * - You're wrapping a characteristic returned by `FluentService.characteristics`.
+ *
+ * @avoidWhen
+ * - You only need bulk initial-value assignment — use `initializeAccessory()`
+ *   or `FluentService.update()` instead.
+ * - You need raw hap-nodejs `Characteristic` access (e.g., to call
+ *   `characteristic.getDefaultValue()`) — retrieve `.characteristic` from the
+ *   underlying service object, or use hap-nodejs directly.
+ *
+ * @pitfalls
+ * - NEVER call `set()` with a value outside the HAP-specified range for that
+ *   characteristic — iOS silently discards accessories that violate type
+ *   constraints, causing the Home app to show the device as "Not Responding".
+ * - NEVER register more than one `onGet` or `onSet` handler on the same
+ *   characteristic — hap-nodejs replaces the previous handler without warning,
+ *   and the first handler's logic is silently dropped.
+ * - NEVER pass `null` to `set()` — `isCharacteristicValue` rejects `null` and
+ *   throws `FluentCharacteristicError`; use `update()` only with typed values.
+ * - NEVER add interceptors after registering `onGet`/`onSet` handlers — the
+ *   interceptor chain is captured at `onGet`/`onSet` call time; later
+ *   `.clamp()` or `.log()` calls will not apply to already-registered handlers.
+ * - NEVER assume interceptors apply to direct `set()` calls — they only wrap
+ *   `onGet`/`onSet` handlers triggered by HomeKit polling or user actions.
+ *
+ * @example
+ * ```typescript
+ * import { getOrAddService } from 'hap-fluent';
+ *
+ * const lightbulb = getOrAddService(accessory, hap.Service.Lightbulb);
+ *
+ * lightbulb.characteristics.brightness
+ *   .clamp(0, 100)          // clamp incoming HomeKit values to valid range
+ *   .log()                  // log all get/set operations
+ *   .onGet(async () => currentBrightness)
+ *   .onSet(async (value) => { currentBrightness = value; });
+ *
+ * // Programmatic update (no SET handler triggered)
+ * lightbulb.characteristics.brightness.update(75);
+ * ```
+ *
+ * @category FluentCharacteristic
  */
 export class FluentCharacteristic<T extends CharacteristicValue> {
   private interceptors: Interceptor[] = [];

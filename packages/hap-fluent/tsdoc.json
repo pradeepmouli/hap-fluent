@@ -1,0 +1,27 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/tsdoc/v0/tsdoc.schema.json",
+  "tagDefinitions": [
+    { "tagName": "@useWhen", "syntaxKind": "block" },
+    { "tagName": "@avoidWhen", "syntaxKind": "block" },
+    { "tagName": "@pitfalls", "syntaxKind": "block" },
+    { "tagName": "@config", "syntaxKind": "modifier" },
+    { "tagName": "@category", "syntaxKind": "block" },
+    { "tagName": "@categoryDescription", "syntaxKind": "block" },
+    { "tagName": "@defaultValue", "syntaxKind": "block" },
+    { "tagName": "@since", "syntaxKind": "block" },
+    { "tagName": "@typeParam", "syntaxKind": "block" },
+    { "tagName": "@document", "syntaxKind": "modifier" },
+    { "tagName": "@group", "syntaxKind": "block" },
+    { "tagName": "@groupDescription", "syntaxKind": "block" },
+    { "tagName": "@module", "syntaxKind": "block" },
+    { "tagName": "@mergeModuleWith", "syntaxKind": "block" },
+    { "tagName": "@license", "syntaxKind": "block" },
+    { "tagName": "@summary", "syntaxKind": "block" },
+    { "tagName": "@preventInline", "syntaxKind": "modifier" },
+    { "tagName": "@preventExpand", "syntaxKind": "modifier" },
+    { "tagName": "@expandType", "syntaxKind": "modifier" },
+    { "tagName": "@inlineType", "syntaxKind": "modifier" },
+    { "tagName": "@sortStrategy", "syntaxKind": "block" },
+    { "tagName": "@import", "syntaxKind": "block" }
+  ]
+}
