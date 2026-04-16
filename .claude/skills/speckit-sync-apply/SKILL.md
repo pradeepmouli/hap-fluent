@@ -1,12 +1,12 @@
 ---
+name: speckit-sync-apply
 description: Apply approved drift resolutions to specs and/or code
-tools: []
-scripts: []
+compatibility: Requires spec-kit project structure with .specify/ directory
+metadata:
+  author: github-spec-kit
+  source: sync:commands/apply.md
 ---
 
-
-<!-- Extension: sync -->
-<!-- Config: .specify/extensions/sync/ -->
 # Spec Sync: Apply Resolutions
 
 Apply approved resolutions from the proposals file. Updates specs or generates implementation tasks.

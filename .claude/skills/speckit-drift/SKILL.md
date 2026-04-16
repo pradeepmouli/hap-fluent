@@ -1,14 +1,13 @@
 ---
+name: speckit-drift
 description: Analyze drift between specs and implementation. Compares requirements
   against code to find divergence.
-tools: []
-scripts:
-  sh: ../scripts/analyze.sh
+compatibility: Requires spec-kit project structure with .specify/ directory
+metadata:
+  author: github-spec-kit
+  source: sync:commands/analyze.md
 ---
 
-
-<!-- Extension: sync -->
-<!-- Config: .specify/extensions/sync/ -->
 # Spec Sync: Analyze Drift
 
 Analyze drift between specifications and implementation. This command compares your spec requirements (FR-*, SC-*, acceptance scenarios) against the actual codebase to identify where they've diverged.

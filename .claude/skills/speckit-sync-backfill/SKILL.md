@@ -1,12 +1,12 @@
 ---
+name: speckit-sync-backfill
 description: Generate a new spec from unspecced code feature (backfill)
-tools: []
-scripts: []
+compatibility: Requires spec-kit project structure with .specify/ directory
+metadata:
+  author: github-spec-kit
+  source: sync:commands/backfill.md
 ---
 
-
-<!-- Extension: sync -->
-<!-- Config: .specify/extensions/sync/ -->
 # Spec Sync: Backfill Spec
 
 Generate a complete spec from an existing, unspecced code feature. Extracts intent from implementation, tests, and documentation.

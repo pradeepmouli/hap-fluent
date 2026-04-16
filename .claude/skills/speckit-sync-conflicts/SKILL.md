@@ -1,13 +1,13 @@
 ---
+name: speckit-sync-conflicts
 description: Detect and surface conflicts between specs or between specs and design
   docs
-tools: []
-scripts: []
+compatibility: Requires spec-kit project structure with .specify/ directory
+metadata:
+  author: github-spec-kit
+  source: sync:commands/conflicts.md
 ---
 
-
-<!-- Extension: sync -->
-<!-- Config: .specify/extensions/sync/ -->
 # Spec Sync: Detect Conflicts
 
 Find contradictions between specs, or between specs and design documents. Surface them for human resolution.

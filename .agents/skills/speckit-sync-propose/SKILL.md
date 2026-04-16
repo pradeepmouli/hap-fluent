@@ -1,13 +1,13 @@
 ---
+name: speckit-sync-propose
 description: Propose resolutions for detected drift. AI generates spec updates or
   code changes.
-tools: []
-scripts: []
+compatibility: Requires spec-kit project structure with .specify/ directory
+metadata:
+  author: github-spec-kit
+  source: sync:commands/propose.md
 ---
 
-
-<!-- Extension: sync -->
-<!-- Config: .specify/extensions/sync/ -->
 # Spec Sync: Propose Resolutions
 
 Generate resolution proposals for each drift item. The AI analyzes each divergence and proposes either a spec update (backfill) or code change (align).
