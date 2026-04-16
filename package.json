@@ -15,6 +15,10 @@
     "smart-home",
     "type-safe"
   ],
+  "homepage": "https://pradeepmouli.github.io/hap-fluent/",
+  "bugs": {
+    "url": "https://github.com/pradeepmouli/hap-fluent/issues"
+  },
   "license": "Apache-2.0",
   "author": "Pradeep Mouli <pmouli@mac.com> (https://github.com/pradeepmouli)",
   "workspaces": [

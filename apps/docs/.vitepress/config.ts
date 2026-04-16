@@ -10,7 +10,29 @@ export default defineConfig({
   ignoreDeadLinks: true,
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/hap-fluent/favicon.svg' }],
+    ['meta', { property: 'og:title', content: 'hap-fluent' }],
+    [
+      'meta',
+      {
+        property: 'og:description',
+        content: 'Fluent, strongly-typed wrapper for HAP-NodeJS services and characteristics'
+      }
+    ],
+    ['meta', { property: 'og:type', content: 'website' }],
+    ['meta', { property: 'og:url', content: 'https://pradeepmouli.github.io/hap-fluent/' }],
+    ['meta', { name: 'twitter:card', content: 'summary' }],
+    ['meta', { name: 'twitter:title', content: 'hap-fluent' }],
+    [
+      'meta',
+      {
+        name: 'twitter:description',
+        content: 'Fluent, strongly-typed wrapper for HAP-NodeJS services and characteristics'
+      }
+    ]
   ],
+  sitemap: {
+    hostname: 'https://pradeepmouli.github.io/hap-fluent'
+  },
   themeConfig: {
     nav: [
       { text: 'Guide', link: '/guide/getting-started' },
@@ -28,13 +50,9 @@ export default defineConfig({
           ]
         }
       ],
-      '/api/': [
-        { text: 'API Reference', items: typedocSidebar }
-      ]
+      '/api/': [{ text: 'API Reference', items: typedocSidebar }]
     },
-    socialLinks: [
-      { icon: 'github', link: 'https://github.com/pradeepmouli/hap-fluent' }
-    ],
+    socialLinks: [{ icon: 'github', link: 'https://github.com/pradeepmouli/hap-fluent' }],
     footer: {
       message: 'Released under the Apache-2.0 License.',
       copyright: 'Copyright © 2026 Pradeep Mouli'
