@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "description": "Documentation site for hap-fluent",
+  "author": "Pradeep Mouli <pmouli@mac.com> (https://github.com/pradeepmouli)",
   "scripts": {
     "docs:api": "typedoc --options .vitepress/typedoc.json && node scripts/escape-api-md.mjs",
     "dev": "pnpm run docs:api && vitepress dev",
@@ -11,14 +12,14 @@
     "typecheck": "vitepress build --debug"
   },
   "devDependencies": {
-    "vitepress": "^2.0.0-alpha.17",
     "typedoc": "0.28.17",
     "typedoc-plugin-markdown": "^4.11.0",
+    "typedoc-plugin-to-skills": "^0.6.0",
     "typedoc-vitepress-theme": "^1.1.2",
+    "vitepress": "^2.0.0-alpha.17",
     "vue": "^3.5.0"
   },
   "engines": {
     "node": ">=20.0.0"
-  },
-  "author": "Pradeep Mouli <pmouli@mac.com> (https://github.com/pradeepmouli)"
+  }
 }
