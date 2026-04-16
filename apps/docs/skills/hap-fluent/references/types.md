@@ -1,0 +1,576 @@
+# Types & Enums
+
+## hap-enums
+
+### `AccessoryFlags`
+
+Accessory capability flags (requires additional setup, etc.)
+
+- `RequiresAdditionalSetupBitMask` = `1`
+
+### `Active`
+
+Active/inactive state for accessories
+
+- `Inactive` = `0`
+- `Active` = `1`
+
+### `AirParticulateSize`
+
+Particulate matter size categories for air quality sensors
+
+- `2.5M` = `0`
+- `10M` = `1`
+
+### `AirQuality`
+
+Air quality levels from excellent to poor
+
+- `Unknown` = `0`
+- `Excellent` = `1`
+- `Good` = `2`
+- `Fair` = `3`
+- `Inferior` = `4`
+- `Poor` = `5`
+
+### `CameraOperatingModeIndicator`
+
+Camera operating mode indicator enable/disable state
+
+- `Disable` = `0`
+- `Enable` = `1`
+
+### `CarbonDioxideDetected`
+
+Carbon dioxide detection state (normal or abnormal CO2 levels)
+
+- `Co2LevelsNormal` = `0`
+- `Co2LevelsAbnormal` = `1`
+
+### `CarbonMonoxideDetected`
+
+Carbon monoxide detection state (normal or abnormal CO levels)
+
+- `CoLevelsNormal` = `0`
+- `CoLevelsAbnormal` = `1`
+
+### `ChargingState`
+
+Battery charging states (not charging, charging, not chargeable)
+
+- `NotCharging` = `0`
+- `Charging` = `1`
+- `NotChargeable` = `2`
+
+### `ClosedCaptions`
+
+Closed captions enabled or disabled state
+
+- `Disabled` = `0`
+- `Enabled` = `1`
+
+### `ContactSensorState`
+
+Contact sensor state (contact detected or not detected)
+
+- `ContactDetected` = `0`
+- `ContactNotDetected` = `1`
+
+### `CurrentAirPurifierState`
+
+Current operational state of an air purifier
+
+- `Inactive` = `0`
+- `Idle` = `1`
+- `PurifyingAir` = `2`
+
+### `CurrentDoorState`
+
+Door position states (open, closed, opening, closing, stopped)
+
+- `Open` = `0`
+- `Closed` = `1`
+- `Opening` = `2`
+- `Closing` = `3`
+- `Stopped` = `4`
+
+### `CurrentFanState`
+
+Current operational state of a fan
+
+- `Inactive` = `0`
+- `Idle` = `1`
+- `BlowingAir` = `2`
+
+### `CurrentHeaterCoolerState`
+
+Current operational state of a heater/cooler (inactive, idle, heating, cooling)
+
+- `Inactive` = `0`
+- `Idle` = `1`
+- `Heating` = `2`
+- `Cooling` = `3`
+
+### `CurrentHeatingCoolingState`
+
+Current heating/cooling mode of a thermostat (off, heat, cool)
+
+- `Off` = `0`
+- `Heat` = `1`
+- `Cool` = `2`
+
+### `CurrentHumidifierDehumidifierState`
+
+Current operational state of a humidifier/dehumidifier
+
+- `Inactive` = `0`
+- `Idle` = `1`
+- `Humidifying` = `2`
+- `Dehumidifying` = `3`
+
+### `CurrentMediaState`
+
+Current playback state of a media device
+
+- `Play` = `0`
+- `Pause` = `1`
+- `Stop` = `2`
+- `Loading` = `4`
+- `Interrupted` = `5`
+
+### `CurrentSlatState`
+
+Current position state of a slat (fixed, jammed, or swinging)
+
+- `Fixed` = `0`
+- `Jammed` = `1`
+- `Swinging` = `2`
+
+### `CurrentVisibilityState`
+
+Current visibility state of a target (shown or hidden)
+
+- `Shown` = `0`
+- `Hidden` = `1`
+
+### `EventSnapshotsActive`
+
+Event snapshots active state (disable or enable)
+
+- `Disable` = `0`
+- `Enable` = `1`
+
+### `FilterChangeIndication`
+
+Filter replacement indication state (OK or change required)
+
+- `FilterOk` = `0`
+- `ChangeFilter` = `1`
+
+### `HomeKitCameraActive`
+
+HomeKit camera active state (off or on)
+
+- `Off` = `0`
+- `On` = `1`
+
+### `InputDeviceType`
+
+Input device type categories for TV accessories
+
+- `Other` = `0`
+- `Tv` = `1`
+- `Recording` = `2`
+- `Tuner` = `3`
+- `Playback` = `4`
+- `AudioSystem` = `5`
+
+### `InputSourceType`
+
+Input source type categories (HDMI, tuner, Airplay, USB, etc.)
+
+- `Other` = `0`
+- `HomeScreen` = `1`
+- `Tuner` = `2`
+- `Hdmi` = `3`
+- `CompositeVideo` = `4`
+- `SVideo` = `5`
+- `ComponentVideo` = `6`
+- `Dvi` = `7`
+- `Airplay` = `8`
+- `Usb` = `9`
+- `Application` = `10`
+
+### `InUse`
+
+Resource in-use state (not in use or in use)
+
+- `NotInUse` = `0`
+- `InUse` = `1`
+
+### `IsConfigured`
+
+Configuration state of an accessory or service (configured or not)
+
+- `NotConfigured` = `0`
+- `Configured` = `1`
+
+### `LeakDetected`
+
+Water leak detection state (leak detected or not detected)
+
+- `LeakNotDetected` = `0`
+- `LeakDetected` = `1`
+
+### `LockCurrentState`
+
+Current lock mechanism state (unsecured, secured, jammed, unknown)
+
+- `Unsecured` = `0`
+- `Secured` = `1`
+- `Jammed` = `2`
+- `Unknown` = `3`
+
+### `LockLastKnownAction`
+
+Last known action that changed the lock state (physical, keypad, remote, etc.)
+
+- `SecuredPhysicallyInterior` = `0`
+- `UnsecuredPhysicallyInterior` = `1`
+- `SecuredPhysicallyExterior` = `2`
+- `UnsecuredPhysicallyExterior` = `3`
+- `SecuredByKeypad` = `4`
+- `UnsecuredByKeypad` = `5`
+- `SecuredRemotely` = `6`
+- `UnsecuredRemotely` = `7`
+- `SecuredByAutoSecureTimeout` = `8`
+- `SecuredPhysically` = `9`
+- `UnsecuredPhysically` = `10`
+
+### `LockPhysicalControls`
+
+Physical control lock state (control lock enabled or disabled)
+
+- `ControlLockDisabled` = `0`
+- `ControlLockEnabled` = `1`
+
+### `LockTargetState`
+
+Target lock state (unsecured or secured)
+
+- `Unsecured` = `0`
+- `Secured` = `1`
+
+### `ManagedNetworkEnable`
+
+Managed network enable state (disabled or enabled)
+
+- `Disabled` = `0`
+- `Enabled` = `1`
+
+### `ManuallyDisabled`
+
+Manually disabled state (note: 0=enabled, 1=disabled)
+
+- `Enabled` = `0`
+- `Disabled` = `1`
+
+### `OccupancyDetected`
+
+Occupancy sensor detection state (occupancy detected or not detected)
+
+- `OccupancyNotDetected` = `0`
+- `OccupancyDetected` = `1`
+
+### `PeriodicSnapshotsActive`
+
+Periodic snapshots active state (disable or enable)
+
+- `Disable` = `0`
+- `Enable` = `1`
+
+### `PictureMode`
+
+Display picture mode presets (standard, vivid, game, calibrated, etc.)
+
+- `Other` = `0`
+- `Standard` = `1`
+- `Calibrated` = `2`
+- `CalibratedDark` = `3`
+- `Vivid` = `4`
+- `Game` = `5`
+- `Computer` = `6`
+- `Custom` = `7`
+
+### `PositionState`
+
+Movement direction and state of a motorized position accessory
+
+- `Decreasing` = `0`
+- `Increasing` = `1`
+- `Stopped` = `2`
+
+### `PowerModeSelection`
+
+Power mode selection for TV-like accessories (show or hide)
+
+- `Show` = `0`
+- `Hide` = `1`
+
+### `ProgrammableSwitchEvent`
+
+Programmable switch event types (single press, double press, long press)
+
+- `SinglePress` = `0`
+- `DoublePress` = `1`
+- `LongPress` = `2`
+
+### `ProgramMode`
+
+Irrigation program scheduling modes (none, scheduled, manual override)
+
+- `NoProgramScheduled` = `0`
+- `ProgramScheduled` = `1`
+- `ProgramScheduledManualMode` = `2`
+
+### `RecordingAudioActive`
+
+Recording audio active state (disable or enable)
+
+- `Disable` = `0`
+- `Enable` = `1`
+
+### `RemoteKey`
+
+Remote control key commands for TV/media accessories
+
+- `Rewind` = `0`
+- `FastForward` = `1`
+- `NextTrack` = `2`
+- `PreviousTrack` = `3`
+- `ArrowUp` = `4`
+- `ArrowDown` = `5`
+- `ArrowLeft` = `6`
+- `ArrowRight` = `7`
+- `Select` = `8`
+- `Back` = `9`
+- `Exit` = `10`
+- `PlayPause` = `11`
+- `Information` = `15`
+
+### `RotationDirection`
+
+Fan or motor rotation direction (clockwise or counter-clockwise)
+
+- `Clockwise` = `0`
+- `CounterClockwise` = `1`
+
+### `RouterStatus`
+
+Router operational readiness state (ready or not ready)
+
+- `Ready` = `0`
+- `NotReady` = `1`
+
+### `SecuritySystemAlarmType`
+
+Security system alarm type (no alarm or unknown alarm type)
+
+- `NoAlarm` = `0`
+- `Unknown` = `1`
+
+### `SecuritySystemCurrentState`
+
+Current security system arm state (stay, away, night, disarmed, or triggered)
+
+- `StayArm` = `0`
+- `AwayArm` = `1`
+- `NightArm` = `2`
+- `Disarmed` = `3`
+- `AlarmTriggered` = `4`
+
+### `SecuritySystemTargetState`
+
+Target security system arm state (stay, away, night, or disarm)
+
+- `StayArm` = `0`
+- `AwayArm` = `1`
+- `NightArm` = `2`
+- `Disarm` = `3`
+
+### `ServiceLabelNamespace`
+
+Labeling namespace for service label indices (dots or arabic numerals)
+
+- `Dots` = `0`
+- `ArabicNumerals` = `1`
+
+### `SiriInputType`
+
+Siri input trigger type for Siri-enabled accessories
+
+- `PushButtonTriggeredAppleTv` = `0`
+
+### `SlatType`
+
+Slat orientation type (horizontal or vertical)
+
+- `Horizontal` = `0`
+- `Vertical` = `1`
+
+### `SleepDiscoveryMode`
+
+Accessory sleep discovery mode (not discoverable or always discoverable)
+
+- `NotDiscoverable` = `0`
+- `AlwaysDiscoverable` = `1`
+
+### `SmokeDetected`
+
+Smoke detection state (smoke detected or not detected)
+
+- `SmokeNotDetected` = `0`
+- `SmokeDetected` = `1`
+
+### `StatusFault`
+
+Accessory fault status (no fault or general fault)
+
+- `NoFault` = `0`
+- `GeneralFault` = `1`
+
+### `StatusJammed`
+
+Jam status of a motorized accessory (not jammed or jammed)
+
+- `NotJammed` = `0`
+- `Jammed` = `1`
+
+### `StatusLowBattery`
+
+Battery level status (normal or low battery)
+
+- `BatteryLevelNormal` = `0`
+- `BatteryLevelLow` = `1`
+
+### `StatusTampered`
+
+Tamper detection status of an accessory (not tampered or tampered)
+
+- `NotTampered` = `0`
+- `Tampered` = `1`
+
+### `SwingMode`
+
+Fan or air vent swing mode (swing disabled or enabled)
+
+- `SwingDisabled` = `0`
+- `SwingEnabled` = `1`
+
+### `TargetAirPurifierState`
+
+Target operating mode for an air purifier (manual or auto)
+
+- `Manual` = `0`
+- `Auto` = `1`
+
+### `TargetDoorState`
+
+Target door state to achieve (open or closed)
+
+- `Open` = `0`
+- `Closed` = `1`
+
+### `TargetFanState`
+
+Target fan operating mode (manual or auto)
+
+- `Manual` = `0`
+- `Auto` = `1`
+
+### `TargetHeaterCoolerState`
+
+Target heater/cooler mode (auto, heat, or cool)
+
+- `Auto` = `0`
+- `Heat` = `1`
+- `Cool` = `2`
+
+### `TargetHeatingCoolingState`
+
+Target thermostat heating/cooling mode (off, heat, cool, or auto)
+
+- `Off` = `0`
+- `Heat` = `1`
+- `Cool` = `2`
+- `Auto` = `3`
+
+### `TargetHumidifierDehumidifierState`
+
+Target humidifier/dehumidifier operating mode
+
+- `HumidifierOrDehumidifier` = `0`
+- `Humidifier` = `1`
+- `Dehumidifier` = `2`
+
+### `TargetMediaState`
+
+Target playback state for a media device (play, pause, or stop)
+
+- `Play` = `0`
+- `Pause` = `1`
+- `Stop` = `2`
+
+### `TargetVisibilityState`
+
+Target visibility state to achieve (shown or hidden)
+
+- `Shown` = `0`
+- `Hidden` = `1`
+
+### `TemperatureDisplayUnits`
+
+Temperature display unit preference (Celsius or Fahrenheit)
+
+- `Celsius` = `0`
+- `Fahrenheit` = `1`
+
+### `ThirdPartyCameraActive`
+
+Third-party camera active state (off or on)
+
+- `Off` = `0`
+- `On` = `1`
+
+### `ValveType`
+
+Valve type categories (generic, irrigation, shower head, water faucet)
+
+- `GenericValve` = `0`
+- `Irrigation` = `1`
+- `ShowerHead` = `2`
+- `WaterFaucet` = `3`
+
+### `VolumeControlType`
+
+Volume control type supported by a speaker (none, relative, relative with current, absolute)
+
+- `None` = `0`
+- `Relative` = `1`
+- `RelativeWithCurrent` = `2`
+- `Absolute` = `3`
+
+### `VolumeSelector`
+
+Volume adjustment direction (increment or decrement)
+
+- `Increment` = `0`
+- `Decrement` = `1`
+
+### `WiFiSatelliteStatus`
+
+Wi-Fi satellite node connection status (unknown, connected, not connected)
+
+- `Unknown` = `0`
+- `Connected` = `1`
+- `NotConnected` = `2`

@@ -1,0 +1,79 @@
+# @hap-fluent/docs
+
+> Documentation site for hap-fluent
+
+## Optional
+
+### Types
+
+- `AccessoryFlags`: Accessory capability flags (requires additional setup, etc.)
+- `Active`: Active/inactive state for accessories
+- `AirParticulateSize`: Particulate matter size categories for air quality sensors
+- `AirQuality`: Air quality levels from excellent to poor
+- `CameraOperatingModeIndicator`: Camera operating mode indicator enable/disable state
+- `CarbonDioxideDetected`: Carbon dioxide detection state (normal or abnormal CO2 levels)
+- `CarbonMonoxideDetected`: Carbon monoxide detection state (normal or abnormal CO levels)
+- `ChargingState`: Battery charging states (not charging, charging, not chargeable)
+- `ClosedCaptions`: Closed captions enabled or disabled state
+- `ContactSensorState`: Contact sensor state (contact detected or not detected)
+- `CurrentAirPurifierState`: Current operational state of an air purifier
+- `CurrentDoorState`: Door position states (open, closed, opening, closing, stopped)
+- `CurrentFanState`: Current operational state of a fan
+- `CurrentHeaterCoolerState`: Current operational state of a heater/cooler (inactive, idle, heating, cooling)
+- `CurrentHeatingCoolingState`: Current heating/cooling mode of a thermostat (off, heat, cool)
+- `CurrentHumidifierDehumidifierState`: Current operational state of a humidifier/dehumidifier
+- `CurrentMediaState`: Current playback state of a media device
+- `CurrentSlatState`: Current position state of a slat (fixed, jammed, or swinging)
+- `CurrentVisibilityState`: Current visibility state of a target (shown or hidden)
+- `EventSnapshotsActive`: Event snapshots active state (disable or enable)
+- `FilterChangeIndication`: Filter replacement indication state (OK or change required)
+- `HomeKitCameraActive`: HomeKit camera active state (off or on)
+- `InputDeviceType`: Input device type categories for TV accessories
+- `InputSourceType`: Input source type categories (HDMI, tuner, Airplay, USB, etc.)
+- `InUse`: Resource in-use state (not in use or in use)
+- `IsConfigured`: Configuration state of an accessory or service (configured or not)
+- `LeakDetected`: Water leak detection state (leak detected or not detected)
+- `LockCurrentState`: Current lock mechanism state (unsecured, secured, jammed, unknown)
+- `LockLastKnownAction`: Last known action that changed the lock state (physical, keypad, remote, etc.)
+- `LockPhysicalControls`: Physical control lock state (control lock enabled or disabled)
+- `LockTargetState`: Target lock state (unsecured or secured)
+- `ManagedNetworkEnable`: Managed network enable state (disabled or enabled)
+- `ManuallyDisabled`: Manually disabled state (note: 0=enabled, 1=disabled)
+- `OccupancyDetected`: Occupancy sensor detection state (occupancy detected or not detected)
+- `PeriodicSnapshotsActive`: Periodic snapshots active state (disable or enable)
+- `PictureMode`: Display picture mode presets (standard, vivid, game, calibrated, etc.)
+- `PositionState`: Movement direction and state of a motorized position accessory
+- `PowerModeSelection`: Power mode selection for TV-like accessories (show or hide)
+- `ProgrammableSwitchEvent`: Programmable switch event types (single press, double press, long press)
+- `ProgramMode`: Irrigation program scheduling modes (none, scheduled, manual override)
+- `RecordingAudioActive`: Recording audio active state (disable or enable)
+- `RemoteKey`: Remote control key commands for TV/media accessories
+- `RotationDirection`: Fan or motor rotation direction (clockwise or counter-clockwise)
+- `RouterStatus`: Router operational readiness state (ready or not ready)
+- `SecuritySystemAlarmType`: Security system alarm type (no alarm or unknown alarm type)
+- `SecuritySystemCurrentState`: Current security system arm state (stay, away, night, disarmed, or triggered)
+- `SecuritySystemTargetState`: Target security system arm state (stay, away, night, or disarm)
+- `ServiceLabelNamespace`: Labeling namespace for service label indices (dots or arabic numerals)
+- `SiriInputType`: Siri input trigger type for Siri-enabled accessories
+- `SlatType`: Slat orientation type (horizontal or vertical)
+- `SleepDiscoveryMode`: Accessory sleep discovery mode (not discoverable or always discoverable)
+- `SmokeDetected`: Smoke detection state (smoke detected or not detected)
+- `StatusFault`: Accessory fault status (no fault or general fault)
+- `StatusJammed`: Jam status of a motorized accessory (not jammed or jammed)
+- `StatusLowBattery`: Battery level status (normal or low battery)
+- `StatusTampered`: Tamper detection status of an accessory (not tampered or tampered)
+- `SwingMode`: Fan or air vent swing mode (swing disabled or enabled)
+- `TargetAirPurifierState`: Target operating mode for an air purifier (manual or auto)
+- `TargetDoorState`: Target door state to achieve (open or closed)
+- `TargetFanState`: Target fan operating mode (manual or auto)
+- `TargetHeaterCoolerState`: Target heater/cooler mode (auto, heat, or cool)
+- `TargetHeatingCoolingState`: Target thermostat heating/cooling mode (off, heat, cool, or auto)
+- `TargetHumidifierDehumidifierState`: Target humidifier/dehumidifier operating mode
+- `TargetMediaState`: Target playback state for a media device (play, pause, or stop)
+- `TargetVisibilityState`: Target visibility state to achieve (shown or hidden)
+- `TemperatureDisplayUnits`: Temperature display unit preference (Celsius or Fahrenheit)
+- `ThirdPartyCameraActive`: Third-party camera active state (off or on)
+- `ValveType`: Valve type categories (generic, irrigation, shower head, water faucet)
+- `VolumeControlType`: Volume control type supported by a speaker (none, relative, relative with current, absolute)
+- `VolumeSelector`: Volume adjustment direction (increment or decrement)
+- `WiFiSatelliteStatus`: Wi-Fi satellite node connection status (unknown, connected, not connected)
