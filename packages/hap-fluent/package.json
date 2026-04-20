@@ -70,7 +70,7 @@
     "@vitest/coverage-v8": "^4.1.2",
     "@vitest/ui": "^4.0.0",
     "eslint": "^9.39.4",
-    "glob": "^11.0.3",
+    "glob": "^13.0.6",
     "hap-nodejs": "^0.14.1",
     "homebridge": "^1.11.0",
     "prettier": "^3.6.2",
