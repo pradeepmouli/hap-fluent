@@ -17,12 +17,12 @@
     "clean": "rm -rf dist tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "camelcase": "^8.0.0",
+    "camelcase": "^9.0.0",
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
-    "ts-morph": "^20.0.0",
+    "ts-morph": "^28.0.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   }
 }
