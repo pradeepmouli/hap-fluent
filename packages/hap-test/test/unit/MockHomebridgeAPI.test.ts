@@ -173,7 +173,7 @@ describe('MockHomebridgeAPI', () => {
  */
 let accessoryCounter = 0;
 function createMockAccessories(count: number): PlatformAccessory[] {
-  return Array.from({ length: count }, (_, i) => {
+  return Array.from({ length: count }, (_) => {
     const id = accessoryCounter++;
     return {
       UUID: `test-uuid-${id}`,

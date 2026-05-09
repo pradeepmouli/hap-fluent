@@ -1,6 +1,5 @@
 // Auto-generated HAP Enums
 
-import { Characteristic } from 'hap-nodejs';
 
 export namespace Enums {
   /** Accessory capability flags (requires additional setup, etc.) */

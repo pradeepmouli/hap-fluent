@@ -141,7 +141,7 @@ describe('FluentAccessory', () => {
         }
       };
 
-      const fluentAccessory = initializeAccessory(mockAccessory as any, initialState as any);
+      const _fluentAccessory = initializeAccessory(mockAccessory as any, initialState as any);
       const service = mockAccessory.services[0];
 
       // Note: The actual implementation may vary, this tests the structure
@@ -219,7 +219,7 @@ describe('FluentAccessory', () => {
           static UUID = 'test-service-uuid';
         }
 
-        const service = handler.addService(TestService as any, 'Test Service', 'subtype1');
+        const _service = handler.addService(TestService as any, 'Test Service', 'subtype1');
         expect(mockAccessory.services[0].subtype).toBe('subtype1');
       });
     });
@@ -260,7 +260,7 @@ describe('FluentAccessory', () => {
       mockAccessory.addService(lightbulbService);
       mockAccessory.addService(switchService);
 
-      const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+      const _handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
       expect(mockAccessory.services).toHaveLength(2);
     });
 

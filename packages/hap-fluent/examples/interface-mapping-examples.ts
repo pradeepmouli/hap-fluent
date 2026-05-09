@@ -8,22 +8,22 @@ import type {
 import type { AccessoryInformation, AirPurifier } from '../src/types/hap-interfaces.js';
 
 // Example 1: Get interface type from constructor
-type AccessoryInfoInterface = InterfaceFor<typeof Service.AccessoryInformation>;
+export type AccessoryInfoInterface = InterfaceFor<typeof Service.AccessoryInformation>;
 // Result: AccessoryInformation interface
 
-type AirPurifierInterface = InterfaceFor<typeof Service.AirPurifier>;
+export type AirPurifierInterface = InterfaceFor<typeof Service.AirPurifier>;
 // Result: AirPurifier interface
 
 // Example 2: Get interface type from instance
 const airPurifierInstance = new Service.AirPurifier('Living Room');
-type AirPurifierFromInstance = InterfaceForInstance<typeof airPurifierInstance>;
+export type AirPurifierFromInstance = InterfaceForInstance<typeof airPurifierInstance>;
 // Result: AirPurifier interface
 
 // Example 3: Reverse mapping - get constructor from interface
-type AccessoryInfoConstructor = ConstructorForInterface<AccessoryInformation>;
+export type AccessoryInfoConstructor = ConstructorForInterface<AccessoryInformation>;
 // Result: typeof Service.AccessoryInformation
 
-type AirPurifierConstructor = ConstructorForInterface<AirPurifier>;
+export type AirPurifierConstructor = ConstructorForInterface<AirPurifier>;
 // Result: typeof Service.AirPurifier
 
 // Example 4: Using with generics
@@ -43,9 +43,9 @@ function createTypedService<T extends keyof ServiceConstructorToInterface>(
 }
 
 // Usage with full type safety
-const typedAirPurifier = createTypedService(Service.AirPurifier, 'Main Air Purifier');
-// typedAirPurifier.service is typed as InstanceType<typeof Service.AirPurifier>
-// typedAirPurifier.interface is typed as AirPurifier interface
+const _typedAirPurifier = createTypedService(Service.AirPurifier, 'Main Air Purifier');
+// _typedAirPurifier.service is typed as InstanceType<typeof Service.AirPurifier>
+// _typedAirPurifier.interface is typed as AirPurifier interface
 
 // Example 5: Working with characteristics
 function getCharacteristicValue<
@@ -58,5 +58,5 @@ function getCharacteristicValue<
 
 // Usage
 const accessoryInfo = new Service.AccessoryInformation('Test Accessory');
-const manufacturerValue = getCharacteristicValue(accessoryInfo, 'manufacturer');
+const _manufacturerValue = getCharacteristicValue(accessoryInfo, 'manufacturer');
 // manufacturerValue is properly typed based on the interface

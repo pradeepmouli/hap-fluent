@@ -2,7 +2,7 @@ import { Service, Characteristic, type WithUUID, type CharacteristicValue } from
 import { PlatformAccessory } from 'homebridge';
 import camelcase from 'camelcase';
 import type { InterfaceForService } from './types/index.js';
-import type { CamelCase, PascalCase } from 'type-fest';
+import type { CamelCase } from 'type-fest';
 import { FluentCharacteristic } from './FluentCharacteristic.js';
 import { ValidationError } from './errors.js';
 import { isService } from './type-guards.js';

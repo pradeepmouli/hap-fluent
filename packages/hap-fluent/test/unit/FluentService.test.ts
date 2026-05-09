@@ -53,7 +53,7 @@ describe('FluentService', () => {
 
     it('should provide onSet method for registering set handlers', () => {
       const fluentService = wrapService(mockService as any);
-      const handler = vi.fn(async (value: boolean) => {});
+      const handler = vi.fn(async (_value: boolean) => {});
       fluentService.onSet('on' as any, handler);
       expect(mockService.characteristics[0]['setHandler']).toBeDefined();
     });
@@ -99,7 +99,7 @@ describe('FluentService', () => {
         static UUID = 'test-service-uuid';
       }
 
-      const fluentService = getOrAddService(
+      const _fluentService = getOrAddService(
         mockAccessory as any,
         TestService as any,
         'Test Service'
@@ -116,7 +116,7 @@ describe('FluentService', () => {
       const service1 = new TestService('Test Service', TestService.UUID);
       mockAccessory.addService(service1);
 
-      const fluentService = getOrAddService(
+      const _fluentService = getOrAddService(
         mockAccessory as any,
         TestService as any,
         'Test Service'
@@ -147,7 +147,7 @@ describe('FluentService', () => {
         static UUID = 'test-service-uuid';
       }
 
-      const fluentService = getOrAddService(
+      const _fluentService = getOrAddService(
         mockAccessory as any,
         TestService as any,
         'Test Service',
@@ -175,13 +175,13 @@ describe('FluentService', () => {
         static UUID = 'test-service-uuid';
       }
 
-      const service1 = getOrAddService(
+      const _service1 = getOrAddService(
         mockAccessory as any,
         TestService as any,
         'Test Service 1',
         'subtype1'
       );
-      const service2 = getOrAddService(
+      const _service2 = getOrAddService(
         mockAccessory as any,
         TestService as any,
         'Test Service 2',
@@ -197,7 +197,7 @@ describe('FluentService', () => {
       const fluentService = wrapService(mockService as any);
 
       const getHandler = vi.fn(async () => true);
-      const setHandler = vi.fn(async (value: boolean) => {});
+      const setHandler = vi.fn(async (_value: boolean) => {});
 
       fluentService.onGet('on' as any, getHandler);
       fluentService.onSet('on' as any, setHandler);

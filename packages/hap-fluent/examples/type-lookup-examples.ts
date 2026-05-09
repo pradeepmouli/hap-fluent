@@ -70,12 +70,12 @@ export function instanceToInterfaceExample() {
 // Example 3: Map constructor/instance to key names
 export function serviceToKeyMappingExample() {
   // Map constructor to key
-  type AirPurifierKey = ServiceConstructorToKey<typeof Service.AirPurifier>; // "AirPurifier"
-  type LightbulbKey = ServiceConstructorToKey<typeof Service.Lightbulb>; // "Lightbulb"
+  type _AirPurifierKey = ServiceConstructorToKey<typeof Service.AirPurifier>; // "AirPurifier"
+  type _LightbulbKey = ServiceConstructorToKey<typeof Service.Lightbulb>; // "Lightbulb"
 
   // Map instance to key
   const lightbulbInstance = new Service.Lightbulb('Living Room Light');
-  type LightbulbInstanceKey = ServiceInstanceToKey<typeof lightbulbInstance>; // "Lightbulb"
+  type _LightbulbInstanceKey = ServiceInstanceToKey<typeof lightbulbInstance>; // "Lightbulb"
 
   // Runtime lookup
   const airPurifierKeyRuntime = getServiceNameFromConstructor(Service.AirPurifier);
@@ -94,7 +94,7 @@ export function serviceToKeyMappingExample() {
 // Example 4: Get characteristic types for a service constructor
 export function characteristicTypesExample() {
   // Get all characteristics for a service
-  type AirPurifierChars = CharacteristicMapForConstructor<typeof Service.AirPurifier>;
+  type _AirPurifierChars = CharacteristicMapForConstructor<typeof Service.AirPurifier>;
 
   // Get specific characteristic type
   type ActiveType = CharacteristicTypeForConstructor<typeof Service.AirPurifier, 'active'>;
@@ -114,15 +114,15 @@ export function characteristicTypesExample() {
 // Example 5: Find services with specific characteristics
 export function findServicesWithCharacteristicExample() {
   // Find all services that have an 'active' characteristic
-  type ServicesWithActive = ServicesWithCharacteristic<'active'>;
+  type _ServicesWithActive = ServicesWithCharacteristic<'active'>;
 
   // Find all services with 'name' characteristic
-  type ServicesWithName = ServicesWithCharacteristic<'name'>;
+  type _ServicesWithName = ServicesWithCharacteristic<'name'>;
 
   // Check if specific services have specific characteristics
-  type AirPurifierHasActive = ServiceHasCharacteristic<'AirPurifier', 'active'>; // true
-  type AccessoryInfoHasActive = ServiceHasCharacteristic<'AccessoryInformation', 'active'>; // false
-  type LightbulbHasName = ServiceHasCharacteristic<'Lightbulb', 'name'>; // true
+  type _AirPurifierHasActive = ServiceHasCharacteristic<'AirPurifier', 'active'>; // true
+  type _AccessoryInfoHasActive = ServiceHasCharacteristic<'AccessoryInformation', 'active'>; // false
+  type _LightbulbHasName = ServiceHasCharacteristic<'Lightbulb', 'name'>; // true
 
   console.log('Services with characteristics:');
   console.log('AirPurifier has active: true');
@@ -136,7 +136,7 @@ export function findServicesWithCharacteristicExample() {
 // Example 6: Create fluent interfaces based on constructor types
 export function fluentInterfaceFromConstructorExample() {
   // This shows how to create a fluent interface type from a constructor
-  type AirPurifierFluent = FluentInterfaceForServiceConstructor<typeof Service.AirPurifier>;
+  type _AirPurifierFluent = FluentInterfaceForServiceConstructor<typeof Service.AirPurifier>;
 
   // You could use this type to create strongly-typed wrappers
   const service = createFluentService('AirPurifier');
@@ -187,7 +187,7 @@ export function genericServiceFunction<T extends keyof typeof Service>(
 
   if (serviceName && isValidServiceConstructor(serviceConstructor)) {
     // Create a fluent service
-    const fluentService = createFluentService(serviceName);
+    const _fluentService = createFluentService(serviceName);
 
     console.log(`Created fluent service for: ${serviceName}`);
 

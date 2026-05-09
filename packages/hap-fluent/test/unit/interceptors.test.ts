@@ -102,7 +102,7 @@ describe('Interceptor System - Fluent API', () => {
       const mockChar = new MockCharacteristic('Brightness', 'brightness-uuid');
       const fluent = new FluentCharacteristic(mockChar as any);
 
-      fluent.limit(2, 1000).onSet(async (value) => {
+      fluent.limit(2, 1000).onSet(async (_value) => {
         // Handler
       });
 
@@ -249,7 +249,7 @@ describe('Interceptor System - Fluent API', () => {
       const mockChar = new MockCharacteristic('Brightness', 'brightness-uuid');
       const fluent = new FluentCharacteristic(mockChar as any);
 
-      fluent.limit(1, 1000).onSet(async (value) => {
+      fluent.limit(1, 1000).onSet(async (_value) => {
         // Handler
       });
 
@@ -261,7 +261,7 @@ describe('Interceptor System - Fluent API', () => {
 
       // Clear interceptors and re-register handler
       fluent.clearInterceptors();
-      fluent.onSet(async (value) => {
+      fluent.onSet(async (_value) => {
         // New handler without rate limit
       });
 

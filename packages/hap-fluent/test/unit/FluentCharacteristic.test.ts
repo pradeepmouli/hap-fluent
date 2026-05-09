@@ -125,19 +125,19 @@ describe('FluentCharacteristic', () => {
 
   describe('onSet()', () => {
     it('should register a set handler', () => {
-      const handler = vi.fn(async (value: boolean) => {});
+      const handler = vi.fn(async (_value: boolean) => {});
       fluentCharacteristic.onSet(handler);
       expect(mockCharacteristic['setHandler']).toBeDefined();
     });
 
     it('should return this for chaining', () => {
-      const handler = async (value: boolean) => {};
+      const handler = async (_value: boolean) => {};
       const result = fluentCharacteristic.onSet(handler);
       expect(result).toBe(fluentCharacteristic);
     });
 
     it('should call the handler when characteristic is written', async () => {
-      const handler = vi.fn(async (value: boolean) => {});
+      const handler = vi.fn(async (_value: boolean) => {});
       fluentCharacteristic.onSet(handler);
       await mockCharacteristic.handleSet(true);
       expect(handler).toHaveBeenCalledWith(true);
@@ -201,7 +201,7 @@ describe('FluentCharacteristic', () => {
   describe('method chaining', () => {
     it('should allow complex method chaining', () => {
       const handler = vi.fn(async () => true);
-      const setHandler = vi.fn(async (value: boolean) => {});
+      const setHandler = vi.fn(async (_value: boolean) => {});
 
       const result = fluentCharacteristic
         .setProps({ minValue: 0, maxValue: 1 })

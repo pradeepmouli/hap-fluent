@@ -328,7 +328,7 @@ export function createDebouncingInterceptor(delayMs: number): Interceptor {
   let pendingValue: CharacteristicValue | null = null;
 
   return {
-    beforeSet(value, context) {
+    beforeSet(value, _context) {
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
@@ -374,7 +374,7 @@ export function createTransformInterceptor(
   transform: (value: CharacteristicValue) => CharacteristicValue
 ): Interceptor {
   return {
-    beforeSet(value, context) {
+    beforeSet(value, _context) {
       return transform(value);
     }
   };

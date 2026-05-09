@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { AccessoryHandler, createServicesObject } from '../../src/AccessoryHandler.js';
-import { wrapService } from '../../src/FluentService.js';
 import {
   MockService,
   MockPlatformAccessory,
@@ -32,7 +31,7 @@ describe('Integration Tests', () => {
       const lightbulbService = createMockLightbulbService();
       mockAccessory.addService(lightbulbService);
 
-      const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+      const _handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
       const services = createServicesObject(lightbulbService as any) as any;
 
       // Turn on the lightbulb
@@ -90,7 +89,7 @@ describe('Integration Tests', () => {
       mockAccessory.addService(lightbulbService);
       mockAccessory.addService(switchService);
 
-      const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+      const _handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
       expect(mockAccessory.services).toHaveLength(2);
     });
 
@@ -103,7 +102,7 @@ describe('Integration Tests', () => {
       mockAccessory.addService(service1);
       mockAccessory.addService(service2);
 
-      const services = createServicesObject(service1 as any, service2 as any);
+      const _services = createServicesObject(service1 as any, service2 as any);
 
       // Set different values for each service
       service1.characteristics[0].value = true;
@@ -378,7 +377,7 @@ describe('Integration Tests', () => {
 
       outlets.forEach((outlet) => mockAccessory.addService(outlet));
 
-      const handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
+      const _handler = new AccessoryHandler(mockPlugin, mockAccessory as any);
       expect(mockAccessory.services).toHaveLength(4);
 
       // Turn on outlets 1 and 3
