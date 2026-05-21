@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [20.x, 22.x]
+        node-version: [22.x, 24.x]
 
     steps:
       - name: Checkout code
@@ -23,7 +23,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
-          version: 10.32.0
+          version: 11.1.3
 
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v6
@@ -51,22 +51,22 @@ jobs:
         run: pnpm run test
 
       - name: Test with coverage
-        if: matrix.node-version == '20.x'
+        if: matrix.node-version == '22.x'
         run: pnpm run test -- --coverage
 
       - name: Upload coverage reports
-        if: matrix.node-version == '20.x'
+        if: matrix.node-version == '22.x'
         uses: codecov/codecov-action@v6
         with:
           files: ./coverage/lcov.info
           fail_ci_if_error: false
 
       - name: Security audit (non-blocking)
-        if: matrix.node-version == '20.x'
+        if: matrix.node-version == '22.x'
         run: pnpm audit --audit-level moderate
         continue-on-error: true
 
       - name: Bundle size
-        if: matrix.node-version == '20.x'
+        if: matrix.node-version == '22.x'
         run: pnpm dlx size-limit
         continue-on-error: true
