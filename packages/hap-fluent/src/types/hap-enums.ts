@@ -1,6 +1,5 @@
 // Auto-generated HAP Enums
 
-
 export namespace Enums {
   /** Accessory capability flags (requires additional setup, etc.) */
   export const enum AccessoryFlags {

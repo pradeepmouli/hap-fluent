@@ -1,7 +1,6 @@
 // Auto-generated HAP Fluent API wrapper
 // This file will be extended to use generated interfaces from hap-codegen
 
-
 /**
  * FluentCharacteristic wraps a HAP characteristic with strong typing and fluent API
  */
