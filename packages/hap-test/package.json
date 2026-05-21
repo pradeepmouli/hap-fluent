@@ -64,7 +64,7 @@
     "typescript": "^6.0.3"
   },
   "peerDependencies": {
-    "hap-nodejs": "^0.11.0 || ^0.12.0",
+    "hap-nodejs": "^0.11.0 || ^0.12.0 || ^0.14.0",
     "homebridge": "^1.6.0 || ^2.0.0",
     "vitest": "^1.0.0 || ^2.0.0"
   },
