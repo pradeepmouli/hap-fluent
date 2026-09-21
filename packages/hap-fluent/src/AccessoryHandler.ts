@@ -43,11 +43,11 @@ import {
   type UnknownContext,
   type WithUUID
 } from 'homebridge';
-import { Service } from 'hap-nodejs';
+import { Service } from '@homebridge/hap-nodejs';
 
 import { TupleToUnion } from 'type-fest';
 
-import { _definitions } from 'hap-nodejs';
+import { _definitions } from '@homebridge/hap-nodejs';
 
 import { getOrAddService, wrapService, FluentService } from './FluentService.js';
 import type { AccessoryInformation } from './types/hap-interfaces.js';
