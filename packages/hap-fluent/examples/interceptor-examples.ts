@@ -13,7 +13,7 @@
  * - Our interceptors add custom behavior on top
  */
 
-import { Service, Characteristic, Accessory, uuid } from 'hap-nodejs';
+import { Service, Characteristic, Accessory, uuid } from '@homebridge/hap-nodejs';
 import { wrapService } from '../src/FluentService.js';
 
 // Example 1: Basic Logging on onSet

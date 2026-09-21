@@ -2,7 +2,7 @@
  * Event type definitions for HomeKit protocol events
  */
 
-import type { CharacteristicValue } from 'hap-nodejs';
+import type { CharacteristicValue } from '@homebridge/hap-nodejs';
 
 /**
  * Accessory-level events
