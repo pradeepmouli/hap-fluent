@@ -7,7 +7,7 @@
  */
 
 import camelcase from 'camelcase';
-import { Characteristic, Formats, Service } from 'hap-nodejs';
+import { Characteristic, Formats, Service } from '@homebridge/hap-nodejs';
 import fs from 'node:fs';
 import path from 'node:path';
 import 'reflect-metadata';
@@ -241,7 +241,7 @@ function extractCharacteristics(tsFile: string) {
 
 function generateEnums(characteristics: Record<string, { type: string; enums?: string[] }> = {}) {
   let output = '// Auto-generated HAP Enums\n\n';
-  output += "import { Characteristic } from 'hap-nodejs';\n\n";
+  output += "import { Characteristic } from '@homebridge/hap-nodejs';\n\n";
   output += 'export namespace Enums {\n';
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   for (const [name, { type, enums }] of Object.entries(characteristics)) {
@@ -281,7 +281,7 @@ function generateInterfaces(
   characteristics: Record<string, { type: string; enums?: string[] }> = {}
 ) {
   let output = '// Auto-generated HAP Service Interfaces\n\n';
-  output += "import { Characteristic, Service } from 'hap-nodejs';\n\n";
+  output += "import { Characteristic, Service } from '@homebridge/hap-nodejs';\n\n";
   output += "import { Enums } from './hap-enums.js';\n\n";
   for (const service of services) {
     output += `export interface ${service.name} {\n`;
@@ -305,7 +305,7 @@ function generateInterfaces(
     output += `  ${service.name}: typeof Service.${service.name};\n`;
   } // Close the ServiceMap interface
   output += '}\n\n';
-  output += "declare module 'hap-nodejs' {";
+  output += "declare module '@homebridge/hap-nodejs' {";
   output += '\n\t namespace _definitions {';
   output += '\n\t\t namespace Services {';
   // Add module augmentations
