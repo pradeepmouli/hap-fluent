@@ -5,7 +5,7 @@
  * This is useful for converting between different formats, units, or representations.
  */
 
-import { Service, Characteristic, Accessory, uuid } from 'hap-nodejs';
+import { Service, Characteristic, Accessory, uuid } from '@homebridge/hap-nodejs';
 import { wrapService } from '../src/FluentService.js';
 
 // Example 1: Temperature unit conversion (Celsius <-> Fahrenheit)

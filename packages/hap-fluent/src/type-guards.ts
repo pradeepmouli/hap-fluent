@@ -2,15 +2,15 @@
  * Runtime type guard utilities for HAP-NodeJS types.
  *
  * @remarks
- * hap-nodejs objects are duck-typed at runtime; these guards validate the
+ * @homebridge/hap-nodejs objects are duck-typed at runtime; these guards validate the
  * minimal structural requirements defined by the HAP specification before
  * hap-fluent operates on them. Using guards prevents cryptic downstream errors
- * from hap-nodejs when malformed objects are passed.
+ * from @homebridge/hap-nodejs when malformed objects are passed.
  *
  * @module type-guards
  */
 
-import type { Characteristic, Service } from 'hap-nodejs';
+import type { Characteristic, Service } from '@homebridge/hap-nodejs';
 
 /**
  * Determine whether `value` is a valid HAP `CharacteristicValue`.
@@ -18,7 +18,7 @@ import type { Characteristic, Service } from 'hap-nodejs';
  * @remarks
  * The HAP specification defines valid characteristic value types as:
  * `string`, `number`, `boolean`, or `object`. `null` and `undefined` are
- * **not** valid — hap-nodejs will throw if you attempt to set them.
+ * **not** valid — @homebridge/hap-nodejs will throw if you attempt to set them.
  *
  * @param value - Value to test.
  * @returns `true` if `value` is a `string`, `number`, `boolean`, or non-null `object`.
@@ -43,14 +43,14 @@ export function isCharacteristicValue(value: unknown): value is CharacteristicVa
 }
 
 /**
- * Determine whether `obj` is a valid hap-nodejs `Service` instance.
+ * Determine whether `obj` is a valid @homebridge/hap-nodejs `Service` instance.
  *
  * @remarks
  * Validates structural requirements: `UUID` (string), `displayName` (string),
  * `getCharacteristic` (function), and `addCharacteristic` (function). This
  * duck-type check is sufficient for hap-fluent's use — it avoids an `instanceof`
- * check that would fail across different hap-nodejs module instances (common
- * in monorepo setups where multiple packages resolve hap-nodejs independently).
+ * check that would fail across different @homebridge/hap-nodejs module instances (common
+ * in monorepo setups where multiple packages resolve @homebridge/hap-nodejs independently).
  *
  * @param obj - Value to test.
  * @returns `true` if `obj` satisfies the minimal `Service` interface.
@@ -72,11 +72,11 @@ export function isService(obj: unknown): obj is Service {
 }
 
 /**
- * Determine whether `obj` is a valid hap-nodejs `Characteristic` instance.
+ * Determine whether `obj` is a valid @homebridge/hap-nodejs `Characteristic` instance.
  *
  * @remarks
  * Validates: `UUID` (string), `displayName` (string), `updateValue` (function),
- * and `getValue` (function). Same duck-typing rationale as {@link isService}.
+ * and `setValue` (function). Same duck-typing rationale as {@link isService}.
  *
  * @param obj - Value to test.
  * @returns `true` if `obj` satisfies the minimal `Characteristic` interface.
@@ -93,7 +93,7 @@ export function isCharacteristic(obj: unknown): obj is Characteristic {
     typeof characteristic.UUID === 'string' &&
     typeof characteristic.displayName === 'string' &&
     typeof characteristic.updateValue === 'function' &&
-    typeof characteristic.getValue === 'function'
+    typeof characteristic.setValue === 'function'
   );
 }
 
@@ -134,7 +134,7 @@ export function isBoolean(value: unknown): value is boolean {
  * The HAP specification (section 6.6) defines the following data types for
  * characteristics: bool (`boolean`), uint8/uint16/uint32/int (`number`),
  * float (`number`), string (`string`), TLV8 and data (represented as `object`).
- * `null` is included here to match the hap-nodejs type definition, but
+ * `null` is included here to match the @homebridge/hap-nodejs type definition, but
  * {@link isCharacteristicValue} rejects `null` at runtime to prevent HAP errors.
  *
  * @category TypeGuards

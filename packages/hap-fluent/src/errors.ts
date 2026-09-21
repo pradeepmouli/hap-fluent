@@ -66,10 +66,10 @@ export class FluentError extends Error {
  * The `context` object contains:
  * - `characteristic` — display name of the failing characteristic.
  * - `value` — the value that was attempted (may be `undefined` for `get` failures).
- * - `originalError` — the underlying error from hap-nodejs, if any.
+ * - `originalError` — the underlying error from @homebridge/hap-nodejs, if any.
  *
  * @pitfalls
- * - NEVER swallow this error silently in a Homebridge plugin — hap-nodejs expects
+ * - NEVER swallow this error silently in a Homebridge plugin — @homebridge/hap-nodejs expects
  *   `onGet`/`onSet` handlers to either resolve or reject with an `HAPStatus` error
  *   code. If you catch and re-throw a plain `Error`, HomeKit receives a generic
  *   failure status and may mark the accessory as "Not Responding".
