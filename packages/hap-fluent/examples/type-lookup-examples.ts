@@ -1,7 +1,7 @@
 // Type Lookup Examples
 // Demonstrates how to lookup interface types using HAP-NodeJS service types
 
-import { Service } from 'hap-nodejs';
+import { Service } from '@homebridge/hap-nodejs';
 import type {
   ServiceInterfaceForConstructor,
   ServiceInterfaceForInstance,
