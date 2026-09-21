@@ -2,7 +2,7 @@
  * Type definitions for mock HomeKit entities
  */
 
-import type { CharacteristicValue } from 'hap-nodejs';
+import type { CharacteristicValue } from '@homebridge/hap-nodejs';
 import type { AccessoryContext } from './harness.js';
 
 /**
