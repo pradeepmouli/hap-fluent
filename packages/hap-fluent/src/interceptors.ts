@@ -67,7 +67,7 @@ export interface InterceptorContext {
  * @pitfalls
  * - NEVER throw inside `afterSet` or `afterGet` without catching — uncaught
  *   errors in post-operation hooks are caught by the `onError` hook, but if
- *   `onError` is also missing, the error propagates to hap-nodejs which logs
+ *   `onError` is also missing, the error propagates to @homebridge/hap-nodejs which logs
  *   it as an unhandled rejection.
  * - NEVER perform slow I/O in `beforeSet` without applying a `.limit()` rate
  *   limiter — iOS polls characteristics every 1-5 seconds for active tiles,
@@ -304,7 +304,7 @@ export function createClampingInterceptor(min: number, max: number): Interceptor
  * `Hue` or `Saturation` where the iOS color wheel generates rapid updates.
  *
  * **Note:** The `beforeSet` hook returns a `Promise` that resolves after the
- * debounce delay. hap-nodejs will hold the HomeKit response open until the
+ * debounce delay. @homebridge/hap-nodejs will hold the HomeKit response open until the
  * promise resolves, so keep `delayMs` well under the HomeKit 5-second timeout.
  *
  * @param delayMs - Debounce delay in milliseconds.

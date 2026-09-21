@@ -9,7 +9,7 @@
  * Import selectively — all exports are tree-shakeable.
  */
 
-import type { CharacteristicValue } from 'hap-nodejs';
+import type { CharacteristicValue } from '@homebridge/hap-nodejs';
 import type { FluentCharacteristic } from './FluentCharacteristic.js';
 
 /**
