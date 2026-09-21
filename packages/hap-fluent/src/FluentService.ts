@@ -35,18 +35,18 @@ import { getLogger } from './logger.js';
  *   values without manually typing characteristic display names.
  *
  * @avoidWhen
- * - You need direct hap-nodejs `Service` access (e.g., `service.getCharacteristic()`,
+ * - You need direct @homebridge/hap-nodejs `Service` access (e.g., `service.getCharacteristic()`,
  *   `service.setPrimaryService(true)`) — `FluentService` does not expose all
  *   service methods; obtain the raw service via `platformAccessory.getService()`.
- * - Your accessory has a single, trivial characteristic — `hap-nodejs` directly
+ * - Your accessory has a single, trivial characteristic — `@homebridge/hap-nodejs` directly
  *   may be simpler and incurs no overhead.
  *
  * @pitfalls
  * - NEVER register the same characteristic handler twice on the same service —
- *   hap-nodejs silently replaces the first handler, causing the original logic
+ *   @homebridge/hap-nodejs silently replaces the first handler, causing the original logic
  *   to be permanently dropped with no runtime error.
  * - NEVER mutate `characteristics` after `platformAccessory` has been published
- *   via `api.registerPlatformAccessories()` — hap-nodejs caches the service
+ *   via `api.registerPlatformAccessories()` — @homebridge/hap-nodejs caches the service
  *   state at publish time; post-publish structural changes cause a silent desync
  *   with the iOS Home controller.
  * - NEVER assume `characteristics` contains characteristics that were not
@@ -259,7 +259,7 @@ export function getOrAddService<T extends typeof Service>(
  * `.characteristics` — call `wrapService` again to refresh the map, or add
  * optional characteristics to the service before wrapping.
  *
- * @param service - A valid hap-nodejs `Service` instance to wrap.
+ * @param service - A valid @homebridge/hap-nodejs `Service` instance to wrap.
  * @returns A {@link FluentService} providing typed `.characteristics`, `.onGet()`,
  *   `.onSet()`, `.update()`, and shorthand property accessors.
  *
@@ -278,7 +278,7 @@ export function getOrAddService<T extends typeof Service>(
  *
  * @pitfalls
  * - NEVER wrap the same service instance more than once and register different handlers
- *   on each wrapper — both wrappers share the underlying `hap-nodejs` characteristic
+ *   on each wrapper — both wrappers share the underlying `@homebridge/hap-nodejs` characteristic
  *   objects, so handlers registered on one wrapper overwrite those on the other.
  * - NEVER add characteristics to the service after calling `wrapService` and expect
  *   them to appear in `.characteristics` — the snapshot is taken at wrap time.

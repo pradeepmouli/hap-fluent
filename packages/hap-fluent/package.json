@@ -66,13 +66,13 @@
   },
   "devDependencies": {
     "@fast-check/vitest": "^0.4.1",
+    "@homebridge/hap-nodejs": "^2.2.3",
     "@size-limit/preset-small-lib": "^12.1.0",
     "@vitest/coverage-v8": "^4.1.7",
     "@vitest/ui": "^4.1.7",
     "eslint": "^10.6.0",
     "glob": "^13.0.6",
-    "hap-nodejs": "^0.14.3",
-    "homebridge": "^2.0.2",
+    "homebridge": "^2.4.0",
     "prettier": "^3.8.3",
     "size-limit": "^12.1.0",
     "ts-node": "^10.9.2",
@@ -81,8 +81,8 @@
     "vitest": "^4.1.7"
   },
   "peerDependencies": {
-    "hap-nodejs": ">=0.13.0",
-    "homebridge": ">=1.11.0"
+    "@homebridge/hap-nodejs": ">=2.0.0",
+    "homebridge": ">=2.0.0"
   },
   "size-limit": []
 }

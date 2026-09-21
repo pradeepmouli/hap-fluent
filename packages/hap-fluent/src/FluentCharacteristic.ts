@@ -26,7 +26,7 @@ import {
  * (`boolean`, `number`, `string`, or `object`), and optional min/max/step
  * constraints defined in the HAP specification. `FluentCharacteristic` enforces
  * the TypeScript-level type via the `T` type parameter and delegates all
- * runtime mutations to the underlying `hap-nodejs` characteristic so the
+ * runtime mutations to the underlying `@homebridge/hap-nodejs` characteristic so the
  * HomeKit protocol contract is never broken.
  *
  * Interceptors (logging, rate-limiting, clamping, codec, transform) are
@@ -45,16 +45,16 @@ import {
  * @avoidWhen
  * - You only need bulk initial-value assignment — use `initializeAccessory()`
  *   or `FluentService.update()` instead.
- * - You need raw hap-nodejs `Characteristic` access (e.g., to call
+ * - You need raw @homebridge/hap-nodejs `Characteristic` access (e.g., to call
  *   `characteristic.getDefaultValue()`) — retrieve `.characteristic` from the
- *   underlying service object, or use hap-nodejs directly.
+ *   underlying service object, or use @homebridge/hap-nodejs directly.
  *
  * @pitfalls
  * - NEVER call `set()` with a value outside the HAP-specified range for that
  *   characteristic — iOS silently discards accessories that violate type
  *   constraints, causing the Home app to show the device as "Not Responding".
  * - NEVER register more than one `onGet` or `onSet` handler on the same
- *   characteristic — hap-nodejs replaces the previous handler without warning,
+ *   characteristic — @homebridge/hap-nodejs replaces the previous handler without warning,
  *   and the first handler's logic is silently dropped.
  * - NEVER pass `null` to `set()` — `isCharacteristicValue` rejects `null` and
  *   throws `FluentCharacteristicError`; use `update()` only with typed values.
