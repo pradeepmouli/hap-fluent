@@ -54,7 +54,7 @@
     "@typescript-eslint/eslint-plugin": "^8.60.0",
     "@typescript-eslint/parser": "^8.60.0",
     "@typescript/native-preview": "beta",
-    "@vitest/ui": "^4.1.7",
+    "@vitest/ui": "^4.1.9",
     "eslint": "^10.6.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
@@ -73,7 +73,7 @@
     "typedoc-plugin-skillit": "^2.0.3",
     "typescript": "^6.0.3",
     "vite": "^8.1.0",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.9"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged",
