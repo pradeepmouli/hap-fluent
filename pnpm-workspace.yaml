@@ -4,3 +4,6 @@ packages:
 allowBuilds:
   esbuild: true
   simple-git-hooks: true
+overrides:
+  # homebridge pins its own patch of @homebridge/hap-nodejs; keep a single copy so HAP types stay compatible
+  '@homebridge/hap-nodejs': ^2.2.3

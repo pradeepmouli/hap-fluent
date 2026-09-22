@@ -1,6 +1,6 @@
 {
   "name": "hap-test",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Test harness for Homebridge plugin development - write integration tests without physical HomeKit controllers",
   "keywords": [
     "hap-nodejs",
@@ -65,8 +65,8 @@
     "vite": "^8.1.0"
   },
   "peerDependencies": {
-    "hap-nodejs": "^0.11.0 || ^0.12.0 || ^0.14.0",
-    "homebridge": "^1.6.0 || ^2.0.0",
+    "@homebridge/hap-nodejs": "^2.0.0",
+    "homebridge": "^2.0.0",
     "vitest": "^1.0.0 || ^2.0.0 || ^3.0.0 || ^4.0.0"
   },
   "peerDependenciesMeta": {

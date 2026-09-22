@@ -1,6 +1,6 @@
 # Types & Enums
 
-## hap-enums
+## types
 
 ### `AccessoryFlags`
 
