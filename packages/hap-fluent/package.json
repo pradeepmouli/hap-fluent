@@ -70,7 +70,7 @@
     "@size-limit/preset-small-lib": "^12.1.0",
     "@vitest/coverage-v8": "^4.1.9",
     "@vitest/ui": "^4.1.9",
-    "eslint": "^10.4.0",
+    "eslint": "^10.6.0",
     "glob": "^13.0.6",
     "homebridge": "^2.4.0",
     "prettier": "^3.8.3",
