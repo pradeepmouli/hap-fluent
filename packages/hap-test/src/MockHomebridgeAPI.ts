@@ -9,7 +9,7 @@ import { EventEmitter } from 'events';
 import { tmpdir } from 'os';
 import { join } from 'path';
 import type { PlatformAccessory } from 'homebridge';
-import * as HAP from 'hap-nodejs';
+import * as HAP from '@homebridge/hap-nodejs';
 
 export class MockHomebridgeAPI extends EventEmitter {
   private _accessories: Map<string, PlatformAccessory> = new Map();

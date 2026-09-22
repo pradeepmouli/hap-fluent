@@ -33,7 +33,7 @@ npm install hap-fluent
 HAP Fluent requires the following peer dependencies:
 
 ```bash
-npm install homebridge@>=1.11.0 hap-nodejs@>=0.13.0
+npm install homebridge@>=1.11.0 @homebridge/hap-nodejs@>=0.13.0
 ```
 
 ## Quick Start

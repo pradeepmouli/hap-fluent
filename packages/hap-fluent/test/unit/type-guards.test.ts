@@ -69,7 +69,7 @@ describe('Type Guards', () => {
         UUID: '00000025-0000-1000-8000-0026BB765291',
         displayName: 'On',
         updateValue: () => {},
-        getValue: () => {}
+        setValue: () => {}
       };
       expect(isCharacteristic(mockCharacteristic)).toBe(true);
     });
@@ -87,7 +87,7 @@ describe('Type Guards', () => {
         UUID: '00000025-0000-1000-8000-0026BB765291',
         displayName: 'On',
         updateValue: () => {}
-        // missing getValue
+        // missing setValue
       };
       expect(isCharacteristic(incomplete)).toBe(false);
     });

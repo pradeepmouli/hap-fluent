@@ -927,7 +927,7 @@ export type ServiceMap = {
   WindowCovering: typeof Service.WindowCovering;
 };
 
-declare module 'hap-nodejs' {
+declare module '@homebridge/hap-nodejs' {
   namespace _definitions {
     namespace Services {
       namespace AccessCode {
