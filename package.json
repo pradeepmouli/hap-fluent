@@ -45,7 +45,7 @@
     "prepare": "simple-git-hooks"
   },
   "dependencies": {
-    "homebridge-lib": "^8.1.0"
+    "homebridge-lib": "^8.1.5"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.7.0",
