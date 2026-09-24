@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.1
+
+### Patch Changes
+
+- [#90](https://github.com/pradeepmouli/hap-fluent/pull/90) [`49c298c`](https://github.com/pradeepmouli/hap-fluent/commit/49c298cf8092d7c8a019e5a97c009f173ab020ce) Thanks [@pradeepmouli](https://github.com/pradeepmouli)! - Bump `vitest` to `^5.0.1` and `@fast-check/vitest` to `^0.5.0` (devDependencies — this repo was missed by the earlier portfolio-wide vitest 4→5 bump). Widened `hap-test`'s `vitest` peerDependencies range to include `^5.0.0`.
+
 ## 0.4.0
 
 ### Minor Changes
