@@ -12,7 +12,7 @@
     "typecheck": "vitepress build --debug"
   },
   "devDependencies": {
-    "typedoc": "0.28.19",
+    "typedoc": "0.28.20",
     "typedoc-plugin-markdown": "^4.11.0",
     "typedoc-plugin-skillit": "^2.0.3",
     "typedoc-vitepress-theme": "^1.1.2",
